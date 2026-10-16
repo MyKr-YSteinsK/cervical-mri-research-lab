@@ -1,0 +1,154 @@
+{
+  "audit": "CMRL-01 FlexFair archive file-level admission audit",
+  "observed_at_utc": "2026-10-16T10:55:03Z",
+  "source": {
+    "figshare_article_id": 28639598,
+    "figshare_file_id": 53159216,
+    "expected_filename": "CervicalCancerDataset.zip",
+    "expected_size_bytes": 348731016,
+    "expected_computed_md5": "303ae54703fdccc63302cb755aed792a"
+  },
+  "privacy": {
+    "archive_member_names_emitted": false,
+    "patient_or_site_identifiers_emitted": false,
+    "pixel_values_emitted": false
+  },
+  "archive": {
+    "filename": "CervicalCancerDataset.zip",
+    "size_bytes": 348731016,
+    "md5": "303ae54703fdccc63302cb755aed792a",
+    "sha256": "4efdfa6b6dbf4174a1b7ce2b0eb8878e739f0365829a89d57fdf5223c82817ec",
+    "official_md5_match": true,
+    "expected_size_match": true
+  },
+  "archive_safety": {
+    "zip_opened": true,
+    "member_count_including_directories": 6743,
+    "file_count": 6732,
+    "expanded_bytes": 349883720,
+    "compressed_bytes": 347443592,
+    "max_expanded_bytes": 8589934592,
+    "max_member_compression_ratio": 7.1069,
+    "max_member_ratio_limit": 1000.0,
+    "compression_methods": {
+      "0": 1590,
+      "8": 5153
+    },
+    "extension_counts": {
+      ".png": 6732
+    },
+    "medical_imaging_or_array_format_counts": {},
+    "top_level_logical_counts": {
+      "[other]": 6732
+    },
+    "image_like_raster_count": 3366,
+    "mask_name_candidate_count": 3366,
+    "filename_pair_candidate_count": 3366,
+    "unambiguous_filename_pair_candidate_count": 3366,
+    "structured_metadata_candidate_count": 0,
+    "manifest_filename_hint_count": 0,
+    "manifest_contents_inspected": false,
+    "filename_patient_token_candidate_count": 0,
+    "filename_site_token_candidate_count": 0,
+    "path_names_emitted": false,
+    "safety_flags": {
+      "expanded_size_over_limit": false,
+      "max_member_ratio_over_limit": false,
+      "zero_compressed_nonempty_member": false,
+      "absolute_paths": false,
+      "path_traversal": false,
+      "malformed_paths": false,
+      "symbolic_links": false,
+      "special_file_members": false,
+      "duplicate_or_case_colliding_paths": false,
+      "encrypted_members": false,
+      "unsupported_compression": false
+    },
+    "safe_to_read_members": true,
+    "crc_check_completed": true,
+    "crc_check_passed": true,
+    "crc_error_present": false
+  },
+  "identity_evidence": {
+    "patient_key_evidence": "filename patterns only; no authoritative patient mapping established",
+    "site_key_evidence": "no authoritative site mapping established",
+    "patient_key_manifest_file_count": 0,
+    "site_key_manifest_file_count": 0,
+    "patient_or_site_values_emitted": false
+  },
+  "status": "PROFILED",
+  "sample_pair_check": {
+    "requested": true,
+    "extracted": true,
+    "sample_files_saved_locally": true,
+    "image": {
+      "decoded": true,
+      "format": "PNG",
+      "width": 640,
+      "height": 640,
+      "mode": "L",
+      "channels": 1,
+      "sample_type": "8-bit unsigned"
+    },
+    "mask": {
+      "decoded": true,
+      "format": "PNG",
+      "width": 640,
+      "height": 640,
+      "mode": "L",
+      "channels": 1,
+      "sample_type": "8-bit unsigned",
+      "unique_value_count": 2
+    },
+    "dimensions_match": true,
+    "member_names_emitted": false,
+    "reused_prior_extraction_evidence": true
+  },
+  "transfer": {
+    "source_metadata_observed_at_utc": "2026-10-16T10:22:19Z",
+    "article_id": 28639598,
+    "file_id": 53159216,
+    "license": "CC BY 4.0",
+    "official_download_endpoint": "https://ndownloader.figshare.com/files/53159216",
+    "final_origin_path_without_query": "https://s3-eu-west-1.amazonaws.com/pstorage-npg-968563215/53159216/CervicalCancerDataset.zip",
+    "redirect_query_saved": false,
+    "authenticated": false,
+    "preflight": {
+      "head_status": 403,
+      "head_body_bytes_read": 0,
+      "initial_range_probe_status": 206,
+      "initial_range_content_range": "bytes 0-0/348731016",
+      "initial_range_body_bytes_read": 1,
+      "resume_range_probe_status": 206,
+      "resume_range_content_range": "bytes 69312040-69313063/348731016",
+      "resume_range_body_bytes_read": 1024
+    },
+    "initial_stream_attempt": {
+      "http_status": 200,
+      "range_requested": false,
+      "expected_payload_bytes": 348731016,
+      "received_payload_bytes": 69312040,
+      "completed": false,
+      "part_retained_until_resume": true,
+      "promoted_to_final_name": false,
+      "part_creation_time_observed_utc": "2026-10-16T10:24:29Z"
+    },
+    "range_resume": {
+      "http_status": 206,
+      "range_request_count": 17,
+      "all_content_ranges_and_lengths_matched": true,
+      "payload_bytes": 279418976,
+      "started_at_utc": "2026-10-16T10:32:25Z",
+      "elapsed_seconds": 1038.61,
+      "retry_count": 0
+    },
+    "known_body_payload_bytes_total": 348738232,
+    "known_body_payload_accounting": "6191-byte Figshare API response + 1-byte initial Range probe + 69312040-byte incomplete GET + 1024-byte resume Range probe + 279418976-byte ranged resume; excludes HTTP headers and unconsumed HEAD body",
+    "disk_space": {
+      "minimum_required_bytes": 5368709120,
+      "free_bytes_before_resume": 150813462528,
+      "free_bytes_after_download": 150534000640
+    },
+    "result": "DOWNLOADED_AND_MD5_VERIFIED"
+  }
+}
