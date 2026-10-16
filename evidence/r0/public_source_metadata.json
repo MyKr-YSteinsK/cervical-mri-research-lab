@@ -1,0 +1,217 @@
+{
+  "audit": "CMRL-00 / R0 public source metadata",
+  "run_started_at_utc": "2026-10-16T09:44:39Z",
+  "authentication": "unauthenticated public GET requests; no GitHub token or cookies used",
+  "downloads_performed": false,
+  "sources": {
+    "figshare_28639598": {
+      "request": {
+        "requested_url": "https://api.figshare.com/v2/articles/28639598",
+        "final_url": "https://api.figshare.com/v2/articles/28639598",
+        "observed_at_utc": "2026-10-16T09:44:39Z",
+        "elapsed_ms": 2353,
+        "status": 200,
+        "content_type": "application/json",
+        "content_length_header": "6191",
+        "bytes_read": 6191,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "8710a64f9031d98f34bf5aafb4c9baa4ec0e59d7b4fcce04d667762c2930645b"
+      },
+      "article_id_requested": 28639598,
+      "article": {
+        "id": 28639598,
+        "doi": "10.6084/m9.figshare.28639598.v1",
+        "title": "Achieving Flexible Fairness Metrics in Federated Medical Imaging",
+        "version": 1,
+        "published_date": "2025-04-09T07:01:32Z",
+        "modified_date": "2025-04-09T07:01:32Z",
+        "license": "CC BY 4.0",
+        "files": [
+          {
+            "name": "CervicalCancerDataset.zip",
+            "size_bytes": 348731016,
+            "md5": null,
+            "computed_md5": "303ae54703fdccc63302cb755aed792a",
+            "is_link_only": false,
+            "download_url": "https://ndownloader.figshare.com/files/53159216"
+          }
+        ]
+      }
+    },
+    "figshare_28636133": {
+      "request": {
+        "requested_url": "https://api.figshare.com/v2/articles/28636133",
+        "final_url": "https://api.figshare.com/v2/articles/28636133",
+        "observed_at_utc": "2026-10-16T09:44:41Z",
+        "elapsed_ms": 1522,
+        "status": 404,
+        "content_type": "application/json",
+        "bytes_read": 73,
+        "body_sha256": "f7e6bb0b4b710635b66a37138ed96a4908b4779256389a982a9462b0f6c4bde2"
+      },
+      "article_id_requested": 28636133
+    },
+    "flexfair_github": {
+      "repository_request": {
+        "requested_url": "https://api.github.com/repos/MaksimXing/FlexFair",
+        "final_url": "https://api.github.com/repos/MaksimXing/FlexFair",
+        "observed_at_utc": "2026-10-16T09:44:43Z",
+        "elapsed_ms": 643,
+        "status": 403,
+        "content_type": "application/json; charset=utf-8",
+        "bytes_read": 279,
+        "body_sha256": "49c488f2b07103e347d368d2d6ff19692b0a85af4f6826fda95238aabeab4345"
+      },
+      "fallback_branch": "main",
+      "latest_commit_feed_request": {
+        "requested_url": "https://github.com/MaksimXing/FlexFair/commits/main.atom",
+        "final_url": "https://github.com/MaksimXing/FlexFair/commits/main.atom",
+        "observed_at_utc": "2026-10-16T09:44:43Z",
+        "elapsed_ms": 985,
+        "status": 200,
+        "content_type": "application/atom+xml; charset=utf-8",
+        "content_length_header": "10376",
+        "bytes_read": 10376,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "a2da0220997011c1e38f471803c53ef5333105a5bdb90ab20f3b583300c2b060"
+      },
+      "latest_commit": {
+        "sha": "f7da0fc0a9a4ad7c96f2c7b48699fc8cc151e320",
+        "updated_at": "2025-04-12T15:01:59Z",
+        "source": "GitHub public Atom feed"
+      },
+      "readme_request": {
+        "requested_url": "https://raw.githubusercontent.com/MaksimXing/FlexFair/main/README.md",
+        "final_url": "https://raw.githubusercontent.com/MaksimXing/FlexFair/main/README.md",
+        "observed_at_utc": "2026-10-16T09:44:44Z",
+        "elapsed_ms": 987,
+        "status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "content_length_header": "3555",
+        "bytes_read": 3555,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "d1ee63b88d69855bf8a3d08573e042f9b52866f7b4dba9e8cee3d1dab8591902"
+      },
+      "readme_facts": {
+        "sha256": "d1ee63b88d69855bf8a3d08573e042f9b52866f7b4dba9e8cee3d1dab8591902",
+        "figshare_id_mentions": [
+          "28636133",
+          "28639598"
+        ],
+        "figshare_anchor_targets": [
+          "https://doi.org/10.6084/m9.figshare.28639598"
+        ],
+        "mentions_google_drive_links": true,
+        "mentions_dicom_png": false,
+        "mentions_nrrd_pair": false,
+        "mentions_access_password_request": false
+      }
+    },
+    "ccmd_github": {
+      "repository_request": {
+        "requested_url": "https://api.github.com/repos/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset",
+        "final_url": "https://api.github.com/repos/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset",
+        "observed_at_utc": "2026-10-16T09:44:45Z",
+        "elapsed_ms": 615,
+        "status": 403,
+        "content_type": "application/json; charset=utf-8",
+        "bytes_read": 279,
+        "body_sha256": "49c488f2b07103e347d368d2d6ff19692b0a85af4f6826fda95238aabeab4345"
+      },
+      "fallback_branch": "main",
+      "latest_commit_feed_request": {
+        "requested_url": "https://github.com/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset/commits/main.atom",
+        "final_url": "https://github.com/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset/commits/main.atom",
+        "observed_at_utc": "2026-10-16T09:44:46Z",
+        "elapsed_ms": 975,
+        "status": 200,
+        "content_type": "application/atom+xml; charset=utf-8",
+        "content_length_header": "12891",
+        "bytes_read": 12891,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "7679f661027a106c61a86ef646a20993775d4b78358000b9e4e1668069ad6b99"
+      },
+      "latest_commit": {
+        "sha": "9b6a7e9b31ba2b89dd0604e59cedefe2662d2a24",
+        "updated_at": "2025-02-10T20:00:27Z",
+        "source": "GitHub public Atom feed"
+      },
+      "readme_request": {
+        "requested_url": "https://raw.githubusercontent.com/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset/main/README.md",
+        "final_url": "https://raw.githubusercontent.com/peekaboo990/CCMD-Cervical-Cancer-MRI-Dataset/main/README.md",
+        "observed_at_utc": "2026-10-16T09:44:47Z",
+        "elapsed_ms": 831,
+        "status": 200,
+        "content_type": "text/plain; charset=utf-8",
+        "content_length_header": "2329",
+        "bytes_read": 2329,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "41dbf160dc35bdb5fe0418506a4cefef971e3bc81f4aeee83dd8a1b5ec00846d"
+      },
+      "readme_facts": {
+        "sha256": "41dbf160dc35bdb5fe0418506a4cefef971e3bc81f4aeee83dd8a1b5ec00846d",
+        "figshare_id_mentions": [],
+        "figshare_anchor_targets": [],
+        "mentions_google_drive_links": false,
+        "mentions_dicom_png": true,
+        "mentions_nrrd_pair": true,
+        "mentions_access_password_request": true
+      }
+    },
+    "tcia_collection": {
+      "request": {
+        "requested_url": "https://www.cancerimagingarchive.net/api/v1/collections/41813",
+        "final_url": "https://www.cancerimagingarchive.net/api/v1/collections/41813",
+        "observed_at_utc": "2026-10-16T09:44:48Z",
+        "elapsed_ms": 2069,
+        "status": 200,
+        "content_type": "application/json; charset=UTF-8",
+        "content_length_header": null,
+        "bytes_read": 26918,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "eef4eab34338d9860cc32b08f4eb68eca5519efe020e629627952461b298e632"
+      },
+      "collection": {
+        "id": 41813,
+        "title": "Cervical Cancer – Tumor Heterogeneity: Serial Functional and Molecular Imaging Across the Radiation Therapy Course in Advanced Cervical Cancer",
+        "slug": "cc-tumor-heterogeneity",
+        "page_url": "https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/",
+        "doi": "10.7937/ERZ5-QZ59",
+        "version_number": "2",
+        "published_date": "2023-11-20T01:52:55",
+        "modified_gmt": "2026-10-14T18:18:40",
+        "date_updated": "2023-02-23",
+        "subject_count": 23,
+        "data_types": [
+          "CT",
+          "MR",
+          "PT",
+          "REG",
+          "RTSTRUCT"
+        ],
+        "collection_download_entry_count": 2
+      }
+    },
+    "idc_collection": {
+      "request": {
+        "requested_url": "https://portal.imaging.datacommons.cancer.gov/collections/cc_tumor_heterogeneity/",
+        "final_url": "https://portal.imaging.datacommons.cancer.gov/collections/cc_tumor_heterogeneity/",
+        "observed_at_utc": "2026-10-16T09:44:50Z",
+        "elapsed_ms": 1738,
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "content_length_header": "38635",
+        "bytes_read": 38635,
+        "body_truncated_at_8mb": false,
+        "body_sha256": "fa42a5981b2709c2af5b75462ce6262ce68aaa4399c564f26073d10039a10a99"
+      },
+      "collection_page_facts": {
+        "page_sha256": "fa42a5981b2709c2af5b75462ce6262ce68aaa4399c564f26073d10039a10a99",
+        "mentions_23_subjects": true,
+        "mentions_mr": true,
+        "mentions_rtstruct": true,
+        "mentions_clinical_support": true
+      }
+    }
+  }
+}

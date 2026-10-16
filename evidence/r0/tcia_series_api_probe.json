@@ -1,0 +1,25 @@
+{
+  "probe": "TCIA public getSeries metadata request for one candidate image/RTSTRUCT pair",
+  "observed_date": "2026-10-16",
+  "endpoint": "https://services.cancerimagingarchive.net/services/TCIA/TCIA/query/getSeries",
+  "authentication": "none",
+  "request_parameters": "withheld from this evidence file; no patient or series identifiers are retained",
+  "attempts": [
+    {
+      "client": "PowerShell web request",
+      "observation": "No response was captured before the tool's 30-second execution boundary",
+      "http_status": null,
+      "response_body_captured": false
+    },
+    {
+      "client": "Python standard-library urllib",
+      "timeout_seconds": 15,
+      "elapsed_seconds_observed": 15.99,
+      "error_kind": "TimeoutError",
+      "http_status": null,
+      "response_body_captured": false
+    }
+  ],
+  "dataset_files_requested_or_downloaded": false,
+  "interpretation": "The endpoint attempt did not establish whether the collection data or a specific series is accessible. Image/RTSTRUCT pairing, ROI type, frame of reference, and spatial alignment remain uninspected."
+}

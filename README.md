@@ -6,7 +6,7 @@ This repository supports a staged, reproducible research project on cervical can
 
 ## Current research state
 
-The only active stage is `R0-DATA-ACCESS-AUDIT`. The public sources and candidate datasets have not yet passed file-level image/mask inspection. No patient MRI, clinical workbook, segmentation, model run, or local imaging environment is represented as validated here. Read [the current research state](docs/project/08-RESEARCH_STATE.md) and [the staged research plan](docs/project/03-STAGED_RESEARCH_PLAN.md) before proposing experiments.
+The only active stage is `R0-DATA-ACCESS-AUDIT`. Candidate datasets have not passed file-level image/mask inspection. CMRL-00 downloaded the public TCIA clinical workbook into ignored local storage and profiled its schema and missingness; it did not validate clinical endpoints or accept training labels. No patient MRI, segmentation, model run, or local imaging environment is represented as validated here. See the [CMRL-00 audit report](reports/r0/CMRL-00-三候选数据准入审计.md), [current research state](docs/project/08-RESEARCH_STATE.md), and [staged research plan](docs/project/03-STAGED_RESEARCH_PLAN.md) before proposing experiments.
 
 ## Project contracts
 
@@ -32,5 +32,14 @@ The user learns, writes, and runs the medical-imaging processing, segmentation, 
 ## Reproduction and handoff
 
 Start from the active Plan and use its exact commands, source URLs, download limits, and acceptance gates. CMRL-00 keeps its audit script, safe evidence, report, and `TASK_RESULT` under `scripts/r0/`, `evidence/r0/`, and `reports/r0/`. Work is delivered on the Plan-authorized branch. Push does not mean merge; Main reviews the evidence and decides whether to accept it.
+
+To reproduce the CMRL-00 aggregate audit from the repository root, use Python with `openpyxl` for the local workbook profile:
+
+```powershell
+python -X utf8 scripts/r0/audit_public_sources.py
+python -X utf8 scripts/r0/inspect_clinical_xlsx.py data/clinical/TCIA_CCTH_Patient-data_02.06.23.xlsx --output evidence/r0/tcia_clinical_profile.json
+```
+
+The first command makes bounded public metadata requests and does not download dataset archives. The second requires the TCIA workbook to be present locally; it emits aggregate field counts only. Keep the workbook under ignored `data/` and do not stage it.
 
 The startup ZIP was supplied as input and is not itself a repository artifact. Its eight seed documents were copied unchanged; their SHA-256 values are recorded in `docs/project/SEED_SHA256.md`.
