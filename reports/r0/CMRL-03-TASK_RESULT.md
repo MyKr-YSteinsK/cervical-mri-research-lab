@@ -12,7 +12,7 @@
 - **Branch：** `codex/r0-03-tcia-minimal-reference-audit`。
 - **Parent SHA：** `81d6801cd926a279653e8d6a2eca87f88dc331e9`（CMRL-02 远端 HEAD）。
 - **PR chain：** #1 `OPEN / Draft`, `main → codex/r0-00-data-access-audit`；#2 `OPEN / Draft`, `codex/r0-00-data-access-audit → codex/r0-01-flexfair-archive-audit`；#3 `OPEN / Draft`, `codex/r0-01-flexfair-archive-audit → codex/r0-02-site-provenance-and-plan-governance`。均未合并。
-- **本任务 PR：** Git 交付完成后回填 URL、base/head 与状态；目标 base 为 `codex/r0-02-site-provenance-and-plan-governance`，保持 Draft，不合并。
+- **本任务 PR：** [#4](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/4) `OPEN / Draft`；base `codex/r0-02-site-provenance-and-plan-governance`，head `codex/r0-03-tcia-minimal-reference-audit`；未合并。
 - **Final local SHA / Remote SHA：** 由最终分支 HEAD 和 `git ls-remote` 实测值填写在最终交付回执；TASK_RESULT 随其自身提交，不硬编码自引用 Git SHA。
 - **Working tree：** 最终检查后应 clean；详见最终交付回执。
 
@@ -26,7 +26,7 @@
 | M4 Bounded File Check | `NOT_RUN` | 身份/引用候选前置条件未满足；MR DICOM 0 个、RTSTRUCT 0 个，没有 Header 读取 |
 | M5 Scientific Semantics | `NOT_RUN` | MR/T2WI、同人/同 Study/同 Frame、引用关系、ROI 类别和采集时点均 `UNKNOWN` |
 | M6 Privacy | `PASS` | 未下载 DICOM；成果无逐例标识、UID、原始 Header、路径、像素、Contour、临床行值或凭据；提交前完成隐私检查 |
-| M7 Git/Delivery | `PENDING` | Push、PR #4 和远端 SHA 核验后更新 |
+| M7 Git/Delivery | `PASS` | 五个脱敏/治理文件已 Commit/Push；PR #4 远端为 Open/Draft，base/head 正确，远端分支 SHA 与本地一致；没有合并 |
 
 ## 来源与访问
 

@@ -71,7 +71,7 @@ S2 的受试者身份与引用候选来源核对没有通过，故 Plan 的条�
 | M4 Bounded File Check | `NOT_RUN` | S2 候选前置条件不满足；没有文件下载或 Header 检查；未尝试任何 DICOM 对象读取 |
 | M5 Scientific Semantics | `NOT_RUN` | T2WI、时点、Frame of Reference、引用链和 ROI 意义均未知；没有将 RTSTRUCT 等同肿瘤 Mask 或临床标签 |
 | M6 Privacy | `PASS` | 本次没有下载或提交患者级影像；脱敏输出经提交前路径与内容检查 |
-| M7 Git / Delivery | `PENDING` | 在提交、Push 和 Draft PR #4 远端核验后回填至 TASK_RESULT 和最终回执；不合并、不改变 PR ready 状态 |
+| M7 Git / Delivery | `PASS` | 脱敏成果已 Commit/Push；[Draft PR #4](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/4) 的 base/head、Open/Draft 状态和远端 SHA 已核验；未合并 |
 
 ## D03 研究含义与下一边界
 

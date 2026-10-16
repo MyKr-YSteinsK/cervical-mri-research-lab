@@ -1,7 +1,7 @@
 {
   "audit_id": "CMRL-03",
   "plan_revision": "r1",
-  "observed_at_utc": "2026-10-16T11:57:09Z",
+  "observed_at_utc": "2026-10-16T12:02:19Z",
   "status": "PARTIAL",
   "source_versions": {
     "tcia_collection": "Version 2; collection page updated 2023-02-23",
