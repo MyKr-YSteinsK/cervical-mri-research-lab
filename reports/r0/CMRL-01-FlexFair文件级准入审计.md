@@ -76,4 +76,4 @@ D01 的官方 Figshare ZIP 已完整下载，字节数和公开 MD5 匹配；ZIP
   python -X utf8 scripts/r0/audit_flexfair_archive.py data/raw/flexfair/CervicalCancerDataset.zip --extract-one-pair
   ```
 
-- 本任务的工作分支依赖 CMRL-00 审计分支；远端提交与 Draft PR 的最终状态记录在同目录的 [`CMRL-01-TASK_RESULT.md`](CMRL-01-TASK_RESULT.md) 和交付回执中。本次不合并 PR。
+- 本任务的工作分支依赖 CMRL-00 审计分支；远端状态为 [Draft PR #2](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/2)，base 是 `codex/r0-00-data-access-audit`，PR #1 仍为 Open/Draft/未合并。详见同目录的 [`CMRL-01-TASK_RESULT.md`](CMRL-01-TASK_RESULT.md) 与最终交付回执。本次不合并 PR。
