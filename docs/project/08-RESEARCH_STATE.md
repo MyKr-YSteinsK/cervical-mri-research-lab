@@ -4,7 +4,7 @@
 
 ## 唯一当前行动
 
-`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01 与 CMRL-02 已完成各自外部 Plan 授权范围内的来源/结构调查，但不代表 Main 接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 下一步仍需 Main 决定是否安排小样本 MRI/RTSTRUCT 检查，CCMD 访问条件仍未解决。
+`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01、CMRL-02 已完成各自外部 Plan 范围内的阶段性来源/结构调查；CMRL-03 来源与许可核验完成，但受试者级查询因当前执行环境连接失败而为 `PARTIAL`。这些任务均不代表 Main 接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 的 Collection 级来源与许可已复核，但当前执行环境无法取得受试者级元数据，尚无 MRI/RTSTRUCT 配对或文件检查证据；CCMD 访问条件仍未解决。见 [CMRL-03 审计报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)。
 
 ## 用户已确认
 
@@ -23,7 +23,7 @@
 - 六篇用户提供的原 PDF 在此次迁移制品中存在并进行基本 PDF 打开/页数/校验。
 - FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；CMRL-02 将全部 3366 对按作者 `_label.png` 规则与 CMRL-01 规范化规则独立交叉核对，结果一致。原作者代码预期的 `Private/train|test/<四组>` 路径在 ZIP 中没有对应文件；ZIP 的 train/test 目录各有 2420/946 个影像侧 PNG 及等量 Mask。对 3366 张影像解码像素比较发现 9 条重复额外记录，其中一组完全相同图像跨 train/test 各出现一次；文件名/目录仍未建立患者或临床中心键，不能证明患者级无泄漏。2D 分割仍仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
 - CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
-- TCIA 公开 CC-Tumor-Heterogeneity 发布 23 人 MRI/RTSTRUCT。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。没有核验 MRI/RTSTRUCT 配对，也没有验证临床结局定义或接纳训练标签。
+- TCIA 官方页面发布 CC-Tumor-Heterogeneity（23 subjects，含 MR 与 RTSTRUCT；DOI `10.7937/ERZ5-QZ59`，影像许可 CC BY 4.0）。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。CMRL-03 对官方来源、许可与 API 文档完成复核，但 TCIA series 查询超时、IDC REST TLS/浏览器连接失败；没有核验 MRI/RTSTRUCT 配对，没有下载 DICOM，也没有验证临床结局定义或接纳训练标签。
 - P03 有原作者公开研究代码但患者数据未公开。
 
 ## 最大阻塞/风险
@@ -43,4 +43,4 @@
 
 ## 下一次 Main 必做
 
-读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)，审查 PNG/Mask 的二维条件性准入、作者代码与发布包分组不一致、患者/中心身份缺口和跨 split 完全重复影像；再决定是否让用户亲自进行 PNG/Mask 语义检查及如何处理 split 泄漏风险。不要据此推进 3D/Radiomics/Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
+读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md) 和 [CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)，审查 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，并将 TCIA 当前仅到 Collection 元数据、单病例查询阻塞、无文件级证据纳入 R0 决策。再决定是否让用户亲自进行 PNG/Mask 语义检查，以及后续如何处理网络/访问环境和 split 泄漏风险。不要据此推进 3D/Radiomics/Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。

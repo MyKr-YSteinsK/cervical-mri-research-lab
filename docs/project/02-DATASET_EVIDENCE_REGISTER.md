@@ -6,6 +6,7 @@
 - `FILE-NOT-INSPECTED`：没有下载/解包，因此文件结构、患者匹配、实际标签和下载能否完成**尚未验收**。
 - `RESTRICTED`：获取须申请、密码、平台授权或机构条件。
 - `NOT-FOR-TUMOR-MASK`：提供的 Mask 不对应宫颈原发肿瘤。
+- `QUERY-UNAVAILABLE`：当前执行环境对公开元数据端点未获得可用响应；不等于资源不存在或受限。
 
 本次工具核查包括在线官方来源、论文、公开 GitHub 目录及六篇原 PDF；**没有下载或运行任何医学研究数据**。发布页展示的大小≠本地下载成功。
 
@@ -33,13 +34,14 @@
 
 ## D03｜TCIA CC-Tumor-Heterogeneity｜容易核验的公开起点
 
-状态：`SOURCE-VERIFIED / PUBLIC-METADATA / FILE-NOT-INSPECTED / R0-PRIORITY-3`
+状态：`SOURCE-VERIFIED / PUBLIC-METADATA / QUERY-UNAVAILABLE / FILE-NOT-INSPECTED / R0-PRIORITY-3`
 
 - 官方：https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/ ; DOI https://doi.org/10.7937/ERZ5-QZ59
 - TCIA 列出：**23 名患者、171 个 studies、821 个 series、131556 张影像**；多模态 MR、RTSTRUCT、REG、PT、CT；临床 `Follow-Up` 与 `Classification` XLSX；影像 **28.39 GB**，临床表 **13.9 KB**；CC BY 4.0，需合规引用。
 - IDC 官方也列出该队列：https://portal.imaging.datacommons.cancer.gov/collections/cc_tumor_heterogeneity/ ；可考虑分批检索与下载，而非一次拉取所有 28 GB。
 - **R0 优先操作**：先下载 13.9 KB 临床表并检查字段和编码，再看少量患者 DICOM 与 RTSTRUCT 的序列/ROI/时间点；不假设 23 人都有某一疗效、DFS 或 OS 的完整标签。RTSTRUCT 可能包含多种临床勾画结构，需定位真正肿瘤 ROI，不能将膀胱/器官/计划靶区无审查地当作肿瘤 Mask。
 - 用途：数据流验证、图像坐标、RTSTRUCT→Mask、纵向/多序列与探索性 Habitat；样本太少，严禁将复杂模型的高 AUC 解释成稳健疗效模型。
+- **CMRL-03（2026-10-16）更新**：官方 Collection 元数据、IDC 页面、CC BY 4.0 与数据引用要求已复核；本机 TCIA `getSeries` 超时，IDC REST TLS/浏览器连接失败。没有获得受试者级 series 清单、MR/RTSTRUCT 引用链或影像文件，当前仍为 `FILE-NOT-INSPECTED`；具体证据见 [`CMRL-03 审计报告`](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)。查询失败不证明 Collection 无可用 MR/RTSTRUCT。
 
 ## D04｜盆骨骨 MRI 预后分析 Zenodo 资源｜有条件支线
 
