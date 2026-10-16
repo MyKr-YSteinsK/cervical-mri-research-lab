@@ -1,0 +1,32 @@
+# Local clinical and research data
+/data/
+/downloads/
+/.local/
+/.cache/
+
+# Credentials and local configuration
+.env*
+!.env.example
+
+# Python and notebook caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Temporary/editor/OS files
+*.tmp
+*.temp
+*.part
+*.log
+.DS_Store
+Thumbs.db
+
+# User-provided bootstrap attachments kept locally, not repository inputs
+/CMRL-00-Codex 启动材料包.zip
+/CMRL-00-科研仓库初始化与候选数据准入审计.md
+/BOOTSTRAP_INPUTS_README.md
