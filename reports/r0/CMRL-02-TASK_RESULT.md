@@ -17,7 +17,7 @@
 | A4 Mask 配对 | **PASS** | 作者 `_label.png` 同目录规则和 CMRL-01 规范化规则均得到 3366 对；交集 3366，双方独有 0，无歧义或孤立候选。仅为命名关系，不验收 Mask 语义/空间。 |
 | A5 身份/去重 | **PASS** | 患者/中心键与患者级拆分证据为 `UNKNOWN`。3366 张影像侧 PNG 全部解码；发现 9 条精确像素重复额外记录，其中一组跨 train/test 各出现一次。逐例路径/哈希未输出。 |
 | A6 隐私/科研边界 | **PASS** | 无新数据下载、模型训练、核心代码教学替代、病例清单/逐例哈希/像素或凭据入库；R0 与各准入状态未越级。 |
-| A7 交付 | **PASS** | 任务分支已推送，远端 HEAD 与最终本地提交核对；Draft PR #3 以 `codex/r0-01-flexfair-archive-audit` 为 base。PR #1/#2 在最终复核时状态、依赖关系见对话交付回执；均不由本任务合并。 |
+| A7 交付 | **PASS** | 任务分支已推送，远端 HEAD 与提交核对；Draft PR #3 以 `codex/r0-01-flexfair-archive-audit` 为 base。最终复核时 PR #1/#2/#3 均为 Open/Draft/未合并，形成依赖链；本任务不合并。 |
 
 ## 关键结果
 
@@ -25,6 +25,13 @@
 - **ZIP：** 348,731,016 bytes；MD5 `303ae54703fdccc63302cb755aed792a`、SHA-256 `4efdfa6b6dbf4174a1b7ce2b0eb8878e739f0365829a89d57fdf5223c82817ec` 与前次核验相同；6732 PNG，CRC 完整复核通过。Train 有 2420 image-side 与 2420 mask-name candidates；test 有 946 与 946。作者四组目录和严格 loader 路径命中数均为 0。
 - **身份与重复：** 3357 个不同 RGBA 像素矩阵 / 3366 张影像，重复额外记录 9；其中 1 个矩阵出现在两个 split，各一条，另 8 条额外记录在各自同一 split 内。不能据此推定患者关系或否定不同切片泄漏。
 - **科研准入：** 2D segmentation `CONDITIONAL`；3D segmentation `NO-GO`；volumetric Radiomics `NO-GO`，2D Radiomics 未评估；Cross-site/公平性与 patient-wise evaluation `NO-GO`。R0 `NOT COMPLETE`。
+
+## Git / Remote
+
+- [Draft PR #1](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/1)：`OPEN/DRAFT`，base `main`，head `codex/r0-00-data-access-audit`。
+- [Draft PR #2](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/2)：`OPEN/DRAFT`，base `codex/r0-00-data-access-audit`，head `codex/r0-01-flexfair-archive-audit`。
+- [Draft PR #3](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/3)：`OPEN/DRAFT`，base `codex/r0-01-flexfair-archive-audit`，head `codex/r0-02-site-provenance-and-plan-governance`。
+- 最终分支 SHA 与远端 ref 核验结果在交付对话中回报，避免任务结果自引用其自身提交。
 
 ## Plan Directory
 
