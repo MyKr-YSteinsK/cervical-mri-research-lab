@@ -3,6 +3,7 @@
 /downloads/
 /.local/
 /.cache/
+/plans/
 
 # Credentials and local configuration
 .env*

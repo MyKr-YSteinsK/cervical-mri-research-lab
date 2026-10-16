@@ -1,16 +1,16 @@
 # CURRENT RESEARCH STATE｜新项目独立初始状态
 
-更新时间：2026-10-16｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、公开网页/仓库审计，以及 CMRL-01 的公开发布包文件审计；**无患者身份映射、临床行值或模型运行验收**。
+更新时间：2026-10-16｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、公开网页/仓库审计，以及 CMRL-01/02 的 FlexFair 发布包审计；**无患者身份映射、临床行值或模型运行验收**。
 
 ## 唯一当前行动
 
-`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00 与 CMRL-01 已完成各自 Plan 授权的来源/结构调查，但不代表 Main 接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)；TCIA 下一步仍需 Main 决定是否安排小样本 MRI/RTSTRUCT 检查，CCMD 访问条件仍未解决。
+`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01 与 CMRL-02 已完成各自外部 Plan 授权范围内的来源/结构调查，但不代表 Main 接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 下一步仍需 Main 决定是否安排小样本 MRI/RTSTRUCT 检查，CCMD 访问条件仍未解决。
 
 ## 用户已确认
 
 以**宫颈癌 MRI** 为研究主线；与六篇论文的影像处理/影像组学/深度表征保持联系；允许先完成分割与前期影像研究，不强制当下患者级疗效二分类；未来追求真实、有根据的模型改进或新方法。采用 GPT 教学＋用户亲自编写和运行代码，常规不使用 Codex。未来工作独立迁移新 ChatGPT Project。
 
-**专项任务权限**：CMRL-00 的授权限于其自身 Plan。CMRL-01 另由用户启动的自包含 Plan 授权本次公开 ZIP 的有限下载、安全枚举及最小样本格式检查；它没有扩大未来 Codex 权限。MRI 空间质控、分割、Radiomics、训练及解释性核心代码仍由用户亲自学习、编写和运行。
+**专项任务权限**：CMRL-00 的授权限于其自身 Plan。CMRL-01 另由用户启动的 Plan 授权公开 ZIP 的有限下载、安全枚举及最小样本格式检查；CMRL-02 授权对同一已核验 ZIP 与原作者公开代码进行分组、身份线索、配对和精确像素重复审计，并治理仓库 Plan 存放规则。这些授权均不扩大未来 Codex 权限。MRI 空间质控、分割、Radiomics、训练及解释性核心代码仍由用户亲自学习、编写和运行。
 
 ## 不要代替用户确认的建议
 
@@ -21,7 +21,7 @@
 ## 已核实的正面证据
 
 - 六篇用户提供的原 PDF 在此次迁移制品中存在并进行基本 PDF 打开/页数/校验。
-- FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；一对样本可解码且尺寸一致。包内未发现 manifest 或可信患者/中心键，678 人与 3366 个影像文件的关系仍为 `UNRESOLVED`；2D 分割仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
+- FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；CMRL-02 将全部 3366 对按作者 `_label.png` 规则与 CMRL-01 规范化规则独立交叉核对，结果一致。原作者代码预期的 `Private/train|test/<四组>` 路径在 ZIP 中没有对应文件；ZIP 的 train/test 目录各有 2420/946 个影像侧 PNG 及等量 Mask。对 3366 张影像解码像素比较发现 9 条重复额外记录，其中一组完全相同图像跨 train/test 各出现一次；文件名/目录仍未建立患者或临床中心键，不能证明患者级无泄漏。2D 分割仍仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
 - CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
 - TCIA 公开 CC-Tumor-Heterogeneity 发布 23 人 MRI/RTSTRUCT。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。没有核验 MRI/RTSTRUCT 配对，也没有验证临床结局定义或接纳训练标签。
 - P03 有原作者公开研究代码但患者数据未公开。
@@ -43,4 +43,4 @@
 
 ## 下一次 Main 必做
 
-读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)，审查发布包的 2D 条件性准入与患者/中心身份缺口；再决定是否让用户亲自进行最小 PNG/Mask 读取和语义检查。不要据此推进 3D/Radiomics/Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
+读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)，审查 PNG/Mask 的二维条件性准入、作者代码与发布包分组不一致、患者/中心身份缺口和跨 split 完全重复影像；再决定是否让用户亲自进行 PNG/Mask 语义检查及如何处理 split 泄漏风险。不要据此推进 3D/Radiomics/Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
