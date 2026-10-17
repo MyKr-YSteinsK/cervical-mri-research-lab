@@ -1,10 +1,10 @@
 # CURRENT RESEARCH STATE｜新项目独立初始状态
 
-更新时间：2026-10-17｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、公开网页/仓库审计、CMRL-01/02 的 FlexFair 发布包审计，以及 CMRL-04/05 对用户本地 TCIA DICOM 的脱敏文件级审计；**无逐病例身份映射、临床行值或模型运行验收**。
+更新时间：2026-10-18｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、CMRL-00 至 CMRL-10 的有界公开来源/元数据和既有本地脱敏审计；**无逐病例身份映射、患者临床行值或模型运行验收**。
 
 ## 唯一当前行动
 
-`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01、CMRL-02 已完成各自外部 Plan 范围内的阶段性来源/结构调查；CMRL-03 完成 Collection 来源与许可核验，但当时的受试者级查询被网络连接阻断；CMRL-04 后续完成用户本地人工下载子集的文件级 Header 与 RTSTRUCT 引用审计；CMRL-05 完成 IDC Release 25.0 全量候选目录的只读 Header、RTSTRUCT 引用和下载证据分层审计。上述任务均不代表 Main 已接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 本地子集确认 MR 与 RTSTRUCT 的直接引用链，但原发宫颈肿瘤 ROI 语义及本地包的 Collection 归属仍未确认；CCMD 访问条件仍未解决。见 [CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md) 和 [CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md)。
+`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00 至 CMRL-09 的各项来源、文件与受限候选证据维持各自范围；CMRL-10 对 CCTH 派生 NPZ、MedOtter 第三方 CCTH 打包及替代候选完成公开来源/目录元数据预筛，没有新增权威宫颈原发肿瘤 Mask 证据。CCTH ROI 语义、实际像素/几何验收、患者键/时点及临床终点仍未解决；FlexFair 只有条件性 2D 图像级教学路径，CCMD/Cervical-MD 访问受限，MOGaMBO 公开描述的是 OAR 标注。上述任务均不代表 Main 已接受数据集或批准实验。详见 [CMRL-09 决策备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md) 与 [CMRL-10 预筛报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md)。
 
 ## 用户已确认
 
@@ -79,3 +79,11 @@
 - 研究级方案时点在来源中定义但周次/剂量口径有差异；论文早期 response 描述不映射为 Clinical V2 标签。
 - R0 准入备忘录未给任何任务最终 GO：TCIA 单例空间 QC 为后续 CANDIDATE/CONDITIONAL，监督分割、Radiomics、纵向及临床结局 NO-GO；FlexFair 仅条件性 2D 图像级教学；CCMD 仍受限。R0 NOT COMPLETE，等待 Main/用户决策。
 - 详见 [CMRL-09 追索报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md)、[准入备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md) 与 [TASK_RESULT](../../reports/r0/CMRL-09-TASK_RESULT.md)。
+
+## CMRL-10｜派生标注来源与替代候选（2026-10-18）
+
+- **任务状态：** Plan-10 r1 的来源链、许可/公开性和候选任务预筛完成；R0 仍 NOT COMPLETE。仅使用公开页面及 Hub/Figshare/Zenodo 元数据，没有下载 NPZ、DICOM、临床表或模型权重，也未访问本地病例数据。
+- **CCTH 派生源：** BiomedSegFM 数据卡称有标签切片提取并保存为 NPZ；7 个公开目录条目共 6,302,340 bytes。`gts` 原始 ROI、标注者、版本和预处理链 UNKNOWN，字段 `spacing` 不足以证明原生完整 3D 物理坐标。MedOtter 具体 ROI/时点映射仅为第三方声明，license/再发布权利未证；两者均按潜在同一 CCTH 队列处理，不作独立患者/外部验证。
+- **替代候选：** MOGaMBO Zenodo 记录开放 CC BY 4.0，但描述的是宫颈癌 3D MRI 与 OAR 勾画，非已核实肿瘤 Mask；Cervical-MD 作者报告为申请访问且数据量口径有 3,137/3,177 冲突；2022 机构论文未发现公开数据资产和许可。HNTS-MRG 因头颈原发肿瘤排除。
+- **准入影响：** 无新增权威 GTV/ROI 证据；TCIA 单例空间 QC 仍 CONDITIONAL；监督肿瘤分割、三维肿瘤 Radiomics/Habitat、患者/中心独立评价、应答/生存任务均 NO-GO；FlexFair 保持条件性 2D 图像级教学。Main/用户保留后续路线决定权。
+- **交付：** [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md)、[任务矩阵](../../reports/r0/CMRL-10-R0候选数据与任务对照矩阵.md)、[脱敏来源登记](../../evidence/r0/cervical_mri_derived_provenance_register.json) 与 [TASK_RESULT](../../reports/r0/CMRL-10-TASK_RESULT.md)。

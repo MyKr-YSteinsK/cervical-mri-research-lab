@@ -76,3 +76,17 @@ Plan-08 r1 的只读元数据审计完成；没有数据源网络请求。Clinic
 - 未找到发布版逐 RTSTRUCT ROI 标识到 tumor/uterus 的 crosswalk、Clinical V2 codebook、21 人论文队列到 23 subjects 的具体关系、Clinical key 到 DICOM PatientID namespace 说明、DICOM Series 的逐患者治疗时点映射。
 - 源内歧义：TCIA Wiki 的 tumor contour 描述与 Version 1 下“No labels”单句未能消解；当前/历史页面大小不同；论文与 Wiki 的 mid timepoint 周次/剂量范围不同。逐项引用与访问等级见 [CMRL-09 报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md)。
 - 仅准备 UNSENT 作者/TCIA 问题草案，未发送；R0 NOT COMPLETE。
+
+## CMRL-10 新增来源（2026-10-18）
+
+| 来源编号 | 权威入口 | 可支持的范围 | 不能支持的范围 |
+|---|---|---|---|
+| S14 | [CVPR-BiomedSegFM 数据卡](https://huggingface.co/datasets/junma/CVPR-BiomedSegFM)、[CCTH 目录](https://huggingface.co/datasets/junma/CVPR-BiomedSegFM/tree/main/3D_train_npz_all/MRI/MR_CervicalCancer)、[竞赛仓库](https://github.com/JunMa11/CVPR-MedSegFMCompetition) | 作者称多来源体数据预处理成 NPZ、仅提取有标签切片；目录的公开文件数量/大小/版本元数据 | `gts` 对应哪一 ROI、标注者、RTSTRUCT 版本、原始完整体积、病例/时点映射、origin/direction；许可对各来源资产的具体适用范围 |
+| S15 | [MedOtter 第三方 CCTH 页面](https://huggingface.co/datasets/MedOtter/TCIA_CervicalCancer) | 记录第三方自己的来源、ROI/时间点和 CC BY 4.0 声称；Hub revision/目录元数据 | 不证明 TCIA/原作者背书、ROI crosswalk、完整性、转化脚本或再发布授权；不独立于 CCTH |
+| S16 | [FlexFair Figshare 28639598](https://figshare.com/articles/dataset/Achieving_Flexible_Fairness_Metrics_in_Federated_Medical_Imaging/28639598)、[作者仓库](https://github.com/MaksimXing/FlexFair) | 官方 Figshare 版本、文件总量与 CC BY 4.0；作者 README 所指文件记录号 | 28636133 的公开 API 现返回 HTTP 404；该冲突不证明文章资产缺失或患者键可用 |
+| S17 | [MOGaMBO Zenodo 记录](https://zenodo.org/records/15156638) | 公开记录的开放状态、CC BY 4.0 与作者数据描述：3D T2 MRI、OAR 勾画 | 未下载档案的实际格式、空间 header、GTV 是否存在；目前只可视为 OAR/空间教学近似候选 |
+| S18 | [Cervical-RG/MICCAI 2025 论文页](https://papers.miccai.org/miccai-2025/0143-Paper0177.html) | 论文/作者报告的多序列 MRI、报告/FIGO 任务与邮件申请说法；页面中 3,137 与 3,177 的源内口径差异 | 公开下载、患者级独立访问、肿瘤 GTV Mask 或治疗应答/生存标签 |
+| S19 | [3D Cervical MRI 2022 OpenReview 论文](https://openreview.net/pdf?id=c42ffe0c48f7903a8df25629a7225b8f61b41860) | 论文报告的机构影像分割研究与合并训练结构 | 论文结果不证明公开影像资产或可复用许可；未发现公开下载 |
+| S20 | [HNTS-MRG 2024 官方数据页](https://hntsmrg24.grand-challenge.org/dataset/) | 公开头颈 MRI/肿瘤分割资源的范围 | 肿瘤原发部位为头颈，不符合本项目宫颈原发肿瘤目标，按 Plan 排除 |
+
+BiomedSegFM 的 3D 数组字段是作者声明，非文件内部核验；MedOtter 的肿瘤/时点描述是第三方声明，不能越过 CMRL-09 的权威 ROI 语义缺口。MOGaMBO 的开放许可支持其本身的 OAR 数据记录，不能转用于任何其他数据源。详细证据和访问版本见 [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md) 与[来源登记](../../evidence/r0/cervical_mri_derived_provenance_register.json)。

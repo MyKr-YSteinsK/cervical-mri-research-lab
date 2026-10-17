@@ -104,3 +104,11 @@
 - Clinical V2 的事件 codebook、time origin、units、censoring、last-contact 与五个尾部单格行解释均未在审阅来源找到；论文响应定义只适用于论文报告端点。Clinical key→DICOM PatientID 仍 JOIN_UNVERIFIED。
 - Collection 23 subjects 与 Bowen 论文 21 人的 cohort 关系、逐患者真实治疗时点 Series 映射未找到。TCIA 当前/历史页的图像大小与时点口径差异按来源分别保留。
 - 任务准入建议见 [CMRL-09 R0 决策备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md)；R0 NOT COMPLETE，Main/用户决定后继路线。
+
+## CMRL-10（2026-10-18）｜派生标注溯源与替代数据预筛
+
+- CVPR-BiomedSegFM 的 CCTH 目录公开元数据为 7 个 NPZ、6,302,340 bytes；卡片称仅提取有标签切片并预处理为数组。`gts` 的原始 ROI/标注者/版本与空间转换链未找到，`spacing` 以外的 origin/direction 未说明；未下载样本。按潜在同一 CCTH 队列处理，不是独立患者。
+- MedOtter 第三方 CCTH 卡片提出逐 Series/时间点与 tumor-only 语义，但没有官方 crosswalk、原作者背书或可复核转换链；Hub 许可徽标不足以证明整包再发布权，`LICENSE_UNVERIFIED`。不使用该页解除 `ROI_SEMANTIC_UNRESOLVED`。
+- FlexFair Figshare 28639598 v1 返回 CC BY 4.0 和 348,731,016 bytes；作者 README 指向 28636133，该 API 当前返回 404，保留来源冲突。CMRL-01/02 文件审计仍只支持条件性 2D 图像级教学。
+- MOGaMBO Zenodo 记录为开放 CC BY 4.0 的 3D T2/OAR 资源；肿瘤 GTV 证据缺失，约 754 MB 数据包未下载。Cervical-MD 仅论文/作者报告且需申请访问；2022 机构研究未找到公开资产许可。均未改变 R0。
+- 候选逐任务状态见 [CMRL-10 对照矩阵](../../reports/r0/CMRL-10-R0候选数据与任务对照矩阵.md)，完整溯源见 [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md) 和[脱敏登记](../../evidence/r0/cervical_mri_derived_provenance_register.json)。新的权威肿瘤 Mask 证据为无；ROI 语义未解，R0 NOT COMPLETE。
