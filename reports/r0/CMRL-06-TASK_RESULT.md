@@ -65,3 +65,57 @@ CMRL-05 的 61 条本地未命中引用维持 `UNKNOWN`。Series-level `instance
 ## 8. 下一项建议
 
 由 Main 另行决定是否创建候选 `CMRL-07`：核验 TCIA 原始论文、子宫/肿瘤 ROI 语义、采集时点与 clinical XLSX 字段/许可来源。**本任务没有执行该项，也不据此冻结唯一数据集。** MRI/分割/Radiomics/训练与临床解释核心仍由用户本人实践。
+
+## r2 ADDENDUM｜CMRL-06 按模态缺口与私有差异清单
+
+### 1. 状态
+
+`CMRL-06/r2` 任务范围完成；本补记保留上文 r1 执行记录，不将 r1 的远端对象审计改写为已完成。科研阶段仍为 **R0 NOT COMPLETE**；Main 尚未接受本轮新增证据，监督训练和科研核心均未获准。
+
+### 2. 来源、扫描与输入保护
+
+- 复用已核验的 IDC `idc-index-data` Release `25.0.0` 主索引、`collections_index` 与 CMRL-06/r1 manifest；固定版本/sidecar SHA 未重新抓取或替换。821 个官方 Series 与 821 个唯一 manifest source-prefix 保持一对一映射。
+- 只执行一次最小 DICOM Header 扫描，读取 Series/SOP UID、Modality、必要的 Study 键及普通文件盘点元数据；标准解析、止于 PixelData 前。扫描耗时 **279.886 秒**。运行环境 Python 3.14.6、pydicom 3.0.2、DuckDB 1.5.6、PyArrow 26.0.0；测试复用同一 IDC Python 及进程级 pydicom 搜索路径，未安装或改动依赖。
+- 扫描开始/完成 profile 时间：`2026-10-17T11:49:03.301795+00:00` / `2026-10-17T11:54:09.519814+00:00`。本地 metadata 快照前后均为 130,424 个文件、28,151,425,416 bytes、1,017 个目录；reparse 与特殊非普通条目均为 0，文件数一致。没有修改、复制、移动、重命名原始 DICOM；未读临床 XLSX。此检查不等于逐文件内容哈希。
+- r2 发生的网络请求为 **0**；没有重新发起 S3 LIST、HEAD、GetObject 或下载。r1 两次匿名 LIST 失败保持为历史状态。
+
+### 3. 五模态对账
+
+分类以官方 v25.0.0 Series Modality 为权威。`equal_count_series` 只说明数量相同，不表示内容、像素或空间质量已核验。
+
+| Modality | Expected Series | Local matched | Missing Series | Equal count | Partial shortage | All shortage | Shortage Series total | Expected instances | Observed unique instances | Shortage instances | Excess instances |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MR | 523 | 523 | 0 | 468 | 55 | 0 | 55 | 93,308 | 92,508 | 800 | 0 |
+| CT | 65 | 65 | 0 | 64 | 1 | 0 | 1 | 21,740 | 21,637 | 103 | 0 |
+| PT | 68 | 68 | 0 | 66 | 2 | 0 | 2 | 16,343 | 16,129 | 214 | 0 |
+| REG | 97 | 87 | 10 | 87 | 0 | 10 | 10 | 97 | 87 | 10 | 0 |
+| RTSTRUCT | 68 | 63 | 5 | 63 | 0 | 5 | 5 | 68 | 63 | 5 | 0 |
+| **Total** | **821** | **806** | **15** | **748** | **58** | **15** | **73** | **131,556** | **130,424** | **1,132** | **0** |
+| UNKNOWN/INVALID | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+五模态 reconciliation 为 `RECONCILIATION_VERIFIED`，所有模态已解释。缺失/无效 Header Modality、Series 内混合 Modality、官方与 Header 冲突、非预期 Series、Series/SOP UID 缺失、解析错误、零字节文件、重复 SOP 均为 0。上述数据还原了 821 / 806 / 15 / 73 / 748 / 131,556 / 130,424 / 1,132 / 0 的 Plan 回归值。
+
+### 4. MR 与 RTSTRUCT 影响
+
+- MR 的 523 个 Series 均命中本地，但 55 个 Series 部分短缺，共少 800 个实例；这 55 个 Series 暂不列入首轮实验候选池，待缺口解释。其余数量相等也不证明 MRI 体、像素、切片方向、spacing 或几何完整。
+- RTSTRUCT 有 63/68 Series 命中且数量相等，5 个 Series 完全缺失，共少 5 个实例。没有证据把它们与 CMRL-05 的 61 条未命中 SOP 引用对应；61 条引用继续是 `UNKNOWN`。没有推断 ROI、Mask 或临床标签含义。
+
+### 5. 本机私有表
+
+同一次 Header 扫描生成了 73 行逐 Series 私有差异表，记录数及原始目录快照核验通过；`git check-ignore` 证明文件位于本机 worktree 的忽略范围。公开 profile 只记录生成状态、行数和本地忽略范围标记；不包含 UID 或 source-prefix。未将私有表加入 Git、报告或对话，也没有自动补下载。
+
+### 6. 未解决项
+
+`REMOTE_LIST_UNAVAILABLE`、对象名/数量/大小 `NOT VERIFIED`、位级完整性 `NOT VERIFIED`、61 条 RTSTRUCT 引用 `UNKNOWN` 均保持。r2 不改变这些结论，也不代表完成像素/空间质控、ROI 语义、`OBJECT_INVENTORY_AND_SIZE_VERIFIED`、`BITWISE_INTEGRITY_VERIFIED` 或 `R0 COMPLETE`。
+
+### 7. 验证、Gates 与 Git
+
+- 全仓库 45 项合成单元测试通过；`py_compile` 通过。实测聚合 reconciliation、raw metadata snapshot、私有表 73 行与忽略状态、远端/科研边界断言通过。
+- `git diff --check` / staged diff check 通过；暂存清单仅含本轮授权的聚合证据、报告、状态、审计代码和合成测试；对私有 UID/source-prefix 的 staged 内容匹配为 0。
+- Gate：V1 `PASS`（执行前远端 SHA 与 PR 链符合 Plan；PR #6、#7 均 Open/Draft/未合并，base/head 正确）；V2 `PASS`（复用固定来源和映射，一次完整扫描，前后 metadata 快照一致）；V3 `PASS`（五模态 reconciliation）；V4 `PASS`（73 行本机忽略表）；V5 `PASS`（合成测试、编译、脱敏与 staged 检查）；V6 `PASS`（更新现有 PR #7，未创建 PR #8）。
+- 主审计提交：`62d2422958d050b553bfc2780a19b14b4db4dca6`，已推送；推送后 `origin/codex/r0-06-idc-v25-integrity` 与该 SHA 一致。核验时 PR #7 为 OPEN / Draft / 未合并，base `codex/r0-05-tcia-full-dicom-audit`，head `codex/r0-06-idc-v25-integrity`；PR #6 保持原状态及 SHA。此后追加本 TASK_RESULT r2 回传记录作为 follow-up。
+- 本轮变更文件：`scripts/r0/audit_tcia_v25_integrity.py`、`tests/test_tcia_v25_integrity.py`、`evidence/r0/tcia_v25_integrity_profile.json`、本报告、`docs/project/02-DATASET_EVIDENCE_REGISTER.md`、`docs/project/08-RESEARCH_STATE.md`，以及本 TASK_RESULT。
+
+### 8. 下一项候选
+
+仅建议 Main 另行评估是否启动 `CMRL-07`：核验 TCIA 原始研究、ROI 标注定义、采集时点及 Clinical XLSX 来源和字段。本轮没有启动该任务。MRI 处理/空间质控、分割、Radiomics、训练与临床解释仍由用户亲自实践。

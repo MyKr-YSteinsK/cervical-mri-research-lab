@@ -72,6 +72,7 @@ CMRL-05 的 61 条本地未命中 RTSTRUCT SOP 引用在本任务仍不能归类
 - [IDC 固定 v25.0.0 collection 索引及校验 sidecar](https://storage.googleapis.com/idc-index-data-artifacts/25.0.0/release_artifacts/collections_index.parquet) · [SHA-256](https://storage.googleapis.com/idc-index-data-artifacts/25.0.0/release_artifacts/collections_index.parquet.sha256)
 - [IDC index 字段参考](https://idc-index.readthedocs.io/en/latest/indices_reference.html) · [IDC 数据版本说明](https://learn.canceridc.dev/data/data-versioning)
 - [TCIA CC-Tumor-Heterogeneity 公开页](https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/)
+
 ## r2 附录｜按模态缺口与本机私有差异表（2026-10-17）
 
 ### 执行范围与快照
