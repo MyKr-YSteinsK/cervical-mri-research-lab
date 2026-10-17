@@ -24,7 +24,8 @@
 - FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；CMRL-02 将全部 3366 对按作者 `_label.png` 规则与 CMRL-01 规范化规则独立交叉核对，结果一致。原作者代码预期的 `Private/train|test/<四组>` 路径在 ZIP 中没有对应文件；ZIP 的 train/test 目录各有 2420/946 个影像侧 PNG 及等量 Mask。对 3366 张影像解码像素比较发现 9 条重复额外记录，其中一组完全相同图像跨 train/test 各出现一次；文件名/目录仍未建立患者或临床中心键，不能证明患者级无泄漏。2D 分割仍仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
 - CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
 - TCIA 官方页面发布 CC-Tumor-Heterogeneity（23 subjects，含 MR 与 RTSTRUCT；DOI `10.7937/ERZ5-QZ59`，影像许可 CC BY 4.0）。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。CMRL-03 对官方来源、许可与 API 文档完成复核，但当时的 TCIA series 查询超时、IDC REST TLS/浏览器连接失败。CMRL-04/r2 复核用户报告从 IDC 手动取得的本地子集：5,959 个 DICOM 文件、4,334 MR、3 RTSTRUCT；129 条按 RTSTRUCT 内去重汇总的 SOP 引用记录全部命中本地，且指向 T2 文本候选 Series。r1 对 ROI 类型的读取位置错误；r2 正确关联 6 个 Observation 与 6 个 ROI，类型标签均存在但为空，名称启发式单独计数为 `OTHER` 6。6 个 ROIContour 条目关联唯一；108 个声明为 `CLOSED_PLANAR` 的轮廓点数和坐标元素数量/有限性均通过元数据检查，并有 ContourImageSequence 引用。未验证共面性、图像空间对齐、目标结构含义或可用 Mask；本地文件与 Collection 的归属没有 manifest 独立证明。没有验证临床结局定义或接纳训练标签。
-- **CMRL-05 全量候选目录审计**：本机 manifest 结构与上传副本摘要匹配，821 条 source-prefix 命令有效；本地目录有 130,424 个 DICOM 候选文件、130,424/130,424 标准 Header 解析成功，元数据快照前后未变化。聚合为 23 个 PatientID 键、171 个 Study、806 个 Series；63 个 RTSTRUCT 的直接引用链与 ROI/Contour 元数据结果见 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)。没有可信 source-prefix→Series 映射或对象级期望清单，所以 `SERIES_COVERAGE_NOT_VERIFIED`、`OBJECT_LEVEL_COMPLETENESS_NOT_VERIFIED`；61 条本地未命中的 SOP 引用本身不证明下载缺失。该本地候选目录的 Collection 成员关系仍未独立验证，且无 ROI 临床语义或空间叠加验收。
+- **CMRL-05 全量候选目录审计**：本机 manifest 结构与上传副本摘要匹配，821 条 source-prefix 命令有效；本地目录有 130,424 个 DICOM 候选文件、130,424/130,424 标准 Header 解析成功，元数据快照前后未变化。聚合为 23 个 PatientID 键、171 个 Study、806 个 Series；63 个 RTSTRUCT 的直接引用链与 ROI/Contour 元数据结果见 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)。当时 source-prefix→Series 映射和对象级期望清单尚未验证；这些缺口由 CMRL-06 后续补证。
+- **CMRL-06 IDC v25 映射与完整性补证**：固定 IDC `idc-index-data` Release 25.0.0 索引及集合 crosswalk 通过官方 checksum 与内嵌版本核验；821/821 manifest 前缀一对一映射到官方 Series。最小 Header 对照确认本地 806/821 Series 命中、15 个缺失，73 个 Series 实例数短缺，共短缺 1,132 个实例，超额为 0。两次匿名 S3 LIST 均未取得响应，逐对象完整性仍未验证；统计差异不证明像素/内容哈希一致。61 条未命中 SOP 引用继续保留 `UNKNOWN`，未生成逐 Series UID 私有 gap list。详情见 [CMRL-06 报告](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md)。**Main 尚未接受证据；R0 NOT COMPLETE。**
 - P03 有原作者公开研究代码但患者数据未公开。
 
 ## 最大阻塞/风险
@@ -34,7 +35,7 @@
 3. D03 本地 MR–RTSTRUCT 直接引用及轮廓元数据结构已核实，但 ROI 类型值为空，名称启发式和 `CLOSED_PLANAR` 点列表不足以认定原发宫颈肿瘤 Mask；图像空间关系与来源 Collection 归属仍需确认，不可据此启动分割或 Radiomics。
 4. 公开资源是否含可信疗效标签尚未得到证据，因此不可现在启动临床应答预测。
 5. OS/GPU/VRAM/磁盘与用户 Python 运行环境未知，不应冻结 CUDA 依赖。
-6. CMRL-05 证明了本机候选目录的全量 Header 可解析与直接引用元数据，但 manifest 通配符不列逐对象期望清单；Series 覆盖与对象级下载完整性仍未验证。
+6. CMRL-06 已证明 821 条 manifest 前缀与 v25.0.0 官方 Series 一对一映射，并发现本地 15 个缺失 Series、1,132 个实例短缺；匿名 S3 LIST 不可用，逐对象清单/大小仍未验证，61 条 SOP 引用仍未知。ROI 临床语义、像素空间一致性与临床标签也未解决。
 
 ## 学习与执行证据
 

@@ -50,6 +50,8 @@
 
 本机 manifest 的 SHA-256 与计划记录副本一致，包含 821 条互不重复的 Release 25.0 source-prefix 通配符命令。它不枚举每个对象；目前没有经过验证的 source-prefix→DICOM Series 映射，也没有版本一致的权威对象级期望清单。因此 `MANIFEST_STRUCTURE_VERIFIED`，但 `SERIES_COVERAGE_NOT_VERIFIED`、`OBJECT_LEVEL_COMPLETENESS_NOT_VERIFIED`。本地 806 个 Series、官方发布的 821 个 Series 和两边文件数的差异不构成映射证据；患者键数与官方 23、Study 数与官方 171 数字相同也不证明身份或 Collection 成员关系。完整口径和准入矩阵见 [`CMRL-05 审计报告`](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)、[`脱敏聚合 JSON`](../../evidence/r0/tcia_full_dicom_profile.json) 与 [`审计脚本`](../../scripts/r0/audit_tcia_full_dicom.py)。
 
+**CMRL-06（2026-10-17）更新**：IDC 官方固定 `idc-index-data` Release 25.0.0 主索引和 `collections_index` 的 sidecar SHA、Parquet 内嵌版本与目标 machine ID 均通过核验。821 个 manifest 前缀与 821 个官方 Series 一对一映射。只读最小 Header 对照发现本地 806 个 Series 命中、15 个缺失，73 个 Series 的实例数短缺，合计 1,132 个实例；超额为 0。官方公开 S3 LIST 两次均未返回响应，故逐对象清单、大小与位级完整性仍未验证。CMRL-05 的 61 条未命中 RTSTRUCT SOP 引用仍为 `UNKNOWN`；没有为本次短缺保留逐 Series UID 私有清单。来源、版本、差额和预算见 [`CMRL-06 报告`](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md) 与 [`脱敏聚合 JSON`](../../evidence/r0/tcia_v25_integrity_profile.json)。
+
 ## D04｜盆骨骨 MRI 预后分析 Zenodo 资源｜有条件支线
 
 状态：`SOURCE-VERIFIED / NOT-FOR-TUMOR-MASK / FILE-NOT-INSPECTED / LOWER PRIORITY`
@@ -76,7 +78,7 @@
 |---|---|---|---|---|---|
 | D01 FlexFair | 论文已证实 | 论文已证实 | 实际发布包待检 | 未证实 | 分割/域差异，须核患者映射 |
 | D02 CCMD | 论文已证实 | 论文已证实 | 实际包待检 | 未证实 | 分割、Radiomics 稳定性 |
-| D03 CC-Tumor | TCIA 有 MR；具体序列待检 | 有 RTSTRUCT；肿瘤 ROI 待检 | TCIA 患者 ID 可查 | 随访/分类字段待检 | DICOM/RTSTRUCT、纵向分析 |
+| D03 CC-Tumor | IDC v25.0.0 索引列 523 个 MR Series；具体 T2 序列待检 | 有 RTSTRUCT；肿瘤 ROI 语义待检 | TCIA 患者 ID 可查；本地身份映射未做 | 随访/分类字段待检 | DICOM/RTSTRUCT、纵向分析；本地 Series/实例短缺仍待处置 |
 | D04 盆骨骨 | 预处理 T1WI 资源 | **不是肿瘤** | 文件待检 | 生存信息可能有 | 表格特征/生存支线 |
 | D05 Cervical-MD | 论文有 | 非核心公开任务 | 未取得 | 不是治疗应答 | 暂不依赖 |
 
