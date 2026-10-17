@@ -72,3 +72,10 @@
 - **MR–RTSTRUCT：** 1,873 个唯一直接 SOP 引用本地命中、61 个未命中；ContourData 数值字节读取为 0。通过计数及引用链筛选出 56 个唯一 MR Series–RTSTRUCT Series 对，非患者数；T2 仅字符串启发式。受控私有索引最多收录 3 组，精确小计不公开。
 - **时间与研究准入：** 仅 CHRONOLOGY_ONLY，治疗时点仍 UNASSIGNED、GROUPING_UNVERIFIED。ROI_SEMANTIC_UNRESOLVED 和 ENDPOINT_CODEBOOK_UNVERIFIED 未变。单例像素/空间 QC 为 CANDIDATE，需用户亲自验收；三维肿瘤分割、体积 Radiomics、纵向治疗变化和应答/DFS/OS 仍 NO-GO。
 - **交付：** [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md)、[脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)、[TASK_RESULT](../../reports/r0/CMRL-08-TASK_RESULT.md)。Main 应先审查这些新增证据，再决定是否进入用户主导的单例空间实践；不自动推进 R0。
+## CMRL-09｜TCIA 权威定义与准入准备（2026-10-17）
+
+- Plan-09 r1 的有界公开来源追索完成；未访问本地 DICOM、Clinical V2、私有 crosswalk 或候选索引，未下载公开附件，未联系作者/TCIA。
+- 未找到逐 RTSTRUCT ROI 身份 crosswalk、Clinical V2 endpoint/time/censoring codebook、21 人与 23-subject collection 的具体关联、Clinical-to-DICOM 身份 namespace 关系或本地 Series 的逐患者治疗时点映射。ROI_SEMANTIC_UNRESOLVED、ENDPOINT_CODEBOOK_UNVERIFIED、JOIN_UNVERIFIED、TIMEPOINT_UNASSIGNED 均保持。
+- 研究级方案时点在来源中定义但周次/剂量口径有差异；论文早期 response 描述不映射为 Clinical V2 标签。
+- R0 准入备忘录未给任何任务最终 GO：TCIA 单例空间 QC 为后续 CANDIDATE/CONDITIONAL，监督分割、Radiomics、纵向及临床结局 NO-GO；FlexFair 仅条件性 2D 图像级教学；CCMD 仍受限。R0 NOT COMPLETE，等待 Main/用户决策。
+- 详见 [CMRL-09 追索报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md)、[准入备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md) 与 [TASK_RESULT](../../reports/r0/CMRL-09-TASK_RESULT.md)。

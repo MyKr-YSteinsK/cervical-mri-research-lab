@@ -70,3 +70,9 @@ H4（以后，有真实终点才激活）：稳定 Radiomics + 深度特征 + �
 Plan-08 r1 的只读元数据审计完成；没有数据源网络请求。Clinical V2 的五条单格文本行在布局上构成同一非键字段类别的连续表尾区块，样式不同且无内部注释/图例标记；语义与记录粒度仍 UNKNOWN。Clinical 候选键到本地 DICOM PatientID 的匹配子类受小单元格抑制，来源语义未确认，状态 JOIN_UNVERIFIED。
 
 固定 IDC v25.0.0 对账复现 CMRL-06/r2：821 期望、806 本地、15 缺失；748 计数相等、73 个短缺 Series/1,132 个实例。全量 Header 解析 130,424/130,424，前后文件元数据 snapshot 相同。63 个 RTSTRUCT 允许范围内解析，唯一直接 SOP 引用 1,873 个本地命中、61 个未命中。通过 MR/RTSTRUCT 计数与目标引用链预筛得到 56 个唯一 Series 对；这不是患者数，也不是空间/肿瘤语义验收。私有定位索引最多保存 3 组，精确小计不公开。时间证据只有 CHRONOLOGY_ONLY；真实治疗时点仍 UNASSIGNED，患者分组仍 GROUPING_UNVERIFIED。ROI_SEMANTIC_UNRESOLVED、ENDPOINT_CODEBOOK_UNVERIFIED 和 R0 NOT COMPLETE 不变。见 [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md) 与 [脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)。
+## CMRL-09｜权威定义追索（2026-10-17）
+
+- 新增来源：TCIA 历史 Wiki（直接可读）确认 collection-level tumor contours/方案时点描述；IDC 页面直接确认 23 subjects 和模态/Clinical supporting data；Wiley 直接摘要支持论文 21 人、2/5 周方案时点及论文级 response assessment。PMC 正文仅 INDEX-ONLY；TCIA 当前 Collection 索引为 INDEX-ONLY；TCIA Data Dictionary、Support 与 ClinicalTrials.gov 正文本次不可读。
+- 未找到发布版逐 RTSTRUCT ROI 标识到 tumor/uterus 的 crosswalk、Clinical V2 codebook、21 人论文队列到 23 subjects 的具体关系、Clinical key 到 DICOM PatientID namespace 说明、DICOM Series 的逐患者治疗时点映射。
+- 源内歧义：TCIA Wiki 的 tumor contour 描述与 Version 1 下“No labels”单句未能消解；当前/历史页面大小不同；论文与 Wiki 的 mid timepoint 周次/剂量范围不同。逐项引用与访问等级见 [CMRL-09 报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md)。
+- 仅准备 UNSENT 作者/TCIA 问题草案，未发送；R0 NOT COMPLETE。

@@ -97,3 +97,10 @@
 
 
 **CMRL-08（2026-10-17）更新**：TCIA Clinical V2 与 CMRL-07 固定字节/SHA 一致；28 个非空数据行中 23 个候选键、5 个未键控单格文本行。五行同属一个非键字段类别，连续位于表尾且样式不同，但没有内部注释标记，角色与记录粒度仍 UNKNOWN。Clinical 候选键与 DICOM PatientID 精确字符串连接的匹配子类按小单元格规则抑制；语义仍 JOIN_UNVERIFIED。沿用固定 IDC v25.0.0 重算，本地 806/821 Series、15 缺失、73 个短缺 Series/1,132 个短缺实例；MR 55 个 Series 少 800 个实例、RTSTRUCT 缺 5 个。63 个本地 RTSTRUCT 允许范围内解析后，1,873 个唯一直接 SOP 引用命中、61 个未命中，与 CMRL-05 一致。共 56 个满足条件的 MR Series–RTSTRUCT Series 组合（非患者数）；私有清单只收录至多 3 组，具体小计依小单元格规则不公开。ROI_SEMANTIC_UNRESOLVED、ENDPOINT_CODEBOOK_UNVERIFIED、TIMEPOINT_UNASSIGNED 和 R0 NOT COMPLETE 均保持。详见 [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md) 与 [脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)。
+## CMRL-09（2026-10-17）｜TCIA 权威来源追索
+
+- Plan-09 r1 的公开来源审阅完成；只读 TCIA 历史 Wiki、IDC Collection 与 Wiley 原论文摘要；TCIA 当前页和 PMC 全文部分为 INDEX-ONLY，TCIA 当前页/Data Dictionary/Support 与 ClinicalTrials.gov 记录存在访问限制。来源细节见 [CMRL-09 追索报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md) 和 [source register](../../evidence/r0/tcia_authority_source_register.json)。
+- 公开来源提及 tumor contours、研究中 tumor/uterus 勾画，但没有逐发布 RTSTRUCT ROI Number/Name/Observation→tumor/uterus crosswalk；历史页另有未解释的“No labels”文字。ROI_SEMANTIC_UNRESOLVED 保持。
+- Clinical V2 的事件 codebook、time origin、units、censoring、last-contact 与五个尾部单格行解释均未在审阅来源找到；论文响应定义只适用于论文报告端点。Clinical key→DICOM PatientID 仍 JOIN_UNVERIFIED。
+- Collection 23 subjects 与 Bowen 论文 21 人的 cohort 关系、逐患者真实治疗时点 Series 映射未找到。TCIA 当前/历史页的图像大小与时点口径差异按来源分别保留。
+- 任务准入建议见 [CMRL-09 R0 决策备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md)；R0 NOT COMPLETE，Main/用户决定后继路线。
