@@ -14,7 +14,7 @@
 | G4｜病例连接与影像时点 | PASS（受限结论） | Clinical 候选键到 DICOM PatientID 为 JOIN_UNVERIFIED；文献计划时点 SOURCE_DEFINED，本地实际时点 UNASSIGNED；未重扫 130,424 个 DICOM。 |
 | G5｜任务准入与泄漏风险 | PASS | 已覆盖单例空间教学、3D 分割、体积 Radiomics、跨时点、应答/DFS/OS 五类；仅单例教学为 CONDITIONAL，其余 NO-GO。要求 patient-level 分组，baseline 预测不可使用未来影像/结局。 |
 | G6｜运行、隐私与代码 | PASS（无新增脚本） | Python 3.14.6 / openpyxl 3.1.5；复用既有 read-only profile 函数。仅 1 次官方 XLSX HTTPS GET，14,233 bytes 在内存；无 DICOM/S3 请求、原始文件改动或外部上传。没有新增脚本，合成脚本测试 NOT RUN；检查聚合 JSON 与报告不含患者行值、键、UID、ROI 原名/编号或本地原始路径。 |
-| G7｜Git 与交付 | PENDING | 报告及脱敏 profile 已准备；完成检查、提交、推送及创建 Draft PR #8 后追加最终远端 HEAD 和 PR URL。未合并、未改 PR #1–#7 状态、未转 Ready、未 force-push。 |
+| G7｜Git 与交付 | PASS | 首次审计产物提交 2990fe3c149e63ee02e2a35db6b55b89dd0db2f0 已推送并据此创建 PR #8；随后补入本 TASK_RESULT 回执。PR #8 为 OPEN / Draft / 未合并，base codex/r0-06-idc-v25-integrity、head codex/r0-07-tcia-roi-clinical-evidence；最终远端 HEAD 在回执提交后复核与本地一致。PR #7 仍 OPEN / Draft / 未合并且 head 未变；未转 Ready、未 force-push。 |
 
 ## 核心证据
 
@@ -33,6 +33,13 @@
 - Bowen et al. 2018 原始研究：[PMC 全文](https://pmc.ncbi.nlm.nih.gov/articles/PMC5899626/)、[PubMed 记录](https://pubmed.ncbi.nlm.nih.gov/29044908/)、DOI [10.1002/jmri.25874](https://doi.org/10.1002/jmri.25874)。
 - IDC CC-Tumor-Heterogeneity：[IDC Collection 页面](https://portal.imaging.datacommons.cancer.gov/collections/cc_tumor_heterogeneity/)；固定 v25.0.0 资产、Series 对照与本地差额沿用 [CMRL-06 报告](CMRL-06-IDC-v25逐Series及对象完整性补证.md)。
 - 本地 RTSTRUCT 元数据依据：[CMRL-04 报告](CMRL-04-TCIA本地DICOM文件级准入审计.md)、[CMRL-05 报告](CMRL-05-TCIA全量DICOM准入审计.md)。
+
+## Git 交付记录
+
+- 工作分支：codex/r0-07-tcia-roi-clinical-evidence；起始基线和 PR #7 head 均为 31b40652758f5804ade9d95d3145ff70b1a93d9b，与 base 分支 codex/r0-06-idc-v25-integrity 一致。
+- 审计报告、脱敏 profile 和项目状态更新的首次提交：2990fe3c149e63ee02e2a35db6b55b89dd0db2f0；推送后 git ls-remote 返回相同 SHA。
+- Draft PR #8：https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/8。创建时状态 OPEN / Draft / 未合并，base 为 codex/r0-06-idc-v25-integrity，head 为 codex/r0-07-tcia-roi-clinical-evidence；创建时远端 head 与首次审计提交相同。
+- PR 创建后追加此 TASK_RESULT 回执并再次正常推送；推送后复核远端 ref 与本地 HEAD 一致，PR #8 仍为 OPEN / Draft / 未合并。PR #7 状态和分支未改变。本次不合并、不转 Ready、不改写历史。
 
 ## 产物
 
