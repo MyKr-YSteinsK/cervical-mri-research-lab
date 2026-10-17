@@ -1,0 +1,220 @@
+{
+  "audit_status": "COMPLETE",
+  "coverage": {
+    "coverage_method": "FULL_LOCAL_CANDIDATE_SET",
+    "elapsed_seconds": 10.406,
+    "forced_parse_uncertain_count": 0,
+    "full_local_candidate_coverage": true,
+    "header_files_attempted": 5959,
+    "header_files_limit": 20000,
+    "oversized_image_header_skipped_count": 0,
+    "parse_failure_classes": {},
+    "parse_failure_count": 0,
+    "pixel_data_decoded": false,
+    "standard_parse_count": 5959,
+    "time_limit_seconds": 1200
+  },
+  "dicom": {
+    "distinct_frame_of_reference_uid_count": 6,
+    "distinct_patient_id_values": 1,
+    "distinct_series_instance_uid_count": 39,
+    "distinct_study_instance_uid_count": 6,
+    "duplicate_sop_instance_uid_value_count": 0,
+    "frame_of_reference_uid_missing_count": 3,
+    "instances_per_series_summary": {
+      "maximum": 1400,
+      "median": 42,
+      "minimum": 1,
+      "series_count": 39
+    },
+    "modality_counts": {
+      "CT": 917,
+      "MR": 4334,
+      "PT": 702,
+      "REG": 3,
+      "RTSTRUCT": 3
+    },
+    "modality_missing_count": 0,
+    "parsed_file_count": 5959,
+    "patient_id_missing_count": 0,
+    "patient_id_values_with_multiple_studies": 1,
+    "series_instance_uid_missing_count": 0,
+    "sop_class_counts": {
+      "CT Image Storage": 917,
+      "MR Image Storage": 4334,
+      "Positron Emission Tomography Image Storage": 702,
+      "RT Structure Set Storage": 3,
+      "Spatial Registration Storage": 3
+    },
+    "sop_class_uid_missing_count": 0,
+    "sop_instance_uid_missing_count": 0,
+    "study_instance_uid_missing_count": 0,
+    "study_instance_uid_values_with_multiple_series": 6
+  },
+  "filesystem": {
+    "dicom_candidate_count": 5959,
+    "directory_count": 47,
+    "extension_counts": {
+      ".dcm": 5959
+    },
+    "file_count": 5959,
+    "inventory_complete": true,
+    "metadata_error_classes": {},
+    "metadata_error_count": 0,
+    "reparse_or_symlink_entries_skipped": 0,
+    "source_path_redacted": true,
+    "special_entry_count": 0,
+    "total_bytes": 1387467936,
+    "zero_byte_file_count": 0
+  },
+  "generated_at_utc": "2026-10-17T02:53:19.355417+00:00",
+  "mr": {
+    "echo_time_present_instance_count": 4334,
+    "geometry_checks_are_metadata_only": true,
+    "heuristic_t2_candidate_series_count": 9,
+    "instance_count": 4334,
+    "series_count": 27,
+    "series_spin_echo_and_echo_time_signal_count": 0,
+    "series_text_t2_signal_count": 9,
+    "spatial_field_plausibility_counts": {
+      "all_selected_geometry_fields_present": 1134,
+      "core_geometry_fields_present": 4334,
+      "image_position_finite_3_values": 4334,
+      "orientation_vectors_plausible": 4334,
+      "pixel_spacing_plausible": 4334,
+      "rows_columns_positive": 4334,
+      "slice_thickness_in_range": 4334,
+      "spacing_between_slices_in_range": 1134
+    },
+    "spatial_tag_missing_counts": {
+      "Columns": 0,
+      "FrameOfReferenceUID": 0,
+      "ImageOrientationPatient": 0,
+      "ImagePositionPatient": 0,
+      "PixelSpacing": 0,
+      "Rows": 0,
+      "SliceThickness": 0,
+      "SpacingBetweenSlices": 3200
+    },
+    "spatial_tag_presence_counts": {
+      "Columns": 4334,
+      "FrameOfReferenceUID": 4334,
+      "ImageOrientationPatient": 4334,
+      "ImagePositionPatient": 4334,
+      "PixelSpacing": 4334,
+      "Rows": 4334,
+      "SliceThickness": 4334,
+      "SpacingBetweenSlices": 1134
+    },
+    "t2_candidate_rule": "MR series text contains a T2 token, or contains a spin-echo token and at least one EchoTime >= 50 ms; candidate only, not sequence confirmation"
+  },
+  "plan_revision": "r1",
+  "privacy": {
+    "file_names_or_paths_serialized": false,
+    "patient_values_serialized": false,
+    "private_case_index_created": false,
+    "roi_names_serialized": false,
+    "source_file_hashes_serialized": false,
+    "uid_values_serialized": false
+  },
+  "reference_audit": {
+    "direct_series_reference_to_mr_t2_candidate_counts": {
+      "not_flagged_as_t2_candidate": 0,
+      "t2_candidate_series": 3
+    },
+    "direct_sop_reference_to_mr_t2_candidate_counts": {
+      "not_flagged_as_t2_candidate": 0,
+      "t2_candidate_series": 129
+    },
+    "instance_reference_counting_unit": "unique referenced SOP Instance UID per RTSTRUCT, summed across RTSTRUCT files",
+    "instance_reference_status_counts": {
+      "MATCHED": 129,
+      "MISMATCH": 0,
+      "NOT_IN_DOWNLOADED_SUBSET": 0,
+      "UNKNOWN": 0
+    },
+    "matched_non_mr_target_modality_counts": {},
+    "patient_id_concordance_counts": {
+      "MATCHED": 129
+    },
+    "referenced_frame_count_with_local_mr_series": 3,
+    "referenced_frame_uid_concordance_counts": {
+      "MATCHED": 129
+    },
+    "referenced_series_uid_concordance_counts": {
+      "MATCHED": 129
+    },
+    "rtstruct_file_count_with_any_image_or_series_reference": 3,
+    "rtstruct_file_count_with_any_local_mr_series_reference": 3,
+    "rtstruct_file_count_with_any_local_mr_sop_reference": 3,
+    "rtstruct_file_count_with_direct_t2_candidate_series_reference": 3,
+    "rtstruct_file_count_with_direct_t2_candidate_sop_reference": 3,
+    "series_reference_status_counts": {
+      "MATCHED": 3,
+      "MISMATCH": 0,
+      "NOT_IN_DOWNLOADED_SUBSET": 0,
+      "UNKNOWN": 0
+    },
+    "study_instance_uid_concordance_counts": {
+      "MATCHED": 129
+    },
+    "weak_cooccurrence_mr_series_pair_counts": {
+      "interpretation": "co-occurrence only; not a substitute for direct SOP/Series reference",
+      "same_frame_of_reference_uid": 27,
+      "same_patient_id": 81,
+      "same_study_instance_uid": 27
+    }
+  },
+  "research_boundary": {
+    "image_pixels_decoded": false,
+    "r0_complete": false,
+    "radiomics_or_model_run": false,
+    "registration_or_resampling_run": false,
+    "rtstruct_to_mask_rasterization_run": false,
+    "volume_reconstruction_run": false
+  },
+  "rtstruct": {
+    "deep_parse_failure_classes": {},
+    "deep_parse_success_count": 3,
+    "files_without_frame_reference_count": 0,
+    "files_without_series_reference_count": 0,
+    "files_without_sop_reference_count": 0,
+    "instance_count": 3,
+    "oversize_file_skipped_count": 0,
+    "roi_category_counts": {
+      "OTHER": 6
+    },
+    "roi_classification_basis": "recognized RTROIInterpretedType first, otherwise coarse ROIName text heuristic",
+    "roi_contour_entry_count": 6,
+    "roi_count": 6,
+    "roi_interpreted_type_present_count": 0,
+    "roi_name_present_count": 6,
+    "rtstruct_file_count_with_roi_category": {
+      "OTHER": 3
+    }
+  },
+  "source_attribution": {
+    "clinical_workbook_read": false,
+    "dataset_reported_by_user": "IDC CC-Tumor-Heterogeneity manual download",
+    "local_collection_membership_verified": false
+  },
+  "source_snapshot_check": {
+    "all_source_files_unchanged_by_metadata": true,
+    "file_added_count": 0,
+    "file_metadata_changed_count": 0,
+    "file_metadata_unchanged_count": 5959,
+    "file_removed_count": 0,
+    "rechecked_complete": true,
+    "unchanged_definition": "relative source file path, byte size, last-write time, and file attributes"
+  },
+  "task_id": "CMRL-04",
+  "tool": {
+    "forced_parse_trial_limit": 5,
+    "maximum_image_file_bytes_for_header_parse": 134217728,
+    "maximum_rtstruct_file_bytes_for_deep_parse": 16777216,
+    "python_version": "3.12.13",
+    "read_mode": "stop_before_pixels; selected metadata tags only",
+    "reader": "pydicom",
+    "reader_version": "3.0.2"
+  }
+}
