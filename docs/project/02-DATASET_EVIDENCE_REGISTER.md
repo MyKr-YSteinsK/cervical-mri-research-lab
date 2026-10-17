@@ -89,3 +89,6 @@
 - 四中心在论文出现不代表发布包提供中心可识别的拆分键。
 - 未验证临床应答标签前不得训练/评估 NACT、NACRT 或 CRT 预测；不能用 FIGO 分期代替疗效。
 - 论文发表的 Dice/AUC 非本项目已获得性能。
+
+
+**CMRL-06/r2（2026-10-17）补证**：沿用已核验的 IDC v25.0.0 固定资产及 821/821 manifest 映射，同一次最小 Header 扫描完成五模态 reconciliation：MR 523/523 Series 命中但 55 个 Series 短缺 800 个实例；CT 1 个 Series 短缺 103；PT 2 个 Series 短缺 214；REG 缺 10 个 Series/实例；RTSTRUCT 缺 5 个 Series/实例。总计仍为 821/806/15 个 Series、73 个短缺 Series、1,132 个短缺实例、0 超额。生成 73 行本机忽略区私有差异表；原始数据仅有只读 Header/metadata 盘点。r1 的 `REMOTE_LIST_UNAVAILABLE`、位级完整性 `NOT VERIFIED` 与 61 条未命中 SOP 引用 `UNKNOWN` 均未改变；R0 仍待 Main 决定。详见 [`CMRL-06 r2 补证报告`](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md) 与 [`脱敏聚合 JSON`](../../evidence/r0/tcia_v25_integrity_profile.json)。

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from argparse import Namespace
 from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError
@@ -11,17 +12,23 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from audit_tcia_v25_integrity import (
+    AuditBlocked,
     _public_list_summary,
     compare_object_inventory,
     compare_global_object_names,
     compare_series_instances,
+    compare_series_instances_by_modality,
     build_private_series_gap_list,
     map_series_prefixes,
     normalize_series_url,
     parse_s3_list_page,
+    public_private_gap_summary,
+    run_audit,
     sha256_file,
+    validate_private_gap_path,
     verify_parquet,
     list_public_objects,
+    write_private_gap_list,
 )
 
 
@@ -102,10 +109,165 @@ class IntegrityAuditTests(unittest.TestCase):
         result = build_private_series_gap_list(
             [{"SeriesInstanceUID": "1.2.synthetic.1", "instanceCount": 3}],
             {"unique_sop_count_by_series": {"1.2.synthetic.1": 2}},
+            {"1.2.synthetic.1": "synthetic-prefix"},
+            raw_metadata_snapshot_verified=True,
+            generated_at_utc="2026-10-17T00:00:00+00:00",
         )
         self.assertEqual(result["record_count"], 1)
         self.assertEqual(result["records"][0]["shortage_count"], 1)
+        self.assertEqual(result["records"][0]["Modality"], "UNKNOWN/INVALID")
+        self.assertEqual(result["records"][0]["series_source_prefix"], "synthetic-prefix")
+        self.assertTrue(result["raw_metadata_snapshot_verified"])
         self.assertEqual(result["remote_object_status"], "NOT_ASSESSED_BY_THIS_PRIVATE_SERIES_LIST")
+
+    def test_per_modality_summary_reconciles_all_five_modalities(self):
+        rows = [
+            {"SeriesInstanceUID": "synthetic-mr-1", "instanceCount": 3, "Modality": "MR"},
+            {"SeriesInstanceUID": "synthetic-mr-2", "instanceCount": 2, "Modality": "MR"},
+            {"SeriesInstanceUID": "synthetic-ct-1", "instanceCount": 4, "Modality": "CT"},
+            {"SeriesInstanceUID": "synthetic-pt-1", "instanceCount": 2, "Modality": "PT"},
+            {"SeriesInstanceUID": "synthetic-reg-1", "instanceCount": 1, "Modality": "REG"},
+            {"SeriesInstanceUID": "synthetic-rtstruct-1", "instanceCount": 2, "Modality": "RTSTRUCT"},
+        ]
+        counts = {
+            "synthetic-mr-1": 2,
+            "synthetic-ct-1": 4,
+            "synthetic-pt-1": 3,
+            "synthetic-reg-1": 1,
+            "synthetic-rtstruct-1": 2,
+        }
+        local = {
+            "unique_sop_count_by_series": counts,
+            "series_file_count_by_series": {uid: value for uid, value in counts.items()},
+            "header_modalities_by_series": {
+                "synthetic-mr-1": ["MR"],
+                "synthetic-ct-1": ["CT"],
+                "synthetic-pt-1": ["PT"],
+                "synthetic-reg-1": ["REG"],
+                "synthetic-rtstruct-1": ["RTSTRUCT"],
+            },
+            "modality_header_missing_or_invalid_file_count_by_series": {},
+        }
+        result = compare_series_instances_by_modality(rows, local, mapping_verified=True)
+        self.assertEqual(result["reconciliation_status"], "RECONCILIATION_VERIFIED")
+        self.assertTrue(result["all_modalities_explained"])
+        self.assertEqual(set(result["by_modality"]), {"MR", "CT", "PT", "REG", "RTSTRUCT", "UNKNOWN/INVALID"})
+        self.assertEqual(result["totals"]["expected_series"], 6)
+        self.assertEqual(result["totals"]["local_matched_series"], 5)
+        self.assertEqual(result["totals"]["missing_series"], 1)
+        self.assertEqual(result["totals"]["equal_count_series"], 3)
+        self.assertEqual(result["totals"]["partial_shortage_series"], 1)
+        self.assertEqual(result["totals"]["all_shortage_series"], 1)
+        self.assertEqual(result["totals"]["excess_series"], 1)
+        self.assertEqual(result["totals"]["shortage_series_total"], 2)
+        self.assertEqual(result["totals"]["expected_instances"], 14)
+        self.assertEqual(result["totals"]["observed_unique_instances"], 12)
+        self.assertEqual(result["totals"]["shortage_instances"], 3)
+        self.assertEqual(result["totals"]["excess_instances"], 1)
+        self.assertEqual(result["by_modality"]["MR"]["missing_series"], 1)
+        self.assertEqual(result["by_modality"]["MR"]["partial_shortage_series"], 1)
+        self.assertEqual(result["by_modality"]["PT"]["excess_series"], 1)
+        self.assertEqual(result["by_modality"]["PT"]["excess_instances"], 1)
+
+    def test_mr_series_count_match_does_not_hide_instance_shortage(self):
+        uid = "synthetic-mr-series"
+        result = compare_series_instances_by_modality(
+            [{"SeriesInstanceUID": uid, "instanceCount": 10, "Modality": "MR"}],
+            {
+                "unique_sop_count_by_series": {uid: 9},
+                "series_file_count_by_series": {uid: 9},
+                "header_modalities_by_series": {uid: ["MR"]},
+                "modality_header_missing_or_invalid_file_count_by_series": {},
+            },
+            mapping_verified=True,
+        )
+        mr = result["by_modality"]["MR"]
+        self.assertEqual(mr["expected_series"], 1)
+        self.assertEqual(mr["local_matched_series"], 1)
+        self.assertEqual(mr["partial_shortage_series"], 1)
+        self.assertEqual(mr["shortage_instances"], 1)
+        self.assertTrue(result["all_modalities_explained"])
+
+    def test_header_modality_conflict_and_mixed_series_are_flagged(self):
+        uid = "synthetic-mr-conflict"
+        result = compare_series_instances_by_modality(
+            [{"SeriesInstanceUID": uid, "instanceCount": 3, "Modality": "MR"}],
+            {
+                "unique_sop_count_by_series": {uid: 2},
+                "series_file_count_by_series": {uid: 2},
+                "header_modalities_by_series": {uid: ["MR", "CT"]},
+                "modality_header_missing_or_invalid_file_count_by_series": {},
+            },
+            mapping_verified=True,
+        )
+        self.assertEqual(result["by_modality"]["MR"]["header_modality_conflict_series"], 1)
+        self.assertEqual(result["by_modality"]["MR"]["mixed_header_modality_series"], 1)
+        self.assertEqual(result["unknown_invalid_summary"]["official_vs_header_modality_conflict_series"], 1)
+        self.assertEqual(result["unknown_invalid_summary"]["mixed_header_modality_series"], 1)
+        self.assertFalse(result["all_modalities_explained"])
+        public = json.dumps(result)
+        self.assertNotIn(uid, public)
+
+    def test_missing_or_invalid_local_modality_blocks_explained_gate(self):
+        uid = "synthetic-mr-missing-modality"
+        result = compare_series_instances_by_modality(
+            [{"SeriesInstanceUID": uid, "instanceCount": 1, "Modality": "MR"}],
+            {
+                "unique_sop_count_by_series": {uid: 1},
+                "series_file_count_by_series": {uid: 1},
+                "header_modalities_by_series": {},
+                "modality_header_missing_or_invalid_file_count_by_series": {uid: 1},
+                "modality_header_missing_or_invalid_file_count": 1,
+            },
+            mapping_verified=True,
+        )
+        self.assertEqual(result["unknown_invalid_summary"]["local_series_with_missing_or_invalid_header_modality"], 1)
+        self.assertEqual(result["by_modality"]["MR"]["header_modality_missing_or_invalid_series"], 1)
+        self.assertFalse(result["all_modalities_explained"])
+
+    def test_private_gap_path_rejects_outside_and_reparse_locations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            repo_root = root / "repo"
+            local_root = repo_root / ".local"
+            local_root.mkdir(parents=True)
+            synthetic_script = repo_root / "scripts" / "r0" / "audit.py"
+            synthetic_script.parent.mkdir(parents=True)
+            synthetic_script.write_text("# synthetic only\n", encoding="utf-8")
+            allowed = local_root / "gap.json"
+            outside = repo_root / "gap.json"
+            with patch("audit_tcia_v25_integrity.__file__", str(synthetic_script)):
+                self.assertEqual(validate_private_gap_path(allowed), allowed)
+                private_value = {"records": [{"SeriesInstanceUID": "synthetic-only"}]}
+                write_private_gap_list(allowed, private_value)
+                self.assertEqual(json.loads(allowed.read_text(encoding="utf-8")), private_value)
+                with self.assertRaises(AuditBlocked):
+                    validate_private_gap_path(outside)
+                with patch(
+                    "audit_tcia_v25_integrity._path_has_reparse_component",
+                    side_effect=lambda candidate: Path(candidate) == local_root,
+                ):
+                    with self.assertRaises(AuditBlocked):
+                        validate_private_gap_path(allowed)
+
+    def test_public_private_gap_summary_never_contains_private_values(self):
+        private_value = {
+            "record_count": 1,
+            "records": [{
+                "SeriesInstanceUID": "synthetic-private-uid",
+                "series_source_prefix": "synthetic-private-prefix",
+            }],
+        }
+        public = public_private_gap_summary(private_value, "PRIVATE_GAP_LIST_CREATED")
+        serialized = json.dumps(public)
+        self.assertTrue(public["created"])
+        self.assertEqual(public["record_count"], 1)
+        self.assertNotIn("synthetic-private-uid", serialized)
+        self.assertNotIn("synthetic-private-prefix", serialized)
+
+    def test_plan_r2_refuses_any_public_s3_request(self):
+        with self.assertRaisesRegex(AuditBlocked, "NETWORK_REQUESTS_PROHIBITED_BY_PLAN_R2"):
+            run_audit(Namespace(list_public_s3=True))
 
     def test_list_page_parses_pagination_without_publishing_keys(self):
         body = (

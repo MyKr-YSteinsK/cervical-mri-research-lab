@@ -48,3 +48,8 @@
 ## 下一次 Main 必做
 
 读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)、[CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 和 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地引用链、下载完整性缺口和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
+
+
+## CMRL-06/r2｜IDC v25 按模态缺口补证
+
+2026-10-17 的 r2 补证沿用固定 Release 25.0.0 索引与 manifest 映射，一次最小 Header 扫描后按官方 Modality 对账：821 个预期 Series 中本地命中 806 个，15 个完全缺失；73 个 Series 有实例短缺（58 个部分短缺、15 个完全缺失），合计短缺 1,132 个实例，数量相等 748 个，超额 0。MR 523 个 Series 均命中，但 55 个 MR Series 少 800 个实例；数量相等不能代表影像体完整。RTSTRUCT 有 5 个 Series 缺失；CMRL-05 的 61 条未命中 SOP 引用仍为 `UNKNOWN`，没有推断两者对应关系。另在本机忽略目录生成 73 行私有 Series 差异表，未公开 UID 或 source-prefix。r1 两次 S3 LIST 仍 `REMOTE_LIST_UNAVAILABLE`，r2 网络请求为 0；对象级库存及位级完整性仍未验证。此段更新 r1 的阶段性记录，不表示 Main 已接受证据、R0 已完成或数据已批准进入监督训练。详见 [`CMRL-06 r2 报告`](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md)。

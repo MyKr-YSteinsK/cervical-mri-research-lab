@@ -2,8 +2,10 @@
 """Read-only, aggregate-only IDC v25 series and object inventory audit.
 
 The official index, manifest prefixes, DICOM UIDs, file names, and S3 keys are
-kept in process memory. Only aggregate counts and source/version evidence are
-serialized. DICOM PixelData is never read and S3 object bodies are never fetched.
+kept in process memory. Public output contains aggregate counts and source/version
+evidence only; UID/prefix details are written solely to a validated ignored local
+directory when explicitly requested. DICOM PixelData is never read and S3 object
+bodies are never fetched.
 """
 
 from __future__ import annotations
@@ -32,9 +34,11 @@ import pyarrow.parquet as pq
 
 
 TASK_ID = "CMRL-06"
-PLAN_REVISION = "r1"
+PLAN_REVISION = "r2"
 COLLECTION_ID = "cc_tumor_heterogeneity"
 COLLECTION_NAME = "CC-Tumor-Heterogeneity"
+EXPECTED_MODALITIES = ("MR", "CT", "PT", "REG", "RTSTRUCT")
+UNKNOWN_MODALITY = "UNKNOWN/INVALID"
 EXPECTED_INDEX_VERSION = "25.0.0-0-gdbf7fd0"
 EXPECTED_INDEX_SHA256 = "450598d6493d800334a8e1ece1fda4a5ec04ca1bd2f73309058f0531f8155572"
 EXPECTED_COLLECTIONS_SHA256 = "97e5ac3bba296cb3f4e9d87545231275aad66fc89ba07262b7914e72e857489c"
@@ -43,6 +47,20 @@ EXPECTED_MANIFEST_BYTES = 52_045
 AUTHORIZED_PROJECT_ROOT = Path("D:/CS/CMRL")
 AUTHORIZED_DATA_ROOT = Path("D:/CS/CMRL/data/raw/tcia/ccth_idc_v25_full")
 AUTHORIZED_MANUAL_ROOT = Path("D:/CS/CMRL/data/raw/tcia/ccth_manual")
+R1_ACCEPTED_MODALITY_BASELINE = {
+    "expected_series": 821,
+    "local_matched_series": 806,
+    "missing_series": 15,
+    "equal_count_series": 748,
+    "partial_shortage_series": 58,
+    "all_shortage_series": 15,
+    "excess_series": 0,
+    "shortage_series_total": 73,
+    "expected_instances": 131_556,
+    "observed_unique_instances": 130_424,
+    "shortage_instances": 1_132,
+    "excess_instances": 0,
+}
 INDEX_REQUIRED_COLUMNS = {
     "collection_id", "SeriesInstanceUID", "instanceCount", "series_aws_url",
     "Modality", "StudyInstanceUID", "series_size_MB", "crdc_series_uuid",
@@ -214,13 +232,13 @@ def compare_series_instances(
         except (TypeError, ValueError):
             invalid_expected += 1
             continue
-        if not uid or count < 0 or uid in expected:
+        if not uid or count <= 0 or uid in expected:
             invalid_expected += 1
             continue
         expected[uid] = count
     observed = local["unique_sop_count_by_series"]
-    missing = set(expected) - set(observed)
-    matched = set(expected) & set(observed)
+    missing = {uid for uid in expected if observed.get(uid, 0) == 0}
+    matched = {uid for uid in expected if observed.get(uid, 0) > 0}
     shortage_by_series = {
         uid: max(expected[uid] - observed.get(uid, 0), 0) for uid in expected
     }
@@ -250,11 +268,222 @@ def compare_series_instances(
     }
 
 
-def build_private_series_gap_list(
-    rows: Iterable[Mapping[str, Any]], local: Mapping[str, Any]
+def _normalized_modality(value: Any) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip().upper()
+    return text if text in EXPECTED_MODALITIES else None
+
+
+def _empty_modality_summary() -> dict[str, int]:
+    return {
+        "expected_series": 0,
+        "expected_instances": 0,
+        "local_matched_series": 0,
+        "missing_series": 0,
+        "equal_count_series": 0,
+        "partial_shortage_series": 0,
+        "all_shortage_series": 0,
+        "excess_series": 0,
+        "shortage_series_total": 0,
+        "observed_unique_instances": 0,
+        "shortage_instances": 0,
+        "excess_instances": 0,
+        "header_modality_missing_or_invalid_series": 0,
+        "header_modality_conflict_series": 0,
+        "mixed_header_modality_series": 0,
+        "unexpected_local_series": 0,
+        "unexpected_local_unique_instances": 0,
+    }
+
+
+def compare_series_instances_by_modality(
+    rows: Iterable[Mapping[str, Any]],
+    local: Mapping[str, Any],
+    mapping_verified: bool,
+    expected_baseline: Mapping[str, int] | None = None,
 ) -> dict[str, Any]:
-    """Build an optional UID-level difference file for ignored local storage only."""
+    """Classify unique SOP counts by authoritative v25 modality, without identifiers."""
+    buckets = {modality: _empty_modality_summary() for modality in EXPECTED_MODALITIES}
+    buckets[UNKNOWN_MODALITY] = _empty_modality_summary()
     observed = local["unique_sop_count_by_series"]
+    header_modalities = local.get("header_modalities_by_series", {})
+    modality_issue_files = local.get("modality_header_missing_or_invalid_file_count_by_series", {})
+    local_series_files = local.get("series_file_count_by_series", {})
+    expected_by_uid: dict[str, tuple[int, str]] = {}
+    invalid_expected_rows = 0
+
+    for row in rows:
+        uid = str(row.get("SeriesInstanceUID") or "").strip()
+        try:
+            expected = int(row.get("instanceCount"))
+        except (TypeError, ValueError):
+            invalid_expected_rows += 1
+            continue
+        if not uid or expected <= 0 or uid in expected_by_uid:
+            invalid_expected_rows += 1
+            continue
+        modality = _normalized_modality(row.get("Modality")) or UNKNOWN_MODALITY
+        expected_by_uid[uid] = (expected, modality)
+
+    for uid, (expected, modality) in expected_by_uid.items():
+        bucket = buckets[modality]
+        count = int(observed.get(uid, 0))
+        bucket["expected_series"] += 1
+        bucket["expected_instances"] += expected
+        bucket["local_matched_series"] += int(count > 0)
+        bucket["observed_unique_instances"] += count
+        if count == 0:
+            bucket["missing_series"] += 1
+            bucket["all_shortage_series"] += 1
+            bucket["shortage_instances"] += expected
+        elif count == expected:
+            bucket["equal_count_series"] += 1
+        elif count < expected:
+            bucket["partial_shortage_series"] += 1
+            bucket["shortage_instances"] += expected - count
+        else:
+            bucket["excess_series"] += 1
+            bucket["excess_instances"] += count - expected
+
+        modalities = {
+            normalized
+            for value in header_modalities.get(uid, ())
+            if (normalized := _normalized_modality(value)) is not None
+        }
+        has_local_files = uid in local_series_files
+        has_header_issue = has_local_files and (
+            not modalities or int(modality_issue_files.get(uid, 0)) > 0
+        )
+        bucket["header_modality_missing_or_invalid_series"] += int(has_header_issue)
+        bucket["mixed_header_modality_series"] += int(len(modalities) > 1)
+        if modality != UNKNOWN_MODALITY and any(value != modality for value in modalities):
+            bucket["header_modality_conflict_series"] += 1
+
+    expected_uids = set(expected_by_uid)
+    local_series_uids = set(observed) | set(local_series_files)
+    unexpected_uids = local_series_uids - expected_uids
+    unexpected_instances = sum(int(observed[uid]) for uid in unexpected_uids)
+    buckets[UNKNOWN_MODALITY]["unexpected_local_series"] = len(unexpected_uids)
+    buckets[UNKNOWN_MODALITY]["unexpected_local_unique_instances"] = unexpected_instances
+    buckets[UNKNOWN_MODALITY]["observed_unique_instances"] += unexpected_instances
+
+    additive_fields = (
+        "expected_series",
+        "expected_instances",
+        "local_matched_series",
+        "missing_series",
+        "equal_count_series",
+        "partial_shortage_series",
+        "all_shortage_series",
+        "excess_series",
+        "shortage_series_total",
+        "observed_unique_instances",
+        "shortage_instances",
+        "excess_instances",
+    )
+    for bucket in buckets.values():
+        bucket["shortage_series_total"] = (
+            bucket["missing_series"] + bucket["partial_shortage_series"]
+        )
+    totals = {
+        field: sum(bucket[field] for bucket in buckets.values())
+        for field in additive_fields
+    }
+    header_issue_uids = {
+        uid
+        for uid in set(expected_by_uid) | set(local_series_files)
+        if uid in local_series_files
+        and (
+            not header_modalities.get(uid)
+            or int(modality_issue_files.get(uid, 0)) > 0
+        )
+    }
+    conflict_series = sum(
+        bucket["header_modality_conflict_series"] for bucket in buckets.values()
+    )
+    mixed_series = sum(
+        bucket["mixed_header_modality_series"] for bucket in buckets.values()
+    )
+    unknown_expected_series = buckets[UNKNOWN_MODALITY]["expected_series"]
+    unassignable_header_issues = {
+        "parse_error_file_count": int(local.get("parse_error_count", 0)),
+        "missing_series_uid_file_count": int(local.get("missing_series_uid_file_count", 0)),
+        "missing_sop_uid_file_count": int(local.get("missing_sop_uid_file_count", 0)),
+    }
+    has_unassignable_header_issue = any(unassignable_header_issues.values())
+
+    arithmetic_consistent = bool(
+        totals["expected_series"] == len(expected_by_uid)
+        and totals["local_matched_series"] + totals["missing_series"]
+        == totals["expected_series"]
+        and totals["equal_count_series"]
+        + totals["partial_shortage_series"]
+        + totals["all_shortage_series"]
+        + totals["excess_series"]
+        == totals["expected_series"]
+        and totals["shortage_series_total"]
+        == totals["missing_series"] + totals["partial_shortage_series"]
+        and totals["expected_instances"]
+        == sum(expected for expected, _modality in expected_by_uid.values())
+        and totals["observed_unique_instances"]
+        == sum(int(value) for value in observed.values())
+    )
+    baseline_matches = expected_baseline is None or all(
+        totals.get(key) == value for key, value in expected_baseline.items()
+    )
+    reconciliation_status = (
+        "RECONCILIATION_VERIFIED"
+        if mapping_verified and invalid_expected_rows == 0
+        and arithmetic_consistent and baseline_matches
+        else "RECONCILIATION_FAILED"
+    )
+    all_modalities_explained = bool(
+        mapping_verified
+        and invalid_expected_rows == 0
+        and unknown_expected_series == 0
+        and not unexpected_uids
+        and not header_issue_uids
+        and conflict_series == 0
+        and mixed_series == 0
+        and not has_unassignable_header_issue
+    )
+    return {
+        "classification_basis": "OFFICIAL_IDC_V25_SERIES_MODALITY",
+        "by_modality": buckets,
+        "totals": totals,
+        "unknown_invalid_summary": {
+            "expected_series": buckets[UNKNOWN_MODALITY]["expected_series"],
+            "expected_instances": buckets[UNKNOWN_MODALITY]["expected_instances"],
+            "local_series_with_missing_or_invalid_header_modality": len(header_issue_uids),
+            "local_files_with_missing_or_invalid_header_modality": int(
+                local.get("modality_header_missing_or_invalid_file_count", 0)
+            ),
+            "mixed_header_modality_series": mixed_series,
+            "official_vs_header_modality_conflict_series": conflict_series,
+            "unexpected_local_series": len(unexpected_uids),
+            "unexpected_local_unique_instances": unexpected_instances,
+            "unassignable_header_issues": unassignable_header_issues,
+            "invalid_official_series_rows": invalid_expected_rows,
+        },
+        "reconciliation_status": reconciliation_status,
+        "arithmetic_consistent": arithmetic_consistent,
+        "matches_r1_accepted_aggregate_baseline": baseline_matches,
+        "all_modalities_explained": all_modalities_explained,
+    }
+
+
+def build_private_series_gap_list(
+    rows: Iterable[Mapping[str, Any]],
+    local: Mapping[str, Any],
+    uid_to_prefix: Mapping[str, str],
+    raw_metadata_snapshot_verified: bool,
+    generated_at_utc: str | None = None,
+) -> dict[str, Any]:
+    """Build the UID/prefix-level difference file for ignored local storage only."""
+    observed = local["unique_sop_count_by_series"]
+    header_modalities = local.get("header_modalities_by_series", {})
+    modality_issue_files = local.get("modality_header_missing_or_invalid_file_count_by_series", {})
     gaps = []
     for row in rows:
         uid = str(row.get("SeriesInstanceUID") or "").strip()
@@ -262,20 +491,38 @@ def build_private_series_gap_list(
             expected = int(row.get("instanceCount"))
         except (TypeError, ValueError):
             continue
-        if not uid or expected < 0:
+        if not uid or expected <= 0:
             continue
         local_count = int(observed.get(uid, 0))
         if local_count != expected:
+            source_prefix = uid_to_prefix.get(uid)
+            if not source_prefix:
+                raise AuditBlocked("PRIVATE_GAP_LIST_SOURCE_MAPPING_INCOMPLETE")
+            modality = _normalized_modality(row.get("Modality")) or UNKNOWN_MODALITY
+            header_values = sorted({
+                normalized
+                for value in header_modalities.get(uid, ())
+                if (normalized := _normalized_modality(value)) is not None
+            })
             gaps.append({
                 "SeriesInstanceUID": uid,
+                "Modality": modality,
                 "expected_instance_count": expected,
                 "observed_unique_sop_count": local_count,
                 "shortage_count": max(expected - local_count, 0),
                 "excess_count": max(local_count - expected, 0),
+                "series_source_prefix": source_prefix,
+                "observed_header_modalities": header_values,
+                "header_modality_missing_or_invalid_file_count": int(
+                    modality_issue_files.get(uid, 0)
+                ),
             })
     return {
         "task_id": TASK_ID,
+        "source_index_release": "25.0.0",
         "source_index_version": EXPECTED_INDEX_VERSION,
+        "generated_at_utc": generated_at_utc or dt.datetime.now(dt.timezone.utc).isoformat(),
+        "raw_metadata_snapshot_verified": bool(raw_metadata_snapshot_verified),
         "record_count": len(gaps),
         "status": "SERIES_INSTANCE_GAPS_FOUND" if gaps else "SERIES_INSTANCE_COUNTS_MATCHED",
         "records": gaps,
@@ -283,23 +530,77 @@ def build_private_series_gap_list(
     }
 
 
+def public_private_gap_summary(private_value: Mapping[str, Any] | None, status: str) -> dict[str, Any]:
+    """Return only safe aggregate facts about a local-only private difference file."""
+    return {
+        "created": private_value is not None,
+        "status": status,
+        "record_count": (
+            int(private_value["record_count"]) if private_value is not None else None
+        ),
+        "storage_scope": "IGNORED_WORKTREE_LOCAL_ONLY",
+        "identifiers_serialized_to_public_profile": False,
+    }
+
+
+def _path_has_reparse_component(path: Path) -> bool:
+    absolute = Path(os.path.abspath(path))
+    for component in [*reversed(absolute.parents), absolute]:
+        try:
+            item = os.stat(component, follow_symlinks=False)
+        except FileNotFoundError:
+            continue
+        except OSError:
+            raise AuditBlocked("PRIVATE_GAP_PATH_VALIDATION_FAILED") from None
+        attributes = int(getattr(item, "st_file_attributes", 0))
+        if stat.S_ISLNK(item.st_mode) or attributes & 0x400:
+            return True
+    return False
+
+
+def validate_private_gap_path(path: Path, require_absent: bool = True) -> Path:
+    """Validate a private output path lexically and physically below this worktree .local."""
+    repo_root = Path(os.path.abspath(__file__)).parents[2]
+    private_root = repo_root / ".local"
+    candidate = Path(os.path.abspath(path))
+    if (
+        not private_root.is_dir()
+        or not candidate.is_relative_to(private_root)
+        or _path_has_reparse_component(repo_root)
+        or _path_has_reparse_component(private_root)
+        or _path_has_reparse_component(candidate)
+    ):
+        raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_SAFE_WORKTREE_LOCAL")
+    try:
+        if not candidate.resolve(strict=False).is_relative_to(private_root.resolve(strict=True)):
+            raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_SAFE_WORKTREE_LOCAL")
+    except (OSError, ValueError):
+        raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_SAFE_WORKTREE_LOCAL") from None
+    if require_absent and (candidate.exists() or candidate.with_suffix(candidate.suffix + ".tmp").exists()):
+        raise AuditBlocked("PRIVATE_GAP_OUTPUT_ALREADY_EXISTS")
+    return candidate
+
+
 def write_private_gap_list(path: Path, private_value: Mapping[str, Any]) -> None:
     """Write sensitive series identifiers only below this worktree's ignored .local."""
-    repo_root = Path(__file__).resolve().parents[2]
-    private_root = repo_root / ".local"
-    private_root.mkdir(parents=True, exist_ok=True)
-    candidate = path.absolute()
-    try:
-        if not candidate.resolve(strict=False).is_relative_to(private_root.resolve()):
-            raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_IGNORED_LOCAL")
-    except ValueError:
-        raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_IGNORED_LOCAL") from None
+    candidate = validate_private_gap_path(path, require_absent=True)
     candidate.parent.mkdir(parents=True, exist_ok=True)
-    if not candidate.resolve(strict=False).is_relative_to(private_root.resolve()):
-        raise AuditBlocked("PRIVATE_GAP_OUTPUT_MUST_BE_UNDER_IGNORED_LOCAL")
+    candidate = validate_private_gap_path(candidate, require_absent=True)
     temporary = candidate.with_suffix(candidate.suffix + ".tmp")
-    temporary.write_text(json.dumps(private_value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(candidate)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
+    try:
+        descriptor = os.open(temporary, flags, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(private_value, ensure_ascii=False, indent=2) + "\n")
+        temporary.rename(candidate)
+    except AuditBlocked:
+        raise
+    except OSError:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise AuditBlocked("PRIVATE_GAP_WRITE_FAILED") from None
 
 
 def parse_s3_list_page(body: bytes) -> tuple[list[tuple[str, int]], bool, str | None]:
@@ -470,13 +771,19 @@ def _safe_path_check(path: Path) -> bool:
 
 def scan_minimal_headers(root: Path, deadline: float) -> dict[str, Any]:
     """Read only four public DICOM header fields; never decode PixelData."""
+    scan_started = time.monotonic()
     from pydicom.tag import Tag
 
     tags = [Tag(0x0020000E), Tag(0x00080018), Tag(0x00080060), Tag(0x0020000D)]
     file_count = parse_errors = missing_series = missing_sop = zero_bytes = 0
+    modality_header_missing_or_invalid_file_count = 0
+    modality_header_missing_file_count = 0
+    modality_header_invalid_file_count = 0
     exception_counts: collections.Counter[str] = collections.Counter()
     series_files: collections.Counter[str] = collections.Counter()
     sops_by_series: dict[str, set[str]] = collections.defaultdict(set)
+    header_modalities_by_series: dict[str, set[str]] = collections.defaultdict(set)
+    modality_header_missing_or_invalid_file_count_by_series: collections.Counter[str] = collections.Counter()
     basename_sizes: dict[str, dict[str, list[int]]] = collections.defaultdict(
         lambda: collections.defaultdict(list)
     )
@@ -527,10 +834,22 @@ def scan_minimal_headers(root: Path, deadline: float) -> dict[str, Any]:
                 )
                 uid = str(getattr(dataset, "SeriesInstanceUID", "") or "").strip()
                 sop = str(getattr(dataset, "SOPInstanceUID", "") or "").strip()
+                raw_modality = str(getattr(dataset, "Modality", "") or "").strip()
+                normalized_modality = _normalized_modality(raw_modality)
+                if normalized_modality is None:
+                    modality_header_missing_or_invalid_file_count += 1
+                    if raw_modality:
+                        modality_header_invalid_file_count += 1
+                    else:
+                        modality_header_missing_file_count += 1
                 if not uid:
                     missing_series += 1
                     continue
                 series_files[uid] += 1
+                if normalized_modality is None:
+                    modality_header_missing_or_invalid_file_count_by_series[uid] += 1
+                else:
+                    header_modalities_by_series[uid].add(normalized_modality)
                 basename = entry.name.casefold()
                 basename_sizes[uid][basename].append(int(item.st_size))
                 if not sop:
@@ -551,7 +870,16 @@ def scan_minimal_headers(root: Path, deadline: float) -> dict[str, Any]:
         "zero_byte_file_count": zero_bytes,
         "duplicate_sop_file_count": duplicate_sop_files,
         "exception_class_counts": dict(sorted(exception_counts.items())),
-        "scanned_unique_series_count": len(sops_by_series),
+        "scanned_unique_series_count": len(series_files),
+        "header_modalities_by_series": {
+            uid: sorted(values) for uid, values in header_modalities_by_series.items()
+        },
+        "modality_header_missing_or_invalid_file_count": modality_header_missing_or_invalid_file_count,
+        "modality_header_missing_file_count": modality_header_missing_file_count,
+        "modality_header_invalid_file_count": modality_header_invalid_file_count,
+        "modality_header_missing_or_invalid_file_count_by_series": dict(
+            modality_header_missing_or_invalid_file_count_by_series
+        ),
         "unique_sop_count_by_series": {uid: len(sops) for uid, sops in sops_by_series.items()},
         "series_file_count_by_series": dict(series_files),
         "basename_sizes_by_series": {
@@ -560,6 +888,7 @@ def scan_minimal_headers(root: Path, deadline: float) -> dict[str, Any]:
         },
         "complete": stopped_reason is None and parse_errors == 0,
         "stopped_reason": stopped_reason,
+        "elapsed_seconds": round(time.monotonic() - scan_started, 3),
     }
 
 
@@ -682,6 +1011,33 @@ def _collection_crosswalk(collection_path: Path) -> dict[str, Any]:
     ).fetchall()
     verified = rows == [(COLLECTION_NAME, COLLECTION_ID)]
     return {"verified": verified, "matching_collection_row_count": len(rows)}
+
+
+def _load_prior_r1_profile(path: Path | None) -> dict[str, Any] | None:
+    if path is None:
+        return None
+    candidate = Path(os.path.abspath(path))
+    if not _safe_path_check(candidate) or not candidate.is_file():
+        raise AuditBlocked("PRIOR_R1_PROFILE_UNAVAILABLE_OR_UNSAFE")
+    try:
+        value = json.loads(candidate.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        raise AuditBlocked("PRIOR_R1_PROFILE_INVALID") from None
+    if not isinstance(value, dict):
+        raise AuditBlocked("PRIOR_R1_PROFILE_INVALID")
+    remote = value.get("remote_list", {})
+    objects = value.get("object_inventory", {})
+    if not (
+        value.get("task_id") == TASK_ID
+        and value.get("plan_revision") == "r1"
+        and value.get("official_index", {}).get("sha256") == EXPECTED_INDEX_SHA256
+        and value.get("manifest_mapping", {}).get("mapping_status") == "MAPPING_VERIFIED"
+        and remote.get("status") == "REMOTE_LIST_UNAVAILABLE"
+        and objects.get("status") == "OBJECT_INVENTORY_NOT_VERIFIED"
+        and objects.get("bitwise_integrity_status") == "NOT_VERIFIED_NO_CONTENT_HASHES"
+    ):
+        raise AuditBlocked("PRIOR_R1_PROFILE_DOES_NOT_MATCH_ACCEPTED_BASELINE")
+    return value
 
 
 def _load_previous_manifest_parser():
@@ -883,6 +1239,11 @@ def resume_with_remote_audit(args: argparse.Namespace) -> dict[str, Any]:
 
 def run_audit(args: argparse.Namespace) -> dict[str, Any]:
     started = dt.datetime.now(dt.timezone.utc)
+    if args.list_public_s3:
+        raise AuditBlocked("NETWORK_REQUESTS_PROHIBITED_BY_PLAN_R2")
+    previous_profile = _load_prior_r1_profile(
+        Path(args.previous_profile) if args.previous_profile else None
+    )
     index_path = Path(args.index).absolute()
     collection_path = Path(args.collections_index).absolute()
     manifest_path = Path(args.manifest).absolute()
@@ -891,6 +1252,11 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
         raise AuditBlocked("DATA_ROOT_NOT_AUTHORIZED")
     if not _safe_path_check(manifest_path) or not manifest_path.is_file():
         raise AuditBlocked("MANIFEST_PATH_UNAVAILABLE_OR_UNSAFE")
+    private_gap_path = (
+        validate_private_gap_path(Path(args.private_gap_output), require_absent=True)
+        if args.private_gap_output
+        else None
+    )
     prior = _load_previous_manifest_parser()
     prior._assert_safe_roots(AUTHORIZED_PROJECT_ROOT, data_root, AUTHORIZED_MANUAL_ROOT)
     if not collection_path.is_file():
@@ -958,13 +1324,32 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
     if (not before.get("inventory_complete") or before.get("reparse_entry_count", 0)
             or before.get("special_nonregular_entry_count", 0)):
         raise AuditBlocked("RAW_INPUT_PRE_SCAN_INVENTORY_INCOMPLETE_OR_UNSAFE")
-    local = scan_minimal_headers(data_root, time.monotonic() + MAX_HEADER_SECONDS)
+    header_started = time.monotonic()
+    local = scan_minimal_headers(data_root, header_started + MAX_HEADER_SECONDS)
     after = prior.filesystem_supplement(data_root, time.monotonic() + MAX_HEADER_SECONDS)
-    unchanged = prior._inventory_snapshots_match(before, after)
+    metadata_snapshot_matches = prior._inventory_snapshots_match(before, after)
+    safe_directory_snapshot = all(
+        snapshot.get("reparse_entry_count", 0) == 0
+        and snapshot.get("special_nonregular_entry_count", 0) == 0
+        for snapshot in (before, after)
+    )
+    unchanged = metadata_snapshot_matches and safe_directory_snapshot
     header_complete = local["complete"] and local["file_count"] == before.get("file_count")
-    local_series = compare_series_instances(rows, local, mapping_verified and header_complete)
+    local_series = compare_series_instances(
+        rows, local, mapping_verified and header_complete and unchanged
+    )
+    modality_gap_summary = compare_series_instances_by_modality(
+        rows,
+        local,
+        mapping_verified and header_complete and unchanged,
+        expected_baseline=R1_ACCEPTED_MODALITY_BASELINE,
+    )
     local_summary = {
-        "status": "LOCAL_HEADER_SCAN_COMPLETE" if header_complete else "LOCAL_HEADER_SCAN_PARTIAL",
+        "status": (
+            "LOCAL_HEADER_SCAN_COMPLETE"
+            if header_complete and unchanged
+            else "LOCAL_HEADER_SCAN_PARTIAL_OR_SNAPSHOT_CHANGED"
+        ),
         "file_count": local["file_count"],
         "parsed_file_count": local["file_count"] - local["parse_error_count"],
         "parse_error_count": local["parse_error_count"],
@@ -972,34 +1357,65 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
         "missing_sop_uid_file_count": local["missing_sop_uid_file_count"],
         "zero_byte_file_count": local["zero_byte_file_count"],
         "duplicate_sop_file_count": local["duplicate_sop_file_count"],
+        "header_missing_or_invalid_modality_file_count": local[
+            "modality_header_missing_or_invalid_file_count"
+        ],
+        "header_missing_modality_file_count": local["modality_header_missing_file_count"],
+        "header_invalid_modality_file_count": local["modality_header_invalid_file_count"],
         "local_unique_series_count": local["scanned_unique_series_count"],
         "raw_metadata_before_after_match": unchanged,
         "raw_file_count_before": before.get("file_count"),
         "raw_file_count_after": after.get("file_count"),
         "raw_total_bytes_before": before.get("total_bytes"),
         "raw_total_bytes_after": after.get("total_bytes"),
+        "raw_directory_count_before": before.get("directories_including_root"),
+        "raw_directory_count_after": after.get("directories_including_root"),
+        "raw_reparse_entry_count_before": before.get("reparse_entry_count", 0),
+        "raw_reparse_entry_count_after": after.get("reparse_entry_count", 0),
+        "raw_special_entry_count_before": before.get("special_nonregular_entry_count", 0),
+        "raw_special_entry_count_after": after.get("special_nonregular_entry_count", 0),
+        "header_scan_elapsed_seconds": local["elapsed_seconds"],
         "header_scan_stop_reason": local["stopped_reason"],
         "header_file_count_matches_inventory": local["file_count"] == before.get("file_count"),
         **local_series,
     }
 
-    private_gap_summary = {"created": False, "status": "NOT_CREATED_NOT_REQUESTED", "record_count": None}
-    if args.private_gap_output:
-        if not (mapping_verified and header_complete):
-            raise AuditBlocked("PRIVATE_GAP_LIST_REQUIRES_VERIFIED_MAPPING_AND_COMPLETE_SCAN")
-        private_value = build_private_series_gap_list(rows, local)
-        write_private_gap_list(Path(args.private_gap_output), private_value)
-        private_gap_summary = {
-            "created": True,
-            "status": private_value["status"],
-            "record_count": private_value["record_count"],
-            "storage_scope": "IGNORED_WORKTREE_LOCAL_ONLY",
-            "identifiers_serialized_to_public_profile": False,
-        }
+    private_value = None
+    private_status = "NOT_REQUESTED"
+    if private_gap_path is not None:
+        private_ready = bool(
+            mapping_verified
+            and header_complete
+            and unchanged
+            and local["missing_series_uid_file_count"] == 0
+            and local["missing_sop_uid_file_count"] == 0
+            and local["zero_byte_file_count"] == 0
+            and modality_gap_summary["reconciliation_status"] == "RECONCILIATION_VERIFIED"
+        )
+        if not private_ready:
+            private_status = "PRIVATE_GAP_LIST_BLOCKED_INCOMPLETE_OR_UNRECONCILED_SCAN"
+        else:
+            private_value = build_private_series_gap_list(
+                rows,
+                local,
+                uid_to_prefix,
+                raw_metadata_snapshot_verified=unchanged,
+            )
+            if private_value["record_count"] != 73:
+                private_value = None
+                private_status = "PRIVATE_GAP_LIST_BLOCKED_UNEXPECTED_GAP_COUNT"
+            else:
+                write_private_gap_list(private_gap_path, private_value)
+                private_status = "PRIVATE_GAP_LIST_CREATED"
+    private_gap_summary = public_private_gap_summary(private_value, private_status)
 
     list_summary: dict[str, Any]
     object_summary: dict[str, Any]
-    if args.list_public_s3 and version_verified and manifest_valid and mapping_verified and header_complete:
+    if previous_profile is not None:
+        list_summary = dict(previous_profile["remote_list"])
+        object_summary = dict(previous_profile["object_inventory"])
+        object_summary["local_file_count"] = local["file_count"]
+    elif args.list_public_s3 and version_verified and manifest_valid and mapping_verified and header_complete:
         listed = list_public_objects(manifest_prefixes)
         object_summary = compare_object_inventory(
             prefix_to_uid, listed["_objects_by_prefix"], local, listed["complete"]
@@ -1030,9 +1446,7 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
                           "ambiguous_basename_group_count": 0,
                           "bitwise_integrity_status": "NOT_VERIFIED_NO_CONTENT_HASHES"}
 
-    if not unchanged:
-        raise AuditBlocked("RAW_INPUT_CHANGED_DURING_AUDIT")
-    return {
+    result = {
         "task_id": TASK_ID,
         "plan_revision": PLAN_REVISION,
         "generated_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -1051,6 +1465,7 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
         "official_index": index_summary,
         "manifest_mapping": mapping,
         "local_header_comparison": local_summary,
+        "modality_gap_summary": modality_gap_summary,
         "private_series_gap_list": private_gap_summary,
         "remote_list": list_summary,
         "object_inventory": object_summary,
@@ -1059,10 +1474,30 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
         "source_claims": {
             "source_version_status": "SOURCE_VERSION_VERIFIED" if version_verified and manifest_valid else "VERSION_NOT_VERIFIED",
             "series_coverage_status": local_series["status"],
+            "modality_reconciliation_status": modality_gap_summary["reconciliation_status"],
+            "all_modalities_explained": modality_gap_summary["all_modalities_explained"],
             "object_inventory_status": object_summary["status"],
             "bitwise_integrity_status": object_summary["bitwise_integrity_status"],
         },
     }
+    if previous_profile is not None:
+        result["r1_history"] = previous_profile
+        previous_filename_inventory = previous_profile.get("local_filename_inventory", {})
+        result["local_filename_inventory"] = {
+            **previous_filename_inventory,
+            "file_count": local["file_count"],
+            "total_bytes": after.get("total_bytes"),
+            "basename_collision_group_count": after.get("duplicate_basename_group_count"),
+            "raw_metadata_before_after_match": unchanged,
+        }
+    result["network_activity_r2"] = {
+        "request_count": 0,
+        "status": "NO_NETWORK_REQUESTS",
+    }
+    result["completion_method"] = (
+        "R2_SINGLE_MINIMAL_HEADER_SCAN_WITH_MODALITY_SUMMARY_AND_PRIVATE_GAP_LIST"
+    )
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1072,13 +1507,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--data-root", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--previous-profile", help="Preserve accepted r1 aggregate and remote LIST evidence without network requests")
     parser.add_argument("--resume-profile", help="Reuse this task's completed aggregate Header scan and only verify mapping/LIST metadata")
     parser.add_argument("--private-gap-output", help="Optional UID-level shortage list; must be placed below this worktree's ignored .local")
     parser.add_argument("--list-public-s3", action="store_true",
                         help="Make anonymous ListObjectsV2 metadata requests within hard budgets")
     args = parser.parse_args(argv)
     try:
-        if args.resume_profile and args.private_gap_output:
+        if args.list_public_s3:
+            raise AuditBlocked("NETWORK_REQUESTS_PROHIBITED_BY_PLAN_R2")
+        if args.resume_profile and (args.private_gap_output or args.previous_profile):
             raise AuditBlocked("PRIVATE_GAP_LIST_REQUIRES_A_LIVE_HEADER_MAP")
         result = resume_with_remote_audit(args) if args.resume_profile else run_audit(args)
         output = Path(args.output).absolute()
@@ -1090,9 +1528,11 @@ def main(argv: list[str] | None = None) -> int:
             "status": "AUDIT_WRITTEN",
             "source_version_status": result["source_claims"]["source_version_status"],
             "series_coverage_status": result["source_claims"]["series_coverage_status"],
+            "modality_reconciliation_status": result["source_claims"]["modality_reconciliation_status"],
             "object_inventory_status": result["source_claims"]["object_inventory_status"],
             "remote_list_request_count": result["remote_list"]["list_request_count"],
             "raw_metadata_before_after_match": result["local_header_comparison"]["raw_metadata_before_after_match"],
+            "private_gap_list_created": result["private_series_gap_list"]["created"],
         }))
         return 0
     except AuditBlocked as exc:

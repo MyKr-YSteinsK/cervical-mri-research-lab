@@ -72,3 +72,40 @@ CMRL-05 的 61 条本地未命中 RTSTRUCT SOP 引用在本任务仍不能归类
 - [IDC 固定 v25.0.0 collection 索引及校验 sidecar](https://storage.googleapis.com/idc-index-data-artifacts/25.0.0/release_artifacts/collections_index.parquet) · [SHA-256](https://storage.googleapis.com/idc-index-data-artifacts/25.0.0/release_artifacts/collections_index.parquet.sha256)
 - [IDC index 字段参考](https://idc-index.readthedocs.io/en/latest/indices_reference.html) · [IDC 数据版本说明](https://learn.canceridc.dev/data/data-versioning)
 - [TCIA CC-Tumor-Heterogeneity 公开页](https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/)
+## r2 附录｜按模态缺口与本机私有差异表（2026-10-17）
+
+### 执行范围与快照
+
+本附录按外部 Plan r2 接续 CMRL-06/r1，没有创建新任务号。复用已经核验的 IDC Release 25.0.0 主索引、集合索引及 821/821 manifest 映射；没有抓取新索引、访问 S3、发起 HEAD/GetObject 或读取临床信息。本轮只进行了一次完整的最小 DICOM Header 扫描，标签限于 Series/SOP UID、Modality、必要的 Study 键；使用 `stop_before_pixels=True`，不解码 PixelData、不解析 RTSTRUCT 轮廓、不计算内容哈希。扫描时间 279.886 秒；运行环境 Python 3.14.6、pydicom 3.0.2、DuckDB 1.5.6、PyArrow 26.0.0。pydicom 通过已有忽略环境的进程级 `PYTHONPATH` 复用，未安装或更改依赖。
+
+本地 metadata 快照前后均为 130,424 个文件、28,151,425,416 bytes、1,017 个目录；reparse 与特殊非普通条目计数均为 0，扫描文件数与盘点一致，快照判定一致。原始数据未复制、移动、重命名、删除或修改。此项是文件元数据快照，不是内容哈希或逐文件字节不变证明。r2 网络请求数为 0；r1 的两次匿名 LIST 失败仍是历史事实。
+
+### 五模态数量对照
+
+分类权威是固定 IDC v25.0.0 主索引的官方 Modality。`equal_count_series` 只表示唯一 SOP 数量相等，不代表内容完整或影像空间质量通过。
+
+| Modality | Expected Series | Local matched | Missing Series | Equal count | Partial shortage | All shortage | Shortage Series total | Expected instances | Observed unique instances | Shortage instances | Excess instances |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MR | 523 | 523 | 0 | 468 | 55 | 0 | 55 | 93,308 | 92,508 | 800 | 0 |
+| CT | 65 | 65 | 0 | 64 | 1 | 0 | 1 | 21,740 | 21,637 | 103 | 0 |
+| PT | 68 | 68 | 0 | 66 | 2 | 0 | 2 | 16,343 | 16,129 | 214 | 0 |
+| REG | 97 | 87 | 10 | 87 | 0 | 10 | 10 | 97 | 87 | 10 | 0 |
+| RTSTRUCT | 68 | 63 | 5 | 63 | 0 | 5 | 5 | 68 | 63 | 5 | 0 |
+| **Total** | **821** | **806** | **15** | **748** | **58** | **15** | **73** | **131,556** | **130,424** | **1,132** | **0** |
+| UNKNOWN/INVALID | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+模态缺失/无效、Series 内混合 Header Modality、Header 与官方 Modality 冲突、非预期本地 Series、缺失 Series/SOP UID、解析错误、零字节文件、重复 SOP 均为 0。五模态合计与 r1 已接受的聚合基线一致，状态为 `RECONCILIATION_VERIFIED`，`all_modalities_explained=true`。
+
+### MRI 与 RTSTRUCT 的数量层面影响
+
+MR 的 Series 数为 523/523，但 55 个 MR Series 存在部分实例短缺，共少 800 个实例；因此这 55 个 Series 暂时不进入首轮实验候选池，直到本机差异得到解释。另有 468 个 MR Series 仅在计数层面相等；仍需用户后续亲自执行像素解码、切片排序、spacing/direction 与空间质控，不能由计数相等推断 MRI 体完整。
+
+RTSTRUCT 有 63/68 Series 本地命中且数量相等，另有 5 个 Series 完全缺失，共少 5 个实例。此结果不说明这 5 个 Series 与 CMRL-05 的 61 条未命中 SOP 引用有对应关系；该 61 条引用仍为 `UNKNOWN`。本轮没有做 ROI 语义、Mask 或临床标签判断。
+
+### 私有差异表、远端证据与边界
+
+同一次 Header 扫描同时生成了 73 行逐 Series 私有差异表，公开 profile 仅保留已生成布尔值、行数和忽略目录范围标记。`git check-ignore` 验证其位于本机 Git 忽略范围。UID 与 source-prefix 明细不写入仓库或本报告；不执行自动补下载。
+
+r1 的 `REMOTE_LIST_UNAVAILABLE` 仍保留；r2 不产生远端对象库存证据。对象名映射、对象数量/大小仍 `NOT VERIFIED`，位级完整性仍 `NOT VERIFIED`。CMRL-05 的 61 条 RTSTRUCT 引用仍为 `UNKNOWN`。本次结果只补充按模态 Series/实例数量和供后续本机定位的私有映射，Main 尚须独立复核证据；R0 仍为 `NOT COMPLETE`。
+
+全仓库 45 项合成测试通过，审计脚本 `py_compile` 通过；实际聚合 reconciliation、raw metadata snapshot、私有表行数/忽略状态及既有远端证据边界断言均通过。完整 Git 与 PR #7 最终交付状态记录于 `CMRL-06 TASK_RESULT` 的 r2 补记。
