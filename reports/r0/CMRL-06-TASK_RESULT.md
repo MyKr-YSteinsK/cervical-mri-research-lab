@@ -48,7 +48,7 @@ CMRL-05 的 61 条本地未命中引用维持 `UNKNOWN`。Series-level `instance
 | V5 逐对象 | REMOTE_LIST_UNAVAILABLE | 2 次匿名请求无响应；对象 Inventory 未验证 |
 | V6 科研边界 | PASS | 61 条引用保留 UNKNOWN，不推断 ROI、Mask 或标签 |
 | V7 安全与测试 | PASS（聚合输出） | 12 项合成测试；真实 UID 明细未写入仓库或对话 |
-| V8 Git / 报告 | 待交付 | 完成提交、推送与 Draft stacked PR 后补记 |
+| V8 Git / 报告 | PASS | 独立分支已推送；PR #7 Open/Draft，base 正确，未合并 |
 
 ## 7. 产物与 Git 交付
 
@@ -60,7 +60,7 @@ CMRL-05 的 61 条本地未命中引用维持 `UNKNOWN`。Series-level `instance
 - `docs/project/02-DATASET_EVIDENCE_REGISTER.md`
 - `docs/project/08-RESEARCH_STATE.md`
 
-执行分支为 `codex/r0-06-idc-v25-integrity`，base 为 PR #6 head 分支 `codex/r0-05-tcia-full-dicom-audit`。提交 SHA、推送后 remote SHA 及 Draft PR 编号/状态将在最终回传中填写；不合并、不转 Ready。
+执行分支为 `codex/r0-06-idc-v25-integrity`，base 为 PR #6 head 分支 `codex/r0-05-tcia-full-dicom-audit`。主要审计提交 `33b42b88cf2a3b0840f1c00f022c4a2122b7b172` 已推送到 `origin`，并于远端确认一致。Draft PR [#7](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/7) 状态为 OPEN / Draft / 未合并，base/head 正确。TASK_RESULT 最终补记另成 follow-up commit；最终分支 HEAD 以本次回传中复核的 SHA 为准。不合并、不转 Ready，也未改动 PR #1–#6。
 
 ## 8. 下一项建议
 
