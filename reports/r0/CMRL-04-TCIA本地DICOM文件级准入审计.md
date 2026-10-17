@@ -1,21 +1,25 @@
 # CMRL-04｜TCIA 本地 DICOM 文件级与 RTSTRUCT 引用审计
 
 - **审计日期：** 2026-10-17
-- **任务 / Plan：** CMRL-04 / 外部 CMRL-Plan-04 r1
+- **任务 / Plan：** CMRL-04 / 外部 CMRL-Plan-04 r2（对 r1 的定点纠错）
 - **研究阶段：** R0-DATA-ACCESS-AUDIT；本报告不批准进入 R1，也不确认肿瘤 ROI 语义。
-- **任务状态：** COMPLETE（本地文件级审计范围）；**R0 NOT COMPLETE**。
+- **任务状态：** COMPLETE（r2 已完成；r1 的 ROI 类型与轮廓结论已明确纠正）；**R0 NOT COMPLETE**。
 - **本地数据根：** 仓库相对目录 data/raw/tcia/ccth_manual/，对应用户本轮指定的本机目录。没有记录其下原始文件名或病例子目录名。
 - **来源等级：** 用户报告从 IDC 的 CC-Tumor-Heterogeneity 页面手动下载，故本地文件来源为 USER-REPORTED-SOURCE；DICOM Header 为 FILE-INSPECTED。本地文件没有 Collection manifest 可独立确认归属。
 
 ## 结论
 
-本地子集包含 **5,959 个 .dcm 文件，共 1,387,467,936 bytes（1.387 GB，1.292 GiB）**，与用户所报约 1.3 GB 一致。全部 5,959 个文件均由标准 DICOM 读取路径成功解析；未使用强制解析，无解析失败、零字节文件、符号链接或跳过的大文件。Header 扫描耗时约 10.4 秒，限制为 20,000 个文件或 20 分钟。没有解码任何影像 Pixel Data。
+本地子集包含 **5,959 个 .dcm 文件，共 1,387,467,936 bytes（1.387 GB，1.292 GiB）**，与用户所报约 1.3 GB 一致。全部 5,959 个文件均由标准 DICOM 读取路径成功解析；未使用强制解析，无解析失败、零字节文件、符号链接或跳过的大文件。r2 Header 扫描耗时 13.359 秒，限制为 20,000 个文件或 20 分钟。没有解码任何影像 Pixel Data。
 
 其中有 **4,334 MR、917 CT、702 PT、3 REG、3 RTSTRUCT**。共观察到 1 个不同的 DICOM PatientID 值、6 个 Study UID、39 个 Series UID 和 6 个 Frame of Reference UID。单一 PatientID 值只是本地 DICOM 键计数，不能独立证明现实身份或临床人数；此键覆盖 6 个 Study。
 
-27 个 MR Series 中有 **9 个 T2 文本候选**。3 个 RTSTRUCT 的 **129 个直接 SOP Instance 引用全部解析到本地 MR，且目标 MR Series 均落在这 9 个候选内**；3 个 Series 引用也都命中本地 T2 文本候选 MR。129 个直接引用的 PatientID、Study、Series 和 Frame 对照均一致，没有引用缺失、冲突或未知项。
+27 个 MR Series 中有 **9 个 T2 文本候选**。3 个 RTSTRUCT 的 **129 个直接 SOP Instance 引用全部解析到本地 MR，且目标 MR Series 均落在这 9 个候选内**；3 个 Series 引用也都命中本地 T2 文本候选 MR。129 个直接引用的 PatientID、Study、Series 和 Frame 对照均一致，没有引用缺失、冲突或未知项。r2 全量 Header 与引用复核耗时 13.359 秒。
 
-RTSTRUCT 共列出 6 个 ROI 名称，但都只能按本次脱敏规则归为 OTHER；6 个 ROI 均没有 RTROIInterpretedType 值。当前证据**不能确认其中任何一个是原发宫颈肿瘤 ROI**，因此没有得到已验收的肿瘤 Mask。DICOM 引用关系可信，不等于临床结构语义已确认。
+R2 修正了 r1 的读取位置错误：DICOM 将 `RTROIInterpretedType` 定义在 `RTROIObservationsSequence`，通过 `ReferencedROINumber` 连接到 `StructureSetROISequence.ROINumber`；r1 从 `StructureSetROISequence` 读取该类型，因此“类型缺失”的断言无效。[DICOM RT ROI Observations Module](https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_c.8.8.8.html)
+
+本次 3/3 个 RTSTRUCT 的 Observation Sequence 均存在，共 6 个 Observation；6/6 的 ROI 编号均唯一关联到一个 Structure Set ROI，但 `RTROIInterpretedType` 标签值均为空。另行计算的 ROI 名称粗启发式为 `OTHER` 6；该名称结果不等于 DICOM 类型，也不能解释为没有肿瘤结构。没有可由类型字段确认的 ROI，亦不能确认原发宫颈肿瘤语义。
+
+3 个 RTSTRUCT 共 6 个 ROIContour 条目，均唯一关联到 Structure Set ROI；其中有 108 个 Contour item，声明的几何类型全部为 `CLOSED_PLANAR`。108/108 的点数为正，Contour Data 都有与 `3 × NumberOfContourPoints` 相符的有限数值列表；108/108 个 Contour item 还带有图像引用，按 RTSTRUCT 内去重汇总为 60 条 SOP 引用。这是轮廓元数据结构证据，不是已验收 Mask：本次没有验证点的共面性、闭合形状、与 MR 像素网格的空间对齐或临床结构含义。[DICOM ROI Contour Module](https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_c.8.8.6.html)
 
 本地数据足以让用户在自己的 Lab 中开始**单个 MR 序列的 Header 读取和空间元数据质控练习**。开始肿瘤分割、RTSTRUCT 栅格化或 Radiomics 前，仍须由用户在本地查看 ROI 含义并确认目标；Collection 归属也应补充下载 manifest 或来源记录。**R0 仍为 NOT COMPLETE。**
 
@@ -30,10 +34,10 @@ RTSTRUCT 共列出 6 个 ROI 名称，但都只能按本次脱敏规则归为 OT
 | 零字节 / 无法读取 / 特殊文件 / 链接 | 0 / 0 / 0 / 0 |
 | 标准 Header 成功 / 强制解析 / 解析失败 | 5,959 / 0 / 0 |
 | 解析器 | pydicom 3.0.2；Python 3.12.13 |
-| Header 与引用审计用时 | 约 10.4 秒 |
+| Header 与引用审计用时（r2） | 13.359 秒 |
 | Pixel Data 解码 | 未运行 |
 
-解析仅选取必要的 DICOM Header 标签并使用 stop_before_pixels=True。RTSTRUCT 深层序列单文件读取上限为 16 MiB；本次 3 个文件均低于上限且全部成功解析。未读取临床 XLSX，也未访问 TCIA/IDC 数据端点。
+像素 Header 检查使用 stop_before_pixels=True；RTSTRUCT 深层解析单文件上限为 16 MiB，仅解析必要的 RTSTRUCT 元数据及轮廓坐标的长度/数值有效性，不输出或落盘坐标。本次 3 个文件均低于上限且全部成功解析。未读取临床 XLSX，也未访问 TCIA/IDC 数据端点。轮廓点数、Contour Data 和几何类型字段定义见 [DICOM ROI Contour Module](https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_c.8.8.6.html)。
 
 ### 模态与匿名聚合键
 
@@ -53,7 +57,7 @@ SOP Class 汇总与 Modality 对应：MR Image Storage 4,334、CT Image Storage 
 
 4,334 个 MR 实例均具备 ImageOrientationPatient、ImagePositionPatient、PixelSpacing、Rows、Columns、SliceThickness 和 Frame of Reference UID。按元数据边界检查，方向向量、像素间距、位置字段和尺寸字段均通过简单合理性条件。SpacingBetweenSlices 仅在 1,134 个实例中存在，3,200 个缺失。此结果只说明后续人工空间质控所需的核心字段可读；没有排序切片、计算切片间距、重建体积、配准或验证图像与轮廓的几何重合。
 
-## RTSTRUCT 引用链与 ROI 类别
+## RTSTRUCT 引用、ROI 类型与轮廓元数据
 
 | 核验层级 | 结果 |
 |---|---|
@@ -65,15 +69,21 @@ SOP Class 汇总与 Modality 对应：MR Image Storage 4,334、CT Image Storage 
 | Series UID 对照 | 129/129 一致 |
 | Frame of Reference UID 对照 | 129/129 一致 |
 | 不在本地 / 冲突 / 未知的直接图像引用 | 0 / 0 / 0 |
-| ROI | 6 个 ROI 与 6 个 ROIContour 条目；名称字段均存在，RTROIInterpretedType 均缺失 |
-| ROI 粗分类 | OTHER 6；GTV-like、CTV/PTV-like、OAR-like 未检出 |
+| Structure Set ROI / Observation | 6 / 6；6 个 `ReferencedROINumber` 均唯一匹配；重复 ROI 编号、重复 Observation Number、多 Observation 冲突均为 0 |
+| `RTROIInterpretedType` | 6 个标签均存在但值为空；没有非空类型可分类 |
+| ROI 名称启发式 | `OTHER` 6；仅是名称规则的结果，与 DICOM 类型分开统计 |
+| ROIContour 与 ROI 编号 | 6 个 ROIContour 条目均唯一匹配一个 Structure Set ROI；重复 Contour 编号关联为 0 |
+| 轮廓结构 | 108 个 Contour item；几何类型均为 `CLOSED_PLANAR`；108/108 点数为正且坐标元素数与声明点数一致、数值有限 |
+| 轮廓图像引用 | 108/108 Contour item 含图像引用；每个 RTSTRUCT 内去重合计 60 条 SOP 引用，包含在上方 129 条直接引用汇总中 |
 
-引用关系基于本地 DICOM 的实际 SOP/Series/Frame UID 关联，不用“同一个 PatientID”替代引用证据。所有实例级引用同时与该 RTSTRUCT 的 PatientID、Study、被引用 Series 和 Frame UID 一致。未保存这些 UID 或映射。ROI 分类只保留粗类别，名称及其他逐例元数据未写出；OTHER 表示本次规则无法归类，不代表临床上没有肿瘤轮廓。
+引用关系基于本地 DICOM 的实际 SOP/Series/Frame UID 关联，不用“同一个 PatientID”替代引用证据。全部 129 条按 RTSTRUCT 内去重的直接 SOP 引用均解析到本地 MR T2 文本候选 Series，PatientID、Study、被引用 Series 和 Frame 对照均一致；轮廓级的 60 条 SOP 引用是该汇总的子集。未保存这些 UID 或映射。名称启发式 `OTHER` 仅表示规则无法归类；空的 DICOM 类型值和有效轮廓元数据仍不能说明结构是或不是宫颈原发肿瘤。
+
+本次只检查 DICOM 声明的几何枚举、点数、坐标元素数量与有限性，以及 ContourImageSequence 引用存在性。没有独立检验坐标是否共面、轮廓是否适合栅格化、引用图像与点坐标是否空间重合、闭合轮廓是否构成临床目标，或 ROI 是否表示原发宫颈肿瘤。
 
 ## 原始数据、隐私与边界
 
 - 原始 DICOM 以只读方式打开；没有移动、重命名、删除、解压覆盖或改写原始文件，也没有重新下载或补下载影像。
-- 扫描前后 5,959 个文件的数量、字节大小、最后写入时间与文件属性均未变化；没有新增或丢失文件。本项是元数据快照核对，不是逐字节哈希比较。
+- r2 扫描前后 5,959 个文件的数量、字节大小、最后写入时间与文件属性均未变化；没有新增或丢失文件。本项是元数据快照核对，不是逐字节哈希比较。
 - 没有把 PatientName、PatientID 值、日期、Accession Number、机构名、UID、文件名、病例目录名、ROI 原名或任何患者级索引写入仓库、报告、聊天或聚合 JSON。
 - 本任务只为执行元数据审计在分支忽略目录 .local/ 安装了 pydicom 3.0.2（无额外依赖）；未安装影像科研框架。
 - 未进行像素解码、RTSTRUCT→Mask 栅格化、配准/重采样、Radiomics、模型训练或临床解释。没有验证临床结局或疗效标签。
@@ -84,6 +94,6 @@ SOP Class 汇总与 Modality 对应：MR Image Storage 4,334、CT Image Storage 
 ## 后续建议
 
 1. 可进入一次用户亲自编写和运行的单序列 DICOM 读取练习；在本机选定 1 个 T2 候选 MR Series，先核对 shape、方向、间距与切片顺序。
-2. 若目标是肿瘤分割，先在本地 DICOM 工具中查看结构集的 ROI 名称与轮廓，确认哪个（若有）代表原发宫颈肿瘤；不要根据 OTHER 以外的假设构造 Mask。
+2. 若目标是肿瘤分割，先由用户在本地 DICOM 工具中查看结构集的 ROI 名称和轮廓，并结合对应 MR 图像确认哪个（若有）代表原发宫颈肿瘤；当前聚合审计不授权栅格化或构造 Mask。
 3. 保存 IDC 手动下载的来源/选择记录，以确认本地文件对应的 Collection；不要通过追加下载代替来源核对。
 4. R0 总体数据准入、标签判断及阶段推进由 Main 决定；本任务没有推进 R1 或批准分割/Radiomics。

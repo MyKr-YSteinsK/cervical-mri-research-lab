@@ -2,7 +2,7 @@
   "audit_status": "COMPLETE",
   "coverage": {
     "coverage_method": "FULL_LOCAL_CANDIDATE_SET",
-    "elapsed_seconds": 10.406,
+    "elapsed_seconds": 13.359,
     "forced_parse_uncertain_count": 0,
     "full_local_candidate_coverage": true,
     "header_files_attempted": 5959,
@@ -67,7 +67,7 @@
     "total_bytes": 1387467936,
     "zero_byte_file_count": 0
   },
-  "generated_at_utc": "2026-10-17T02:53:19.355417+00:00",
+  "generated_at_utc": "2026-10-17T03:24:20.562382+00:00",
   "mr": {
     "echo_time_present_instance_count": 4334,
     "geometry_checks_are_metadata_only": true,
@@ -108,7 +108,7 @@
     },
     "t2_candidate_rule": "MR series text contains a T2 token, or contains a spin-echo token and at least one EchoTime >= 50 ms; candidate only, not sequence confirmation"
   },
-  "plan_revision": "r1",
+  "plan_revision": "r2",
   "privacy": {
     "file_names_or_paths_serialized": false,
     "patient_values_serialized": false,
@@ -174,6 +174,70 @@
     "volume_reconstruction_run": false
   },
   "rtstruct": {
+    "aggregate_counts": {
+      "contour_data_check_counts": {
+        "LENGTH_MATCH_FINITE": 108
+      },
+      "contour_geometric_type_counts": {
+        "CLOSED_PLANAR": 108
+      },
+      "contour_image_reference_value_status_counts": {
+        "PRESENT": 108
+      },
+      "contour_image_sequence_state_counts": {
+        "PRESENT": 108
+      },
+      "contour_point_count_status_counts": {
+        "PRESENT": 108
+      },
+      "contour_sequence_state_counts": {
+        "PRESENT": 6
+      },
+      "interpreted_type_category_counts": {},
+      "point_geometry_consistency_counts": {
+        "NOT_APPLICABLE": 108
+      },
+      "roi_contour_reference_status_counts": {
+        "UNIQUE_REFERENCE": 6
+      },
+      "roi_name_heuristic_category_counts": {
+        "OTHER": 6
+      },
+      "roi_name_presence_counts": {
+        "PRESENT": 6
+      },
+      "roi_name_type_comparison_counts": {
+        "TYPE_EMPTY": 6
+      },
+      "roi_number_status_counts": {
+        "PRESENT": 6
+      },
+      "roi_observation_interpreted_type_presence_counts": {
+        "EMPTY": 6
+      },
+      "roi_observation_number_status_counts": {
+        "PRESENT": 6
+      },
+      "roi_observation_reference_status_counts": {
+        "UNIQUE_REFERENCE": 6
+      },
+      "roi_type_category_counts": {},
+      "roi_type_mapping_status_counts": {
+        "TYPE_EMPTY": 6
+      }
+    },
+    "aggregate_totals": {
+      "contour_image_reference_item_count": 108,
+      "contour_image_unique_sop_reference_count": 60,
+      "contour_item_count": 108,
+      "contours_with_any_image_reference_count": 108,
+      "duplicate_observation_number_value_count": 0,
+      "observation_entries_with_duplicate_number_count": 0,
+      "roi_contour_duplicate_reference_value_count": 0,
+      "roi_contour_entries_with_duplicate_reference_count": 0,
+      "roi_entries_with_duplicate_number_count": 0,
+      "roi_number_duplicate_value_count": 0
+    },
     "deep_parse_failure_classes": {},
     "deep_parse_success_count": 3,
     "files_without_frame_reference_count": 0,
@@ -181,16 +245,31 @@
     "files_without_sop_reference_count": 0,
     "instance_count": 3,
     "oversize_file_skipped_count": 0,
-    "roi_category_counts": {
-      "OTHER": 6
+    "r1_correction": {
+      "r1_combined_roi_category_counts_valid": false,
+      "r1_interpreted_type_absence_claim_valid": false,
+      "r1_roi_contour_entry_count_proves_geometry_or_mask": false,
+      "r1_type_lookup_sequence_was_incorrect": "StructureSetROISequence",
+      "r2_type_lookup_sequence": "RTROIObservationsSequence"
     },
-    "roi_classification_basis": "recognized RTROIInterpretedType first, otherwise coarse ROIName text heuristic",
-    "roi_contour_entry_count": 6,
-    "roi_count": 6,
-    "roi_interpreted_type_present_count": 0,
-    "roi_name_present_count": 6,
-    "rtstruct_file_count_with_roi_category": {
-      "OTHER": 3
+    "roi_name_heuristic_is_separate_from_dicom_type": true,
+    "roi_type_link": "RTROIObservationsSequence.ReferencedROINumber to unique StructureSetROISequence.ROINumber",
+    "roi_type_source": "RTROIObservationsSequence.RTROIInterpretedType",
+    "sequence_entry_counts": {
+      "ROIContourSequence": 6,
+      "RTROIObservationsSequence": 6,
+      "StructureSetROISequence": 6
+    },
+    "sequence_state_counts": {
+      "ROIContourSequence": {
+        "PRESENT": 3
+      },
+      "RTROIObservationsSequence": {
+        "PRESENT": 3
+      },
+      "StructureSetROISequence": {
+        "PRESENT": 3
+      }
     }
   },
   "source_attribution": {

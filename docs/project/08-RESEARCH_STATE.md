@@ -23,14 +23,14 @@
 - 六篇用户提供的原 PDF 在此次迁移制品中存在并进行基本 PDF 打开/页数/校验。
 - FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；CMRL-02 将全部 3366 对按作者 `_label.png` 规则与 CMRL-01 规范化规则独立交叉核对，结果一致。原作者代码预期的 `Private/train|test/<四组>` 路径在 ZIP 中没有对应文件；ZIP 的 train/test 目录各有 2420/946 个影像侧 PNG 及等量 Mask。对 3366 张影像解码像素比较发现 9 条重复额外记录，其中一组完全相同图像跨 train/test 各出现一次；文件名/目录仍未建立患者或临床中心键，不能证明患者级无泄漏。2D 分割仍仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
 - CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
-- TCIA 官方页面发布 CC-Tumor-Heterogeneity（23 subjects，含 MR 与 RTSTRUCT；DOI `10.7937/ERZ5-QZ59`，影像许可 CC BY 4.0）。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。CMRL-03 对官方来源、许可与 API 文档完成复核，但当时的 TCIA series 查询超时、IDC REST TLS/浏览器连接失败。CMRL-04 检查用户报告从 IDC 手动取得的本地子集：5,959 个 DICOM 文件、4,334 MR、3 RTSTRUCT；129 条按结构集内部去重汇总的 SOP 引用记录全部命中本地，且指向 T2 文本候选 Series。3 个 RTSTRUCT 的 6 个 ROI 均只能归类为 `OTHER`，未确认原发宫颈肿瘤语义；本地文件与 Collection 的归属没有 manifest 独立证明。没有验证临床结局定义或接纳训练标签。
+- TCIA 官方页面发布 CC-Tumor-Heterogeneity（23 subjects，含 MR 与 RTSTRUCT；DOI `10.7937/ERZ5-QZ59`，影像许可 CC BY 4.0）。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。CMRL-03 对官方来源、许可与 API 文档完成复核，但当时的 TCIA series 查询超时、IDC REST TLS/浏览器连接失败。CMRL-04/r2 复核用户报告从 IDC 手动取得的本地子集：5,959 个 DICOM 文件、4,334 MR、3 RTSTRUCT；129 条按 RTSTRUCT 内去重汇总的 SOP 引用记录全部命中本地，且指向 T2 文本候选 Series。r1 对 ROI 类型的读取位置错误；r2 正确关联 6 个 Observation 与 6 个 ROI，类型标签均存在但为空，名称启发式单独计数为 `OTHER` 6。6 个 ROIContour 条目关联唯一；108 个声明为 `CLOSED_PLANAR` 的轮廓点数和坐标元素数量/有限性均通过元数据检查，并有 ContourImageSequence 引用。未验证共面性、图像空间对齐、目标结构含义或可用 Mask；本地文件与 Collection 的归属没有 manifest 独立证明。没有验证临床结局定义或接纳训练标签。
 - P03 有原作者公开研究代码但患者数据未公开。
 
 ## 最大阻塞/风险
 
 1. D01 文件级格式和候选 Mask 配对已核；患者/中心键、患者级拆分与 678 人对 3366 个影像文件的对应仍未知。
 2. D02 CCMD 授权与格式冲突，仓库公开代码缺失。
-3. D03 本地 MR–RTSTRUCT 直接引用已核实，但 ROI 名称/标准类型不足以认定原发宫颈肿瘤 Mask，来源 Collection 归属也仍需确认；不可据此启动分割或 Radiomics。
+3. D03 本地 MR–RTSTRUCT 直接引用及轮廓元数据结构已核实，但 ROI 类型值为空，名称启发式和 `CLOSED_PLANAR` 点列表不足以认定原发宫颈肿瘤 Mask；图像空间关系与来源 Collection 归属仍需确认，不可据此启动分割或 Radiomics。
 4. 公开资源是否含可信疗效标签尚未得到证据，因此不可现在启动临床应答预测。
 5. OS/GPU/VRAM/磁盘与用户 Python 运行环境未知，不应冻结 CUDA 依赖。
 

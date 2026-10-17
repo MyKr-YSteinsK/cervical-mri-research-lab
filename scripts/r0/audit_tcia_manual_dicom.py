@@ -3,8 +3,9 @@
 
 The scanner opens source files read-only, stops before PixelData, does not
 decode image pixels, and emits only aggregate counts. Patient identifiers,
-UID values, source paths, file names, ROI names, and hashes remain in memory
-or are never read; they are not written to the output.
+UID values, source paths, and file names remain in memory only for reference
+resolution. ROI names and contour coordinates are inspected only for bounded
+metadata checks; none are written to the output.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ from pydicom.tag import Tag
 
 
 TASK_ID = "CMRL-04"
-PLAN_REVISION = "r1"
+PLAN_REVISION = "r2"
 MAX_HEADER_FILES = 20_000
 MAX_SECONDS = 20 * 60
 MAX_IMAGE_FILE_BYTES = 128 * 1024 * 1024
@@ -67,7 +68,70 @@ RTSTRUCT_TAGS = [
     Tag("30060010"),  # ReferencedFrameOfReferenceSequence
     Tag("30060020"),  # StructureSetROISequence
     Tag("30060039"),  # ROIContourSequence
+    Tag("30060080"),  # RTROIObservationsSequence
 ]
+
+# DICOM PS3.3 2026d, C.8.8.8.1 defined terms.
+RTROI_DEFINED_TYPES = {
+    "EXTERNAL",
+    "PTV",
+    "CTV",
+    "GTV",
+    "TREATED_VOLUME",
+    "IRRAD_VOLUME",
+    "OAR",
+    "BOLUS",
+    "AVOIDANCE",
+    "ORGAN",
+    "MARKER",
+    "REGISTRATION",
+    "ISOCENTER",
+    "CONTRAST_AGENT",
+    "CAVITY",
+    "BRACHY_CHANNEL",
+    "BRACHY_ACCESSORY",
+    "BRACHY_SRC_APP",
+    "BRACHY_CHNL_SHLD",
+    "SUPPORT",
+    "FIXATION",
+    "DOSE_REGION",
+    "CONTROL",
+    "DOSE_MEASUREMENT",
+    "DEVICE",
+}
+# DICOM PS3.3 2026d, C.8.8.6.1 enumerated geometric types.
+CONTOUR_GEOMETRIC_TYPES = {
+    "POINT",
+    "OPEN_PLANAR",
+    "OPEN_NONPLANAR",
+    "CLOSED_PLANAR",
+    "CLOSEDPLANAR_XOR",
+}
+RTSTRUCT_SEQUENCE_NAMES = (
+    "StructureSetROISequence",
+    "RTROIObservationsSequence",
+    "ROIContourSequence",
+)
+RTSTRUCT_COUNTER_NAMES = (
+    "roi_number_status_counts",
+    "roi_observation_number_status_counts",
+    "roi_observation_reference_status_counts",
+    "roi_observation_interpreted_type_presence_counts",
+    "interpreted_type_category_counts",
+    "roi_type_mapping_status_counts",
+    "roi_type_category_counts",
+    "roi_name_presence_counts",
+    "roi_name_heuristic_category_counts",
+    "roi_name_type_comparison_counts",
+    "roi_contour_reference_status_counts",
+    "contour_sequence_state_counts",
+    "contour_geometric_type_counts",
+    "contour_point_count_status_counts",
+    "contour_data_check_counts",
+    "point_geometry_consistency_counts",
+    "contour_image_sequence_state_counts",
+    "contour_image_reference_value_status_counts",
+)
 
 REQUIRED_TAGS = {
     "PatientID": "PatientID",
@@ -382,17 +446,9 @@ def _sample_candidates(
     )
 
 
-def _roi_category(name: str, interpreted_type: str) -> str:
-    interpreted = interpreted_type.strip().upper()
-    if interpreted == "GTV":
-        return "GTV-like"
-    if interpreted in {"CTV", "PTV"}:
-        return "CTV/PTV-like"
-    if interpreted == "OAR":
-        return "OAR-like"
-
+def _roi_name_heuristic(name: str) -> str:
     label = name.casefold()
-    if not label and not interpreted:
+    if not label:
         return "UNDETERMINED"
     if re.search(
         r"(?:^|[^a-z0-9])gtv(?:p|n|primary|nodal)?(?=$|[^a-z0-9]|[0-9])|"
@@ -418,6 +474,334 @@ def _roi_category(name: str, interpreted_type: str) -> str:
     ):
         return "OAR-like"
     return "OTHER"
+
+
+def _field_value(dataset: Any, keyword: str) -> tuple[Any, bool]:
+    try:
+        return getattr(dataset, keyword), True
+    except AttributeError:
+        return None, False
+
+
+def _sequence_items(dataset: Any, keyword: str) -> tuple[list[Any], str]:
+    value, present = _field_value(dataset, keyword)
+    if not present:
+        return [], "MISSING"
+    if value is None:
+        return [], "EMPTY"
+    try:
+        items = list(value)
+    except TypeError:
+        return [], "INVALID"
+    return items, "PRESENT" if items else "EMPTY"
+
+
+def _dicom_integer(value: Any, present: bool) -> tuple[int | None, str]:
+    if not present:
+        return None, "MISSING"
+    text = _text(value)
+    if not text:
+        return None, "EMPTY"
+    try:
+        number = int(text, 10)
+    except (TypeError, ValueError, OverflowError):
+        return None, "INVALID"
+    return number, "PRESENT"
+
+
+def _positive_dicom_integer(value: Any, present: bool) -> tuple[int | None, str]:
+    number, status = _dicom_integer(value, present)
+    if status != "PRESENT":
+        return None, status
+    if number is None or number <= 0:
+        return None, "NON_POSITIVE"
+    return number, "PRESENT"
+
+
+def _roi_number_link_status(
+    value: Any, present: bool, structure_rois: dict[int, list[int]]
+) -> tuple[str, int | None]:
+    number, number_status = _dicom_integer(value, present)
+    if number_status != "PRESENT":
+        return number_status, None
+    matches = structure_rois.get(number, [])
+    if not matches:
+        return "ORPHAN_REFERENCE", number
+    if len(matches) > 1:
+        return "AMBIGUOUS_REFERENCE", number
+    return "UNIQUE_REFERENCE", number
+
+
+def _interpreted_type_category(value: Any) -> str:
+    normalized = _text(value).upper()
+    if normalized in {"GTV", "CTV", "PTV", "OAR"}:
+        return normalized
+    if normalized in RTROI_DEFINED_TYPES:
+        return "OTHER_VALID_DEFINED_TERM"
+    return "UNRECOGNIZED_VALUE"
+
+
+def _empty_rtstruct_summary() -> dict[str, Any]:
+    return {
+        "sequence_state_counts": {
+            name: collections.Counter() for name in RTSTRUCT_SEQUENCE_NAMES
+        },
+        "sequence_entry_counts": collections.Counter(),
+        "counts": {name: collections.Counter() for name in RTSTRUCT_COUNTER_NAMES},
+        "scalars": collections.Counter(),
+        "_contour_sop_refs": set(),
+    }
+
+
+def _summarize_rtstruct_dataset(dataset: Any) -> dict[str, Any]:
+    summary = _empty_rtstruct_summary()
+    sequences: dict[str, list[Any]] = {}
+    for name in RTSTRUCT_SEQUENCE_NAMES:
+        items, state = _sequence_items(dataset, name)
+        sequences[name] = items
+        summary["sequence_state_counts"][name][state] += 1
+        summary["sequence_entry_counts"][name] += len(items)
+
+    counts = summary["counts"]
+    scalars = summary["scalars"]
+    roi_entries: list[dict[str, Any]] = []
+    structure_rois: dict[int, list[int]] = collections.defaultdict(list)
+    for index, roi in enumerate(sequences["StructureSetROISequence"]):
+        value, present = _field_value(roi, "ROINumber")
+        number, status = _dicom_integer(value, present)
+        counts["roi_number_status_counts"][status] += 1
+        if number is not None:
+            structure_rois[number].append(index)
+        name_value, name_present = _field_value(roi, "ROIName")
+        name = _text(name_value)
+        counts["roi_name_presence_counts"][
+            "MISSING" if not name_present else "PRESENT" if name else "EMPTY"
+        ] += 1
+        counts["roi_name_heuristic_category_counts"][_roi_name_heuristic(name)] += 1
+        roi_entries.append({"number": number, "name": name})
+
+    duplicate_roi_numbers = {
+        number: indexes for number, indexes in structure_rois.items() if len(indexes) > 1
+    }
+    scalars["roi_number_duplicate_value_count"] += len(duplicate_roi_numbers)
+    scalars["roi_entries_with_duplicate_number_count"] += sum(
+        len(indexes) for indexes in duplicate_roi_numbers.values()
+    )
+
+    observation_links: dict[int, list[dict[str, Any]]] = collections.defaultdict(list)
+    observation_numbers: collections.Counter[int] = collections.Counter()
+    for observation in sequences["RTROIObservationsSequence"]:
+        observation_number_value, observation_number_present = _field_value(
+            observation, "ObservationNumber"
+        )
+        observation_number, observation_number_status = _dicom_integer(
+            observation_number_value, observation_number_present
+        )
+        counts["roi_observation_number_status_counts"][observation_number_status] += 1
+        if observation_number is not None:
+            observation_numbers[observation_number] += 1
+
+        reference_value, reference_present = _field_value(
+            observation, "ReferencedROINumber"
+        )
+        reference_status, reference_number = _roi_number_link_status(
+            reference_value, reference_present, structure_rois
+        )
+        counts["roi_observation_reference_status_counts"][reference_status] += 1
+
+        type_value, type_present = _field_value(observation, "RTROIInterpretedType")
+        type_text = _text(type_value)
+        type_status = "MISSING" if not type_present else "PRESENT" if type_text else "EMPTY"
+        counts["roi_observation_interpreted_type_presence_counts"][type_status] += 1
+        type_category = _interpreted_type_category(type_text) if type_text else None
+        if type_category:
+            counts["interpreted_type_category_counts"][type_category] += 1
+        if reference_status == "UNIQUE_REFERENCE" and reference_number is not None:
+            observation_links[reference_number].append(
+                {"type_status": type_status, "type_category": type_category}
+            )
+
+    duplicate_observation_numbers = {
+        number: count for number, count in observation_numbers.items() if count > 1
+    }
+    scalars["duplicate_observation_number_value_count"] += len(
+        duplicate_observation_numbers
+    )
+    scalars["observation_entries_with_duplicate_number_count"] += sum(
+        duplicate_observation_numbers.values()
+    )
+    for observations in observation_links.values():
+        if len(observations) > 1:
+            scalars["unique_roi_numbers_with_multiple_observations_count"] += 1
+            distinct_types = {
+                (item["type_status"], item["type_category"]) for item in observations
+            }
+            if len(distinct_types) > 1:
+                scalars["roi_numbers_with_conflicting_observation_types_count"] += 1
+
+    for roi in roi_entries:
+        number = roi["number"]
+        if number is None:
+            counts["roi_type_mapping_status_counts"]["ROI_NUMBER_UNRESOLVED"] += 1
+            counts["roi_name_type_comparison_counts"]["ROI_NUMBER_UNRESOLVED"] += 1
+            continue
+        if len(structure_rois[number]) > 1:
+            counts["roi_type_mapping_status_counts"]["ROI_NUMBER_DUPLICATE"] += 1
+            counts["roi_name_type_comparison_counts"]["ROI_NUMBER_DUPLICATE"] += 1
+            continue
+        observations = observation_links.get(number, [])
+        if not observations:
+            counts["roi_type_mapping_status_counts"]["NO_OBSERVATION"] += 1
+            counts["roi_name_type_comparison_counts"]["NO_OBSERVATION"] += 1
+            continue
+        if len(observations) > 1:
+            counts["roi_type_mapping_status_counts"]["MULTIPLE_OBSERVATIONS_UNRESOLVED"] += 1
+            counts["roi_name_type_comparison_counts"]["MULTIPLE_OBSERVATIONS_UNRESOLVED"] += 1
+            continue
+
+        observation = observations[0]
+        type_status = observation["type_status"]
+        type_category = observation["type_category"]
+        if type_status != "PRESENT":
+            mapping_status = "TYPE_" + type_status
+            counts["roi_type_mapping_status_counts"][mapping_status] += 1
+            counts["roi_name_type_comparison_counts"][mapping_status] += 1
+            continue
+        counts["roi_type_category_counts"][type_category] += 1
+        counts["roi_type_mapping_status_counts"][type_category] += 1
+        if type_category not in {"GTV", "CTV", "PTV", "OAR"}:
+            counts["roi_name_type_comparison_counts"]["NON_TARGET_OR_UNRECOGNIZED_TYPE"] += 1
+            continue
+        name_category = _roi_name_heuristic(roi["name"])
+        if name_category not in {"GTV-like", "CTV/PTV-like", "OAR-like"}:
+            comparison = "NAME_HEURISTIC_UNRESOLVED"
+        else:
+            type_name_category = {
+                "GTV": "GTV-like",
+                "CTV": "CTV/PTV-like",
+                "PTV": "CTV/PTV-like",
+                "OAR": "OAR-like",
+            }[type_category]
+            comparison = "MATCH" if name_category == type_name_category else "CONFLICT"
+        counts["roi_name_type_comparison_counts"][comparison] += 1
+
+    roi_contour_links: dict[int, list[int]] = collections.defaultdict(list)
+    for index, roi_contour in enumerate(sequences["ROIContourSequence"]):
+        reference_value, reference_present = _field_value(
+            roi_contour, "ReferencedROINumber"
+        )
+        reference_status, reference_number = _roi_number_link_status(
+            reference_value, reference_present, structure_rois
+        )
+        counts["roi_contour_reference_status_counts"][reference_status] += 1
+        if reference_status == "UNIQUE_REFERENCE" and reference_number is not None:
+            roi_contour_links[reference_number].append(index)
+
+        contour_items, contour_state = _sequence_items(roi_contour, "ContourSequence")
+        counts["contour_sequence_state_counts"][contour_state] += 1
+        for contour in contour_items:
+            scalars["contour_item_count"] += 1
+            geometry_value, geometry_present = _field_value(contour, "ContourGeometricType")
+            geometry_text = _text(geometry_value).upper()
+            if not geometry_present:
+                geometry_status = "MISSING"
+            elif not geometry_text:
+                geometry_status = "EMPTY"
+            elif geometry_text in CONTOUR_GEOMETRIC_TYPES:
+                geometry_status = geometry_text
+            else:
+                geometry_status = "UNRECOGNIZED"
+            counts["contour_geometric_type_counts"][geometry_status] += 1
+
+            point_value, point_present = _field_value(contour, "NumberOfContourPoints")
+            point_count, point_status = _positive_dicom_integer(point_value, point_present)
+            counts["contour_point_count_status_counts"][point_status] += 1
+
+            data_value, data_present = _field_value(contour, "ContourData")
+            if not data_present:
+                data_status = "DATA_MISSING"
+            elif data_value is None:
+                data_status = "DATA_EMPTY"
+            elif isinstance(data_value, (str, bytes, bytearray)):
+                data_status = "DATA_EMPTY" if not data_value else "DATA_UNREADABLE"
+            else:
+                try:
+                    data_length = len(data_value)
+                    if data_length == 0:
+                        data_status = "DATA_EMPTY"
+                    elif point_count is None:
+                        data_status = "POINT_COUNT_UNAVAILABLE"
+                    else:
+                        length_matches = data_length == 3 * point_count
+                        finite = all(_number(value) is not None for value in data_value)
+                        if not length_matches:
+                            data_status = "LENGTH_MISMATCH"
+                        elif finite:
+                            data_status = "LENGTH_MATCH_FINITE"
+                        else:
+                            data_status = "LENGTH_MATCH_NONFINITE_OR_INVALID"
+                except (TypeError, ValueError, OverflowError):
+                    data_status = "DATA_UNREADABLE"
+            counts["contour_data_check_counts"][data_status] += 1
+
+            if geometry_status != "POINT":
+                point_geometry_status = (
+                    "NOT_APPLICABLE"
+                    if geometry_status in CONTOUR_GEOMETRIC_TYPES
+                    else "UNRESOLVED"
+                )
+            elif point_count is None:
+                point_geometry_status = "UNRESOLVED"
+            else:
+                point_geometry_status = "MATCH" if point_count == 1 else "CONFLICT"
+            counts["point_geometry_consistency_counts"][point_geometry_status] += 1
+
+            image_items, image_state = _sequence_items(contour, "ContourImageSequence")
+            counts["contour_image_sequence_state_counts"][image_state] += 1
+            has_contour_image_reference = False
+            for image_item in image_items:
+                uid_value, uid_present = _field_value(
+                    image_item, "ReferencedSOPInstanceUID"
+                )
+                uid_text = _text(uid_value)
+                if uid_present and uid_text:
+                    counts["contour_image_reference_value_status_counts"]["PRESENT"] += 1
+                    summary["_contour_sop_refs"].add(uid_text)
+                    has_contour_image_reference = True
+                else:
+                    counts["contour_image_reference_value_status_counts"][
+                        "MISSING" if not uid_present else "EMPTY"
+                    ] += 1
+            scalars["contours_with_any_image_reference_count"] += int(
+                has_contour_image_reference
+            )
+            scalars["contour_image_reference_item_count"] += len(image_items)
+
+    duplicate_roi_contour_links = {
+        number: indexes
+        for number, indexes in roi_contour_links.items()
+        if len(indexes) > 1
+    }
+    scalars["roi_contour_duplicate_reference_value_count"] += len(
+        duplicate_roi_contour_links
+    )
+    scalars["roi_contour_entries_with_duplicate_reference_count"] += sum(
+        len(indexes) for indexes in duplicate_roi_contour_links.values()
+    )
+    scalars["contour_image_unique_sop_reference_count"] += len(
+        summary["_contour_sop_refs"]
+    )
+    return summary
+
+
+def _merge_rtstruct_summary(aggregate: dict[str, Any], summary: dict[str, Any]) -> None:
+    for name, statuses in summary["sequence_state_counts"].items():
+        aggregate["sequence_state_counts"][name].update(statuses)
+    aggregate["sequence_entry_counts"].update(summary["sequence_entry_counts"])
+    for name, values in summary["counts"].items():
+        aggregate["counts"][name].update(values)
+    aggregate["scalars"].update(summary["scalars"])
+    aggregate["_contour_sop_refs"].update(summary["_contour_sop_refs"])
 
 
 def _iter_rt_references(ds: Any) -> tuple[set[str], set[str], set[str]]:
@@ -468,34 +852,10 @@ def _deep_parse_rtstruct(
         return None
 
     sop_refs, series_refs, frame_refs = _iter_rt_references(ds)
-    categories: collections.Counter[str] = collections.Counter()
-    roi_count = 0
-    roi_name_present_count = 0
-    roi_interpreted_type_present_count = 0
-    roi_with_number: dict[str, str] = {}
-    for roi_item in getattr(ds, "StructureSetROISequence", []) or []:
-        roi_count += 1
-        name = _text(getattr(roi_item, "ROIName", None))
-        interpreted_type = _text(getattr(roi_item, "RTROIInterpretedType", None))
-        roi_name_present_count += int(bool(name))
-        roi_interpreted_type_present_count += int(bool(interpreted_type))
-        category = _roi_category(name, interpreted_type)
-        categories[category] += 1
-        number = _text(getattr(roi_item, "ROINumber", None))
-        if number:
-            roi_with_number[number] = category
-
-    contour_roi_count = 0
-    for roi_item in getattr(ds, "ROIContourSequence", []) or []:
-        contour_roi_count += 1
+    summary = _summarize_rtstruct_dataset(ds)
+    _merge_rtstruct_summary(counters["rtstruct_summary"], summary)
 
     counters["deep_parse_success"] += 1
-    counters["roi_count"] += roi_count
-    counters["roi_name_present_count"] += roi_name_present_count
-    counters["roi_interpreted_type_present_count"] += roi_interpreted_type_present_count
-    counters["roi_contour_entry_count"] += contour_roi_count
-    counters["roi_categories"].update(categories)
-    counters["files_with_roi_category"].update(categories.keys())
     counters["files_without_frame_reference"] += int(not frame_refs)
     counters["files_without_series_reference"] += int(not series_refs)
     counters["files_without_sop_reference"] += int(not sop_refs)
@@ -508,7 +868,7 @@ def _deep_parse_rtstruct(
         "_sop_refs": sop_refs,
         "_series_refs": series_refs,
         "_frame_refs": frame_refs,
-        "_roi_categories": categories,
+        "_contour_sop_refs": summary["_contour_sop_refs"],
     }
 
 
@@ -882,12 +1242,7 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
         "deep_parse_success": 0,
         "oversize_file_skipped": 0,
         "deep_parse_error_classes": collections.Counter(),
-        "roi_count": 0,
-        "roi_name_present_count": 0,
-        "roi_interpreted_type_present_count": 0,
-        "roi_contour_entry_count": 0,
-        "roi_categories": collections.Counter(),
-        "files_with_roi_category": collections.Counter(),
+        "rtstruct_summary": _empty_rtstruct_summary(),
         "files_without_frame_reference": 0,
         "files_without_series_reference": 0,
         "files_without_sop_reference": 0,
@@ -1073,19 +1428,37 @@ def run_audit(args: argparse.Namespace) -> dict[str, Any]:
                 sorted(rt_counters["deep_parse_error_classes"].items())
             ),
             "oversize_file_skipped_count": rt_counters["oversize_file_skipped"],
-            "roi_count": rt_counters["roi_count"],
-            "roi_name_present_count": rt_counters["roi_name_present_count"],
-            "roi_interpreted_type_present_count": rt_counters[
-                "roi_interpreted_type_present_count"
-            ],
-            "roi_contour_entry_count": rt_counters["roi_contour_entry_count"],
-            "roi_category_counts": dict(sorted(rt_counters["roi_categories"].items())),
-            "roi_classification_basis": (
-                "recognized RTROIInterpretedType first, otherwise coarse ROIName text heuristic"
+            "sequence_state_counts": {
+                name: dict(sorted(statuses.items()))
+                for name, statuses in sorted(
+                    rt_counters["rtstruct_summary"]["sequence_state_counts"].items()
+                )
+            },
+            "sequence_entry_counts": dict(
+                sorted(rt_counters["rtstruct_summary"]["sequence_entry_counts"].items())
             ),
-            "rtstruct_file_count_with_roi_category": dict(
-                sorted(rt_counters["files_with_roi_category"].items())
+            "aggregate_counts": {
+                name: dict(sorted(values.items()))
+                for name, values in sorted(
+                    rt_counters["rtstruct_summary"]["counts"].items()
+                )
+            },
+            "aggregate_totals": dict(
+                sorted(rt_counters["rtstruct_summary"]["scalars"].items())
             ),
+            "roi_type_source": "RTROIObservationsSequence.RTROIInterpretedType",
+            "roi_type_link": (
+                "RTROIObservationsSequence.ReferencedROINumber to unique "
+                "StructureSetROISequence.ROINumber"
+            ),
+            "roi_name_heuristic_is_separate_from_dicom_type": True,
+            "r1_correction": {
+                "r1_type_lookup_sequence_was_incorrect": "StructureSetROISequence",
+                "r2_type_lookup_sequence": "RTROIObservationsSequence",
+                "r1_interpreted_type_absence_claim_valid": False,
+                "r1_combined_roi_category_counts_valid": False,
+                "r1_roi_contour_entry_count_proves_geometry_or_mask": False,
+            },
             "files_without_frame_reference_count": rt_counters[
                 "files_without_frame_reference"
             ],
