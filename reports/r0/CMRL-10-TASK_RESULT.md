@@ -4,7 +4,7 @@
 - **Branch:** `codex/r0-10-derived-mask-provenance-screen`
 - **Exact base:** PR #10 HEAD `3ce361383cf222cf667a31d2a0ee87ed3d6b5a88`; PR #10 当时 OPEN / Draft、base `codex/r0-08-tcia-private-crosswalk-screen`。
 - **Plan copy:** 按用户要求，外部 Plan r1 已复制到 `D:\Downloads\CMRL-Plan-10-宫颈癌MRI派生标注溯源与替代数据预筛.md`；复制前目标不存在，源/副本 SHA-256 均为 `9F185535956713B1AAA9DC900A69E9B42C25580F742F46B678F82DCCA848CC4A`。仓库内没有 Plan 副本。
-- **Delivery:** 新建独立 Draft PR #11，base/head/最终远端 SHA 将在提交与 push 后填写；不合并、不更新 main、不改动其他 PR。
+- **Delivery:** [Draft PR #11](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/11) 为 OPEN；base `codex/r0-09-tcia-authoritative-annotation-review`，head `codex/r0-10-derived-mask-provenance-screen`。创建时远端 SHA `6447599a06f27bbf7dd2267ba83e1ae1e07a4c1c` 与本地提交一致。本 TASK_RESULT 回执更新会形成后续提交；最终 PR head 以 GitHub 当前核验值和最终回传为准。不合并、不更新 main、不改动其他 PR。
 
 ## G1–G7 Gate 回执
 
@@ -16,7 +16,7 @@
 | G4 维度与标签字段 | PASS（METADATA-ONLY） | BiomedSegFM 只记录数据卡对 `imgs/gts/spacing`、强度和切片预处理的描述；内部 shape/dtype/数组值未检查。文件夹 7 项/6,302,340 bytes 为 Hub 目录元数据，不能证明原生体、tumor ROI 或病例/时点关系；origin/direction 未有证据。 |
 | G5 队列与泄漏 | PASS | BiomedSegFM、MedOtter 按 CCTH 来源重打包处理，不能作为新患者或外部验证。FlexFair 继承 CMRL-01/02 的患者键缺口和跨 split 重复结论。其它数据源无患者级跨库身份核查。 |
 | G6 安全与执行边界 | PASS | 原始 DICOM、Clinical V2、CMRL-08 私有候选索引均未读取；本轮下载数据资产 0 bytes。无病例级 UID、患者键、日期、路径、ROI 原始名称/编号、像素/Mask、凭据写入报告或 JSON。科研核心代码、图像解码/显示、Mask 转换、Radiomics、模型均 `NOT RUN`；R0 仍 `NOT COMPLETE`。 |
-| G7 Git 交付 | PENDING | 报告、矩阵、JSON 与状态增量已写入允许路径；提交前还将检查 staged 文件、隐私模式与 `git diff --check`，随后正常推送并核验 PR #11 的 base/head/draft 与远端 SHA。 |
+| G7 Git 交付 | PASS | 仅提交授权的 7 个报告、脱敏登记和项目状态文件；staged 清单与隐私模式已复核，`git diff --cached --check` 无错误。正常推送后创建并核验 PR #11：OPEN/Draft，base/head 分支与 Plan 一致；创建时远端 head 与本地提交 `6447599a06f27bbf7dd2267ba83e1ae1e07a4c1c` 完全一致。此后仅为写入本项回执再推进一个提交，最终 SHA 见最终 PR head。 |
 
 ## Findings and candidate decisions
 
