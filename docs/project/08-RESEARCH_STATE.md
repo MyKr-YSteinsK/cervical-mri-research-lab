@@ -47,9 +47,19 @@
 
 ## 下一次 Main 必做
 
-读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)、[CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 和 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地引用链、下载完整性缺口和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
+读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)、[CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 和 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)、[CMRL-06 报告](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md) 和 [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地引用链、下载完整性缺口和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
 
 
 ## CMRL-06/r2｜IDC v25 按模态缺口补证
 
 2026-10-17 的 r2 补证沿用固定 Release 25.0.0 索引与 manifest 映射，一次最小 Header 扫描后按官方 Modality 对账：821 个预期 Series 中本地命中 806 个，15 个完全缺失；73 个 Series 有实例短缺（58 个部分短缺、15 个完全缺失），合计短缺 1,132 个实例，数量相等 748 个，超额 0。MR 523 个 Series 均命中，但 55 个 MR Series 少 800 个实例；数量相等不能代表影像体完整。RTSTRUCT 有 5 个 Series 缺失；CMRL-05 的 61 条未命中 SOP 引用仍为 `UNKNOWN`，没有推断两者对应关系。另在本机忽略目录生成 73 行私有 Series 差异表，未公开 UID 或 source-prefix。r1 两次 S3 LIST 仍 `REMOTE_LIST_UNAVAILABLE`，r2 网络请求为 0；对象级库存及位级完整性仍未验证。此段更新 r1 的阶段性记录，不表示 Main 已接受证据、R0 已完成或数据已批准进入监督训练。详见 [`CMRL-06 r2 报告`](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md)。
+
+## CMRL-07｜TCIA ROI、时点与临床字段（2026-10-17）
+
+- **任务：** Plan-07 r1 证据审计 COMPLETE；**R0 NOT COMPLETE**。Main 未接受数据或批准实验。
+- **临床文件：** 本机只读副本与当前 TCIA 官方 XLSX 端点的大小及 SHA-256 匹配，clinical Version 2；28 非空数据行、9 个字段、候选键 23 个互异非空值/5 行缺键。记录粒度及患者身份未证实；没有 event/time-origin/censoring codebook。
+- **ROI：** 论文作者报告参考矢状 T2 上的 tumor 和 uterus 勾画，uterus 辅助配准；未找到发布版 DICOM 逐 ROI Number/name 映射。ROI_SEMANTIC_UNRESOLVED，不能作为肿瘤分割监督真值。
+- **身份与时点：** Clinical 候选键→DICOM PatientID 为 JOIN_UNVERIFIED；文献计划时点 SOURCE_DEFINED，本地逐患者时点 UNASSIGNED。21 人论文与 23 人 Collection 的关系未核实。
+- **IDC v25.0.0：** 沿用 CMRL-06/r2，官方 821 Series 映射已核；本地 15 Series 缺失，73 Series 实例短缺 1,132 个。对象级完整性仍未核实。
+- **准入：** 单例 MRI 空间教学 CONDITIONAL；3D 肿瘤分割、体积 Radiomics、跨时点分析、应答/DFS/OS NO-GO。
+- **报告：** [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)、[脱敏证据 profile](../../evidence/r0/tcia_source_roi_clinical_profile.json)、[TASK_RESULT](../../reports/r0/CMRL-07-TASK_RESULT.md)。Main 须决定是否继续官方文档/作者确认或仅转入用户自主持的单例空间 QC 教学。

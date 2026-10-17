@@ -51,3 +51,15 @@ H4（以后，有真实终点才激活）：稳定 Radiomics + 深度特征 + �
 ## D. 源冲突处理规则
 
 发现两个官方来源矛盾：同时记录版本、原句/数据表、来源链接与查询日期；实际下载文件可直接消解的则用文件证据，仍无法消解的则列 `UNRESOLVED` 并降低适用性评级。不得为了设计一条顺畅的研发路线而静默修正患者数、文件格式、算法参数或标签。
+
+## CMRL-07 补充核验（2026-10-17）
+
+- **S06 当前 TCIA Collection 页面**：当前页面报告 23 subjects、171 studies、821 series、131,556 images、28.39 GB，含 DICOM 与 Follow-Up / Classification XLSX，CC BY 4.0；Clinical changelog 标为 Version 2（2023-02-23），记载为一名受试者补入一个 Time to Distant Metastasis 值。当前页面直接读取超时，采用官方搜索索引文本；官方文件端点另以 HTTP 200 实际取得小型 XLSX 并与本机副本 SHA-256 比对。数据集引用标题写 Version 1，与临床文件 changelog 分开记录。
+- **S06 历史 TCIA Wiki 页面**：记载治疗前、约 2–2.5 周/20–25 Gy、约 4–5 周/45–50 Gy 三个计划时点；说明 tumor volume contours 由 T2 MRI 定义并与 PET/CT 配准。历史页的图像大小为 26.0 GB，当前页为 28.39 GB，属于发布页口径/时间记录差异，不据此判断本地缺失。
+- **S13 Bowen et al. 2018，DOI 10.1002/jmri.25874 / PMID 29044908 / PMCID PMC5899626**：作者报告 21 人、pre-RT/early 20–25 Gy/mid 40–50 Gy；参考矢状 T2 上勾画 tumor 与 uterus，uterus 辅助配准，tumor ROI 用于多时点多模态分析。论文未给出发布版 DICOM 的逐 ROI Number/name crosswalk。TCIA 的 23 subjects 与论文 21 人的对应及差额原因仍 UNKNOWN。
+- **Clinical 字段和临床连接**：官方当前 XLSX 实测 1 sheet、28 非空行、9 命名字段；候选键 23 个非空互异值，5 行为空。没有公开 codebook 解释实际行粒度、临床编码、时间起点、删失或随访；候选键到本地 DICOM PatientID 仍 JOIN_UNVERIFIED。当前完整审计见 [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)。
+- **ROI 与本地时点**：文献双结构勾画不等于 DICOM ROI 语义映射；本地 ROI 语义仍 ROI_SEMANTIC_UNRESOLVED。文献时点 SOURCE_DEFINED；本地实际 DICOM 时点 UNASSIGNED。CMRL-07 不读取像素、不重扫 DICOM、不联系作者。
+
+### CMRL-07 待 Main 决策
+
+先独立复核 ROI crosswalk/codebook 是否存在；若无，是否由用户自行联系作者。即使后续选取一组作单例空间教学，也须由用户实测方向、spacing 与 contour 几何，未确认结构语义前不把轮廓称为肿瘤真值。临床建模需另行取得正式事件/时间/删失定义和合法精确患者 crosswalk。
