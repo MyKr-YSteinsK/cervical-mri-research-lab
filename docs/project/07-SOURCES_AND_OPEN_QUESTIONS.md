@@ -63,3 +63,10 @@ H4（以后，有真实终点才激活）：稳定 Radiomics + 深度特征 + �
 ### CMRL-07 待 Main 决策
 
 先独立复核 ROI crosswalk/codebook 是否存在；若无，是否由用户自行联系作者。即使后续选取一组作单例空间教学，也须由用户实测方向、spacing 与 contour 几何，未确认结构语义前不把轮廓称为肿瘤真值。临床建模需另行取得正式事件/时间/删失定义和合法精确患者 crosswalk。
+
+
+### CMRL-08｜本地 Clinical 键、日期顺序与 MR–RTSTRUCT 候选
+
+Plan-08 r1 的只读元数据审计完成；没有数据源网络请求。Clinical V2 的五条单格文本行在布局上构成同一非键字段类别的连续表尾区块，样式不同且无内部注释/图例标记；语义与记录粒度仍 UNKNOWN。Clinical 候选键到本地 DICOM PatientID 的匹配子类受小单元格抑制，来源语义未确认，状态 JOIN_UNVERIFIED。
+
+固定 IDC v25.0.0 对账复现 CMRL-06/r2：821 期望、806 本地、15 缺失；748 计数相等、73 个短缺 Series/1,132 个实例。全量 Header 解析 130,424/130,424，前后文件元数据 snapshot 相同。63 个 RTSTRUCT 允许范围内解析，唯一直接 SOP 引用 1,873 个本地命中、61 个未命中。通过 MR/RTSTRUCT 计数与目标引用链预筛得到 56 个唯一 Series 对；这不是患者数，也不是空间/肿瘤语义验收。私有定位索引最多保存 3 组，精确小计不公开。时间证据只有 CHRONOLOGY_ONLY；真实治疗时点仍 UNASSIGNED，患者分组仍 GROUPING_UNVERIFIED。ROI_SEMANTIC_UNRESOLVED、ENDPOINT_CODEBOOK_UNVERIFIED 和 R0 NOT COMPLETE 不变。见 [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md) 与 [脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)。

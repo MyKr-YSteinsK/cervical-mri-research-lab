@@ -8,9 +8,9 @@
 
 ## 用户已确认
 
-以**宫颈癌 MRI** 为研究主线；与六篇论文的影像处理/影像组学/深度表征保持联系；允许先完成分割与前期影像研究，不强制当下患者级疗效二分类；未来追求真实、有根据的模型改进或新方法。采用 GPT 教学＋用户亲自编写和运行代码，常规不使用 Codex。未来工作独立迁移新 ChatGPT Project。
+以宫颈癌 MRI 为研究主线；与六篇论文的影像处理、影像组学和深度表征保持联系；允许先完成分割与前期影像研究，不强制当下患者级疗效二分类；未来追求真实、有根据的模型改进或新方法。用户亲自学习、编写并运行科研核心代码。用户后来明确允许 Codex 在当前用户提供的外部 Plan 范围内执行有界的数据接入证据审计、文件/元数据核验、私有映射、合成测试和脱敏报告；许可按任务生效，不扩张为通用科研代理授权。未来工作独立迁移新 ChatGPT Project。
 
-**专项任务权限**：CMRL-00 的授权限于其自身 Plan。CMRL-01 另由用户启动的 Plan 授权公开 ZIP 的有限下载、安全枚举及最小样本格式检查；CMRL-02 授权对同一已核验 ZIP 与原作者公开代码进行分组、身份线索、配对和精确像素重复审计，并治理仓库 Plan 存放规则。这些授权均不扩大未来 Codex 权限。MRI 空间质控、分割、Radiomics、训练及解释性核心代码仍由用户亲自学习、编写和运行。
+**专项任务权限与历史边界**：CMRL-00 至 CMRL-07 的权限和结论保持各自原样，不倒改历史授权。CMRL-08 Plan r1 另行授权本次离线 Clinical/DICOM 键连接、固定 IDC v25 对账、引用预筛、受控本机映射、合成测试和脱敏交付。MRI 像素/空间质控、分割、Radiomics、训练和解释性科研核心仍由用户亲自学习、编写、运行和审查；Codex 不得据本次候选结果声称这些工作已完成。
 
 ## 不要代替用户确认的建议
 
@@ -47,8 +47,7 @@
 
 ## 下一次 Main 必做
 
-读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)、[CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 和 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)、[CMRL-06 报告](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md) 和 [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地引用链、下载完整性缺口和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
-
+读取项目状态及 CMRL-01 至 CMRL-08 报告/TASK_RESULT，结合 FlexFair 分组身份缺口、TCIA 本地文件完整性、Clinical 键语义、MR–RTSTRUCT 候选链和 ROI 限制，审查 R0 总体证据。尤其确认是否让用户从 Plan-08 私有候选索引中选择一个组合开展单例空间实践，以及是否另行索取官方 ROI crosswalk、Clinical 行粒度/终点 codebook 和真实治疗时点映射。不得将本次 56 个 Series 对视为患者数、像素/空间验收或肿瘤 Mask；不要据此推进三维分割、Radiomics、Cross-site 或模型实验。R0 仍需 Main 正式审查和决定。
 
 ## CMRL-06/r2｜IDC v25 按模态缺口补证
 
@@ -63,3 +62,13 @@
 - **IDC v25.0.0：** 沿用 CMRL-06/r2，官方 821 Series 映射已核；本地 15 Series 缺失，73 Series 实例短缺 1,132 个。对象级完整性仍未核实。
 - **准入：** 单例 MRI 空间教学 CONDITIONAL；3D 肿瘤分割、体积 Radiomics、跨时点分析、应答/DFS/OS NO-GO。
 - **报告：** [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)、[脱敏证据 profile](../../evidence/r0/tcia_source_roi_clinical_profile.json)、[TASK_RESULT](../../reports/r0/CMRL-07-TASK_RESULT.md)。Main 须决定是否继续官方文档/作者确认或仅转入用户自主持的单例空间 QC 教学。
+
+## CMRL-08｜TCIA 私有连接与候选预筛（2026-10-17）
+
+- **任务状态：** Plan-08 r1 授权范围内离线元数据审计 COMPLETE；R0 仍 NOT COMPLETE，Main 未批准数据集、研究阶段或模型实验。
+- **Clinical：** V2 字节/SHA 与 CMRL-07 锚点一致。28 个非空数据行、23 个候选键、5 个未键控单格文本行。五行布局上同属一个非键字段类别、连续位于表尾、样式不同，但无明确内部注释标记；不能将其语义定为注释或病例。终点 codebook 未核实。
+- **患者连接：** 按原始字符串和类型精确比较；公开匹配/未匹配/歧义子类依小单元格规则抑制。状态 JOIN_UNVERIFIED，来源语义未确认，临床影像连接未授权。患者键总量相同不作同一性证据。
+- **IDC v25.0.0：** 821 个期望 Series、806 本地、15 缺失；748 计数相等，73 个短缺 Series 共少 1,132 个实例。MR 523/523 命中但 55 个少 800 个实例；RTSTRUCT 63/68。一次 Header 扫描解析 130,424/130,424，元数据 snapshot 前后相同。
+- **MR–RTSTRUCT：** 1,873 个唯一直接 SOP 引用本地命中、61 个未命中；ContourData 数值字节读取为 0。通过计数及引用链筛选出 56 个唯一 MR Series–RTSTRUCT Series 对，非患者数；T2 仅字符串启发式。受控私有索引最多收录 3 组，精确小计不公开。
+- **时间与研究准入：** 仅 CHRONOLOGY_ONLY，治疗时点仍 UNASSIGNED、GROUPING_UNVERIFIED。ROI_SEMANTIC_UNRESOLVED 和 ENDPOINT_CODEBOOK_UNVERIFIED 未变。单例像素/空间 QC 为 CANDIDATE，需用户亲自验收；三维肿瘤分割、体积 Radiomics、纵向治疗变化和应答/DFS/OS 仍 NO-GO。
+- **交付：** [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md)、[脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)、[TASK_RESULT](../../reports/r0/CMRL-08-TASK_RESULT.md)。Main 应先审查这些新增证据，再决定是否进入用户主导的单例空间实践；不自动推进 R0。
