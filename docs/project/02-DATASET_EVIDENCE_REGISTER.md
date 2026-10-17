@@ -10,7 +10,7 @@
 - `FILE-INSPECTED`：已在本地检查文件，但仅覆盖相应任务写明的范围；不自动表示像素、几何对齐或临床语义已验收。
 - `USER-REPORTED-SOURCE`：本地文件来源由用户报告，尚未由 manifest 或其他来源证据独立确认。
 
-本次工具核查包括在线官方来源、论文、公开 GitHub 目录及六篇原 PDF；**没有下载或运行任何医学研究数据**。发布页展示的大小≠本地下载成功。
+既往来源核查覆盖官方来源、论文、公开 GitHub 目录及六篇原 PDF；CMRL-05 另对用户提供的 IDC Release 25.0 manifest 和指定的本地全量 DICOM 目录完成离线、只读的聚合审计。该审计不解码像素，也不等同于对象级下载完整性或科学核心实验验收。
 
 ## D01｜FlexFair 四中心宫颈癌 T2WI 肿瘤分割数据｜新增最高优先核验
 
@@ -36,7 +36,7 @@
 
 ## D03｜TCIA CC-Tumor-Heterogeneity｜容易核验的公开起点
 
-状态：`SOURCE-VERIFIED / PUBLIC-METADATA / QUERY-UNAVAILABLE / USER-REPORTED-SOURCE / FILE-INSPECTED（本地人工下载子集）/ R0-PRIORITY-3`
+状态：`SOURCE-VERIFIED / PUBLIC-METADATA / QUERY-UNAVAILABLE / USER-REPORTED-SOURCE / FILE-INSPECTED（本地人工子集及 IDC v25 全量候选目录，范围见 CMRL-04/05）/ R0-PRIORITY-3`
 
 - 官方：https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/ ; DOI https://doi.org/10.7937/ERZ5-QZ59
 - TCIA 列出：**23 名患者、171 个 studies、821 个 series、131556 张影像**；多模态 MR、RTSTRUCT、REG、PT、CT；临床 `Follow-Up` 与 `Classification` XLSX；影像 **28.39 GB**，临床表 **13.9 KB**；CC BY 4.0，需合规引用。
@@ -45,6 +45,10 @@
 - 用途：数据流验证、图像坐标、RTSTRUCT→Mask、纵向/多序列与探索性 Habitat；样本太少，严禁将复杂模型的高 AUC 解释成稳健疗效模型。
 - **CMRL-03（2026-10-16）更新**：官方 Collection 元数据、IDC 页面、CC BY 4.0 与数据引用要求已复核；当时本机 TCIA `getSeries` 超时，IDC REST TLS/浏览器连接失败，未取得文件级证据。具体记录见 [`CMRL-03 审计报告`](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)。查询失败不证明 Collection 无可用 MR/RTSTRUCT。
 - **CMRL-04（2026-10-17，r2 纠错）更新**：在用户指定的本地 `data/raw/tcia/ccth_manual/` 子集中重新完成全量有界 Header 检查：5,959 个 `.dcm`、1,387,467,936 bytes；4,334 MR、917 CT、702 PT、3 REG、3 RTSTRUCT。DICOM `PatientID` 有 1 个不同值，包含 6 个 Study、39 个 Series、27 个 MR Series；此键数不等于已独立核实的真实人数。9 个 MR Series 仅按描述文本规则列为 T2 候选。3 个 RTSTRUCT 共 129 条按 RTSTRUCT 内去重的直接 SOP 引用记录全部解析到本地 T2 候选 MR，患者键、Study、Series、Frame 对照均一致。r1 错误地从 `StructureSetROISequence` 读取 `RTROIInterpretedType`；r2 从 `RTROIObservationsSequence` 以 `ReferencedROINumber` 唯一关联 6 个 ROI，6 个类型标签均存在但值为空。名称启发式独立统计为 `OTHER` 6。6 个 ROIContour 条目均唯一关联；108 个轮廓条目均声明 `CLOSED_PLANAR`，点数为正且 Contour Data 长度/有限性检查通过，108/108 有 ContourImageSequence 引用。它们不是已验收的肿瘤 Mask：未验证空间对齐、共面性、闭合结构或临床语义。来源仍为 `USER-REPORTED-SOURCE`，没有本地 Collection manifest 证明实际包归属。未解码像素；完整边界见 [`CMRL-04 本地 DICOM 审计报告`](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 与聚合 JSON。
+
+**CMRL-05（2026-10-17）更新**：用户指定的 IDC Release 25.0 本地候选目录包含 130,424 个普通文件、28,151,425,416 bytes，均为 `.dcm`；全部文件的标准 Header 解析成功。模态为 MR 92,508、CT 21,637、PT 16,129、REG 87、RTSTRUCT 63。聚合得到 23 个不同 PatientID 键、171 个 Study、806 个 Series 和 171 个 Frame UID；这些键数不等于独立核实的真实患者身份。MR 有 523 个 Series，其中 202 个仅按描述/序列参数启发式列为 T2 候选。63 个 RTSTRUCT 全部完成受限深层解析；1,873 个 SOP 引用命中本地 MR，61 个未在本地对象索引中命中；63/63 的直接 Series 引用命中本地 MR。61 条缺失 SOP 引用不能单独证明下载失败。ROI 的 DICOM 类型均为空，名称启发式均为 `OTHER`；轮廓元数据结构检查通过，但没有验证像素空间对齐或临床语义。
+
+本机 manifest 的 SHA-256 与计划记录副本一致，包含 821 条互不重复的 Release 25.0 source-prefix 通配符命令。它不枚举每个对象；目前没有经过验证的 source-prefix→DICOM Series 映射，也没有版本一致的权威对象级期望清单。因此 `MANIFEST_STRUCTURE_VERIFIED`，但 `SERIES_COVERAGE_NOT_VERIFIED`、`OBJECT_LEVEL_COMPLETENESS_NOT_VERIFIED`。本地 806 个 Series、官方发布的 821 个 Series 和两边文件数的差异不构成映射证据；患者键数与官方 23、Study 数与官方 171 数字相同也不证明身份或 Collection 成员关系。完整口径和准入矩阵见 [`CMRL-05 审计报告`](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)、[`脱敏聚合 JSON`](../../evidence/r0/tcia_full_dicom_profile.json) 与 [`审计脚本`](../../scripts/r0/audit_tcia_full_dicom.py)。
 
 ## D04｜盆骨骨 MRI 预后分析 Zenodo 资源｜有条件支线
 

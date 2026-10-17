@@ -1,10 +1,10 @@
 # CURRENT RESEARCH STATE｜新项目独立初始状态
 
-更新时间：2026-10-17｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、公开网页/仓库审计、CMRL-01/02 的 FlexFair 发布包审计，以及 CMRL-04 对用户本地 TCIA 人工下载子集的脱敏 DICOM Header 审计；**无逐病例身份映射、临床行值或模型运行验收**。
+更新时间：2026-10-17｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、公开网页/仓库审计、CMRL-01/02 的 FlexFair 发布包审计，以及 CMRL-04/05 对用户本地 TCIA DICOM 的脱敏文件级审计；**无逐病例身份映射、临床行值或模型运行验收**。
 
 ## 唯一当前行动
 
-`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01、CMRL-02 已完成各自外部 Plan 范围内的阶段性来源/结构调查；CMRL-03 完成 Collection 来源与许可核验，但当时的受试者级查询被网络连接阻断；CMRL-04 后续完成用户本地人工下载子集的文件级 Header 与 RTSTRUCT 引用审计。上述任务均不代表 Main 已接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 本地子集确认 MR 与 RTSTRUCT 的直接引用链，但原发宫颈肿瘤 ROI 语义及本地包的 Collection 归属仍未确认；CCMD 访问条件仍未解决。见 [CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md) 和 [CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md)。
+`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00、CMRL-01、CMRL-02 已完成各自外部 Plan 范围内的阶段性来源/结构调查；CMRL-03 完成 Collection 来源与许可核验，但当时的受试者级查询被网络连接阻断；CMRL-04 后续完成用户本地人工下载子集的文件级 Header 与 RTSTRUCT 引用审计；CMRL-05 完成 IDC Release 25.0 全量候选目录的只读 Header、RTSTRUCT 引用和下载证据分层审计。上述任务均不代表 Main 已接受数据集或批准实验。FlexFair 文件级事实见 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md) 与 [CMRL-02 分组/身份复核](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)；TCIA 本地子集确认 MR 与 RTSTRUCT 的直接引用链，但原发宫颈肿瘤 ROI 语义及本地包的 Collection 归属仍未确认；CCMD 访问条件仍未解决。见 [CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md) 和 [CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md)。
 
 ## 用户已确认
 
@@ -24,6 +24,7 @@
 - FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI。CMRL-01 实测的 Figshare ZIP 有 6732 张 PNG，其中 3366 个影像侧文件和 3366 个 Mask 命名候选形成唯一文件名配对；CMRL-02 将全部 3366 对按作者 `_label.png` 规则与 CMRL-01 规范化规则独立交叉核对，结果一致。原作者代码预期的 `Private/train|test/<四组>` 路径在 ZIP 中没有对应文件；ZIP 的 train/test 目录各有 2420/946 个影像侧 PNG 及等量 Mask。对 3366 张影像解码像素比较发现 9 条重复额外记录，其中一组完全相同图像跨 train/test 各出现一次；文件名/目录仍未建立患者或临床中心键，不能证明患者级无泄漏。2D 分割仍仅 `CONDITIONAL`，3D 分割/体积级 Radiomics/Cross-site 当前 `NO-GO`，2D Radiomics 未评估。
 - CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
 - TCIA 官方页面发布 CC-Tumor-Heterogeneity（23 subjects，含 MR 与 RTSTRUCT；DOI `10.7937/ERZ5-QZ59`，影像许可 CC BY 4.0）。CMRL-00 已下载并汇总审计公开 XLSX：23 个不同的候选病例键、28 条非空行；行数与受试者数的关系仍需解释。CMRL-03 对官方来源、许可与 API 文档完成复核，但当时的 TCIA series 查询超时、IDC REST TLS/浏览器连接失败。CMRL-04/r2 复核用户报告从 IDC 手动取得的本地子集：5,959 个 DICOM 文件、4,334 MR、3 RTSTRUCT；129 条按 RTSTRUCT 内去重汇总的 SOP 引用记录全部命中本地，且指向 T2 文本候选 Series。r1 对 ROI 类型的读取位置错误；r2 正确关联 6 个 Observation 与 6 个 ROI，类型标签均存在但为空，名称启发式单独计数为 `OTHER` 6。6 个 ROIContour 条目关联唯一；108 个声明为 `CLOSED_PLANAR` 的轮廓点数和坐标元素数量/有限性均通过元数据检查，并有 ContourImageSequence 引用。未验证共面性、图像空间对齐、目标结构含义或可用 Mask；本地文件与 Collection 的归属没有 manifest 独立证明。没有验证临床结局定义或接纳训练标签。
+- **CMRL-05 全量候选目录审计**：本机 manifest 结构与上传副本摘要匹配，821 条 source-prefix 命令有效；本地目录有 130,424 个 DICOM 候选文件、130,424/130,424 标准 Header 解析成功，元数据快照前后未变化。聚合为 23 个 PatientID 键、171 个 Study、806 个 Series；63 个 RTSTRUCT 的直接引用链与 ROI/Contour 元数据结果见 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)。没有可信 source-prefix→Series 映射或对象级期望清单，所以 `SERIES_COVERAGE_NOT_VERIFIED`、`OBJECT_LEVEL_COMPLETENESS_NOT_VERIFIED`；61 条本地未命中的 SOP 引用本身不证明下载缺失。该本地候选目录的 Collection 成员关系仍未独立验证，且无 ROI 临床语义或空间叠加验收。
 - P03 有原作者公开研究代码但患者数据未公开。
 
 ## 最大阻塞/风险
@@ -33,10 +34,11 @@
 3. D03 本地 MR–RTSTRUCT 直接引用及轮廓元数据结构已核实，但 ROI 类型值为空，名称启发式和 `CLOSED_PLANAR` 点列表不足以认定原发宫颈肿瘤 Mask；图像空间关系与来源 Collection 归属仍需确认，不可据此启动分割或 Radiomics。
 4. 公开资源是否含可信疗效标签尚未得到证据，因此不可现在启动临床应答预测。
 5. OS/GPU/VRAM/磁盘与用户 Python 运行环境未知，不应冻结 CUDA 依赖。
+6. CMRL-05 证明了本机候选目录的全量 Header 可解析与直接引用元数据，但 manifest 通配符不列逐对象期望清单；Series 覆盖与对象级下载完整性仍未验证。
 
 ## 学习与执行证据
 
-已讲过 MRI 基础/机器学习/统计概念，但尚未通过当前项目完成 Python/MRI/模型的真实代码运行、数据审计、模型训练与评价；**所有实验验收均为 NOT STARTED**。没有已经建立的 Python 环境、仓库或数据下载可凭此文件宣称成功。
+已讲过 MRI 基础/机器学习/统计概念；CMRL-04/05 有限授权审计使用了任务专用的忽略目录 Python/pydicom 环境并完成 DICOM 元数据审计，但这不构成用户 Lab 环境验收。尚未完成 MRI 处理/模型代码运行、模型训练与评价；**所有科学实验验收均为 NOT STARTED**。没有已经建立并验收的项目 Python 环境或科研核心流程可凭此文件宣称成功。
 
 ## 与原课程关系
 
@@ -44,4 +46,4 @@
 
 ## 下一次 Main 必做
 
-读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md) 和 [CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地 MR–RTSTRUCT 引用和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
+读取 `01`–`07`、本文件及 [CMRL-01 报告](../../reports/r0/CMRL-01-FlexFair文件级准入审计.md)、[CMRL-02 报告](../../reports/r0/CMRL-02-FlexFair分组与身份线索复核.md)、[CMRL-03 报告](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)、[CMRL-04 报告](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 和 [CMRL-05 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)，将 FlexFair 的二维条件性准入、分组/身份缺口与跨 split 完全重复影像，以及 TCIA 本地引用链、下载完整性缺口和 ROI 语义限制纳入 R0 总体决策。再决定是否由用户亲自开展单序列 DICOM 读取/空间质控教学、如何确认 ROI 语义与本地文件来源，以及后续数据使用范围。不要据此推进 3D 分割、Radiomics、Cross-site 或模型实验；R0 仍需 Main 正式审查和决定。
