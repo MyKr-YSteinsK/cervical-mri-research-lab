@@ -44,7 +44,7 @@
 - **R0 优先操作**：先下载 13.9 KB 临床表并检查字段和编码，再看少量患者 DICOM 与 RTSTRUCT 的序列/ROI/时间点；不假设 23 人都有某一疗效、DFS 或 OS 的完整标签。RTSTRUCT 可能包含多种临床勾画结构，需定位真正肿瘤 ROI，不能将膀胱/器官/计划靶区无审查地当作肿瘤 Mask。
 - 用途：数据流验证、图像坐标、RTSTRUCT→Mask、纵向/多序列与探索性 Habitat；样本太少，严禁将复杂模型的高 AUC 解释成稳健疗效模型。
 - **CMRL-03（2026-10-16）更新**：官方 Collection 元数据、IDC 页面、CC BY 4.0 与数据引用要求已复核；当时本机 TCIA `getSeries` 超时，IDC REST TLS/浏览器连接失败，未取得文件级证据。具体记录见 [`CMRL-03 审计报告`](../../reports/r0/CMRL-03-TCIA最小MR与RTSTRUCT准入审计.md)。查询失败不证明 Collection 无可用 MR/RTSTRUCT。
-- **CMRL-04（2026-10-17）更新**：在用户指定的本地 `data/raw/tcia/ccth_manual/` 子集中完成全量有界 Header 检查：5,959 个 `.dcm`、1,387,467,936 bytes；4,334 MR、917 CT、702 PT、3 REG、3 RTSTRUCT。DICOM `PatientID` 有 1 个不同值，包含 6 个 Study、39 个 Series、27 个 MR Series；此键数不等于已独立核实的真实人数。9 个 MR Series 仅按描述文本规则列为 T2 候选。3 个 RTSTRUCT 共 129 个直接 SOP 引用全部解析到本地 T2 候选 MR，患者键、Study、Series、Frame 对照均一致。6 个 ROI 名称只能归入 `OTHER`，且未提供 `RTROIInterpretedType`；未确认原发宫颈肿瘤 ROI。来源仍为 `USER-REPORTED-SOURCE`，没有本地 Collection manifest 证明实际包归属。未解码像素；完整边界见 [`CMRL-04 本地 DICOM 审计报告`](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 与聚合 JSON。
+- **CMRL-04（2026-10-17）更新**：在用户指定的本地 `data/raw/tcia/ccth_manual/` 子集中完成全量有界 Header 检查：5,959 个 `.dcm`、1,387,467,936 bytes；4,334 MR、917 CT、702 PT、3 REG、3 RTSTRUCT。DICOM `PatientID` 有 1 个不同值，包含 6 个 Study、39 个 Series、27 个 MR Series；此键数不等于已独立核实的真实人数。9 个 MR Series 仅按描述文本规则列为 T2 候选。3 个 RTSTRUCT 共 129 条直接 SOP 引用记录全部解析到本地 T2 候选 MR，患者键、Study、Series、Frame 对照均一致。6 个 ROI 名称只能归入 `OTHER`，且未提供 `RTROIInterpretedType`；未确认原发宫颈肿瘤 ROI。来源仍为 `USER-REPORTED-SOURCE`，没有本地 Collection manifest 证明实际包归属。未解码像素；完整边界见 [`CMRL-04 本地 DICOM 审计报告`](../../reports/r0/CMRL-04-TCIA本地DICOM文件级准入审计.md) 与聚合 JSON。
 
 ## D04｜盆骨骨 MRI 预后分析 Zenodo 资源｜有条件支线
 
