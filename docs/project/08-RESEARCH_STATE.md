@@ -1,10 +1,10 @@
 # CURRENT RESEARCH STATE｜新项目独立初始状态
 
-更新时间：2026-10-18｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、CMRL-00 至 CMRL-10 的有界公开来源/元数据和既有本地脱敏审计；**无逐病例身份映射、患者临床行值或模型运行验收**。
+更新时间：2026-10-18｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF、CMRL-00 至 CMRL-11 的有界来源/元数据和既有本地脱敏审计；**无 Main 已接受的逐病例身份映射、患者临床行值或模型运行验收**。
 
 ## 唯一当前行动
 
-`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00 至 CMRL-09 的各项来源、文件与受限候选证据维持各自范围；CMRL-10 对 CCTH 派生 NPZ、MedOtter 第三方 CCTH 打包及替代候选完成公开来源/目录元数据预筛，没有新增权威宫颈原发肿瘤 Mask 证据。CCTH ROI 语义、实际像素/几何验收、患者键/时点及临床终点仍未解决；FlexFair 只有条件性 2D 图像级教学路径，CCMD/Cervical-MD 访问受限，MOGaMBO 公开描述的是 OAR 标注。上述任务均不代表 Main 已接受数据集或批准实验。详见 [CMRL-09 决策备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md) 与 [CMRL-10 预筛报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md)。
+`R0-DATA-ACCESS-AUDIT` 仍是唯一活动阶段，**R0 NOT COMPLETE**。CMRL-00 至 CMRL-10 的各项来源、文件与受限候选证据维持各自范围；CMRL-10 未发现新增权威宫颈原发肿瘤 Mask 证据。CMRL-11 完成 CCTH 本地文件/目录/Header 索引：130,424 个文件、171 个 Study UID、806 个 Series UID，IDC v25.0.0 数量对照仍少 15 Series/1,132 instances；此索引不判定对象完整性、像素/几何或 ROI 语义。CCTH ROI 语义、患者键/时点及临床终点仍未解决；FlexFair 只有条件性 2D 图像级教学路径，CCMD/Cervical-MD 访问受限，MOGaMBO 公开描述的是 OAR 标注。上述任务均不代表 Main 已接受数据集或批准实验。详见 [CMRL-09 决策备忘录](../../reports/r0/CMRL-09-R0数据集任务准入决策备忘录.md)、[CMRL-10 预筛报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md) 与 [CMRL-11 目录索引](../datasets/CCTH_DATASET_INDEX.md)。
 
 ## 用户已确认
 
@@ -87,3 +87,12 @@
 - **替代候选：** MOGaMBO Zenodo 记录开放 CC BY 4.0，但描述的是宫颈癌 3D MRI 与 OAR 勾画，非已核实肿瘤 Mask；Cervical-MD 作者报告为申请访问且数据量口径有 3,137/3,177 冲突；2022 机构论文未发现公开数据资产和许可。HNTS-MRG 因头颈原发肿瘤排除。
 - **准入影响：** 无新增权威 GTV/ROI 证据；TCIA 单例空间 QC 仍 CONDITIONAL；监督肿瘤分割、三维肿瘤 Radiomics/Habitat、患者/中心独立评价、应答/生存任务均 NO-GO；FlexFair 保持条件性 2D 图像级教学。Main/用户保留后续路线决定权。
 - **交付：** [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md)、[任务矩阵](../../reports/r0/CMRL-10-R0候选数据与任务对照矩阵.md)、[脱敏来源登记](../../evidence/r0/cervical_mri_derived_provenance_register.json) 与 [TASK_RESULT](../../reports/r0/CMRL-10-TASK_RESULT.md)。
+
+## CMRL-11｜CCTH 本地完整目录索引（2026-10-18）
+
+- **任务范围：** 指定本地树只读遍历与标准 DICOM Header 选定标签读取；未解码 PixelData、未读取临床表、未计算内容哈希、未下载数据或安装依赖。原始数据没有作为输出目标。
+- **本地事实：** 130,424 个 `.dcm` 文件、28,151,425,416 bytes；目录深度为 0–3 层（含根计数 1,016），23 个预期病例别名、171 个 Study 目录、821 个 Series 目录，其中 15 个空 Series 目录。Header 成功 130,424/130,424；模态 MR 92,508、CT 21,637、PT 16,129、REG 87、RTSTRUCT 63；不同 Study/Series/SOP UID 为 171/806/130,424，重复 SOP UID 为 0。
+- **路径事实：** Study 目录名匹配 StudyInstanceUID；活跃 Series 目录名匹配 `Modality_SeriesInstanceUID`；文件 basename 为 UUID 形态，与 SOPInstanceUID 不相等。精确相对路径与 UID 映射在 Git 忽略的本地 Manifest。公开报告/JSON 不含原始 UID、病例完整路径、PatientID 或临床行值。
+- **对照：** 与 CMRL-05 的本地文件数、容量、Study 与 Series 数一致（当前只扫描指定子目录，目录总数比当时父目录口径少根目录一项）。IDC v25.0.0 的官方索引参考为 821 Series/131,556 instances；CMRL-06 已按 Series 映射发现本地少 15 Series/1,132 instances。15 个空目录未在本任务中按 UID 与官方缺口逐项对应；目录/UID 数量不代表对象字节完整、图像像素可解码或医学空间质控通过。
+- **科研状态：** 不改变 `ROI_SEMANTIC_UNRESOLVED`、临床连接/时点未核实及 **R0 NOT COMPLETE**。体数据分类只基于 Header 候选，不是 MRI 几何验收或 ROI 可靠性证据。
+- **交付：** [目录索引与路径合同](../datasets/CCTH_DATASET_INDEX.md)、[脱敏汇总 JSON](../../evidence/ccth_inventory_summary.json)、[TASK_RESULT](../../reports/r0/CMRL-11-TASK_RESULT.md)。

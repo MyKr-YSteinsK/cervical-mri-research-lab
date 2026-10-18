@@ -1,4 +1,4 @@
-# 02｜候选数据与可获得性证据登记（截至 2026-10-17）
+# 02｜候选数据与可获得性证据登记（截至 2026-10-18）
 
 ## 状态约定
 
@@ -112,3 +112,11 @@
 - FlexFair Figshare 28639598 v1 返回 CC BY 4.0 和 348,731,016 bytes；作者 README 指向 28636133，该 API 当前返回 404，保留来源冲突。CMRL-01/02 文件审计仍只支持条件性 2D 图像级教学。
 - MOGaMBO Zenodo 记录为开放 CC BY 4.0 的 3D T2/OAR 资源；肿瘤 GTV 证据缺失，约 754 MB 数据包未下载。Cervical-MD 仅论文/作者报告且需申请访问；2022 机构研究未找到公开资产许可。均未改变 R0。
 - 候选逐任务状态见 [CMRL-10 对照矩阵](../../reports/r0/CMRL-10-R0候选数据与任务对照矩阵.md)，完整溯源见 [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md) 和[脱敏登记](../../evidence/r0/cervical_mri_derived_provenance_register.json)。新的权威肿瘤 Mask 证据为无；ROI 语义未解，R0 NOT COMPLETE。
+
+## CMRL-11（2026-10-18）｜CCTH 本地目录与路径索引
+
+- 用户指定的 `cc_tumor_heterogeneity` 本地子目录只读扫描得到 130,424 个 `.dcm` 普通文件、28,151,425,416 bytes、1,016 个目录（含根）、23 个病例别名、171 个 Study 目录、821 个 Series 目录；全部 130,424 个标准 DICOM Header 解析成功。
+- Header 识别 MR 92,508、CT 21,637、PT 16,129、REG 87、RTSTRUCT 63；唯一 Study/Series/SOP 数分别为 171/806/130,424。没有零字节文件、Header 错误、重复 basename 或重复 SOP UID；15 个 Series 目录为空。
+- 实际路径为病例别名 / Study UID / `Modality_SeriesUID` / UUID 形态文件名。Study 目录与 Study UID 相符；Series 目录与模态前缀及 Series UID 相符；文件名不是 SOP UID。准确 UID→路径映射只在 Git 忽略的 `.local/dataset-index/`。
+- 与 CMRL-05 本机盘点的文件数、总字节、Study/Series 数一致；沿用 CMRL-06 的 IDC v25.0.0 参考仍为 821 Series/131,556 instances，按既有逐 Series 对账本地少 15 Series/1,132 instances。空目录计数与 Series 缺口同为 15，但本任务没有把二者按 UID 对应；对象完整性、版本差异成因、像素解码、空间质量及 ROI 语义均不由目录索引判定。
+- 详见 [CMRL-11 目录索引与路径合同](../datasets/CCTH_DATASET_INDEX.md)、[脱敏 JSON](../../evidence/ccth_inventory_summary.json) 与 [TASK_RESULT](../../reports/r0/CMRL-11-TASK_RESULT.md)。R0 仍 NOT COMPLETE。
