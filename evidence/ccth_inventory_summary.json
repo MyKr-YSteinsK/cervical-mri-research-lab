@@ -1,0 +1,690 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "CMRL-11",
+  "audit_version": "1.0.0",
+  "manifest_schema_version": "1.0.0",
+  "generated_at_local": "2026-10-18T13:16:30+08:00",
+  "source_class": "USER-REPORTED-SOURCE; local directory and DICOM headers inspected",
+  "dataset_release_context": "IDC Release 25.0.0 reference carried forward from CMRL-06; object completeness is not implied",
+  "scan_scope": {
+    "dataset_relative_path": "data/raw/tcia/ccth_idc_v25_full/cc_tumor_heterogeneity",
+    "root_directory_included_in_directory_counts": true,
+    "filesystem_inventory_complete": true,
+    "dicom_header_parse_complete": true,
+    "pixel_data_decoded": false,
+    "clinical_values_read": false,
+    "file_content_hashes_computed": false,
+    "source_files_modified_by_indexer": false,
+    "network_or_install_actions": false
+  },
+  "filesystem": {
+    "regular_file_count": 130424,
+    "total_bytes": 28151425416,
+    "directory_count_including_root": 1016,
+    "directory_count_excluding_root": 1015,
+    "directory_depth_counts_including_root": {
+      "0": 1,
+      "1": 23,
+      "2": 171,
+      "3": 821
+    },
+    "maximum_directory_depth_below_root": 3,
+    "case_directory_count": 23,
+    "expected_case_alias_directory_count": 23,
+    "missing_expected_case_aliases": [],
+    "unexpected_top_level_directory_count": 0,
+    "unmapped_case_file_count": 0,
+    "unmapped_case_file_bytes": 0,
+    "study_directory_count": 171,
+    "series_directory_count": 821,
+    "empty_directory_count": 15,
+    "empty_series_directory_count": 15,
+    "extension_counts": {
+      ".dcm": 130424
+    },
+    "zero_byte_file_count": 0,
+    "special_nonregular_entry_count": 0,
+    "reparse_entry_count": 0,
+    "metadata_error_count": 0,
+    "directory_read_error_count": 0,
+    "unreadable_access_flag_count": 0,
+    "duplicate_basename_group_count": 0,
+    "duplicate_basename_extra_file_count": 0
+  },
+  "dicom_headers": {
+    "header_parsed_file_count": 130424,
+    "header_error_file_count": 0,
+    "header_error_classes": {},
+    "unique_study_uid_count": 171,
+    "unique_series_uid_count": 806,
+    "case_study_series_group_count": 806,
+    "unique_sop_instance_uid_count": 130424,
+    "unique_frame_of_reference_uid_count": 171,
+    "files_with_all_study_series_sop_uids": 130424,
+    "files_missing_study_uid": 0,
+    "files_missing_series_uid": 0,
+    "files_missing_sop_instance_uid": 0,
+    "files_missing_modality": 0,
+    "duplicate_sop_instance_uid_group_count": 0,
+    "duplicate_sop_instance_uid_extra_file_count": 0,
+    "duplicate_sop_identity_conflict_group_count": 0,
+    "duplicate_sop_file_size_conflict_group_count": 0,
+    "path_to_header_mapping_checks": {
+      "filename_has_uuid_stem_shape": 130424,
+      "filename_matches_sop_instance_uid": 0,
+      "files_at_case_study_series_instance_depth": 130424,
+      "series_directory_matches_modality_series_uid": 130424,
+      "series_directory_matches_series_uid": 0,
+      "study_directory_matches_study_uid": 130424
+    },
+    "image_metadata_field_presence_by_modality": {
+      "CT": {
+        "columns_missing_count": 0,
+        "columns_present_count": 21637,
+        "image_instance_count": 21637,
+        "orientation_missing_count": 0,
+        "orientation_present_count": 21637,
+        "pixel_spacing_missing_count": 0,
+        "pixel_spacing_present_count": 21637,
+        "position_missing_count": 0,
+        "position_present_count": 21637,
+        "rows_missing_count": 0,
+        "rows_present_count": 21637,
+        "slice_thickness_missing_count": 0,
+        "slice_thickness_present_count": 21637,
+        "spacing_between_slices_missing_count": 20438,
+        "spacing_between_slices_present_count": 1199
+      },
+      "MR": {
+        "columns_missing_count": 0,
+        "columns_present_count": 92508,
+        "image_instance_count": 92508,
+        "orientation_missing_count": 0,
+        "orientation_present_count": 92508,
+        "pixel_spacing_missing_count": 0,
+        "pixel_spacing_present_count": 92508,
+        "position_missing_count": 0,
+        "position_present_count": 92508,
+        "rows_missing_count": 0,
+        "rows_present_count": 92508,
+        "slice_thickness_missing_count": 0,
+        "slice_thickness_present_count": 92508,
+        "spacing_between_slices_missing_count": 29572,
+        "spacing_between_slices_present_count": 62936
+      },
+      "PT": {
+        "columns_missing_count": 0,
+        "columns_present_count": 16129,
+        "image_instance_count": 16129,
+        "orientation_missing_count": 0,
+        "orientation_present_count": 16129,
+        "pixel_spacing_missing_count": 0,
+        "pixel_spacing_present_count": 16129,
+        "position_missing_count": 0,
+        "position_present_count": 16129,
+        "rows_missing_count": 0,
+        "rows_present_count": 16129,
+        "slice_thickness_missing_count": 0,
+        "slice_thickness_present_count": 16129,
+        "spacing_between_slices_missing_count": 16129,
+        "spacing_between_slices_present_count": 0
+      }
+    },
+    "modality_counts": {
+      "CT": {
+        "header_parsed_file_count": 21637,
+        "unique_sop_instance_count": 21637,
+        "series_group_count": 65,
+        "total_bytes": 11423330602
+      },
+      "MR": {
+        "header_parsed_file_count": 92508,
+        "unique_sop_instance_count": 92508,
+        "series_group_count": 523,
+        "total_bytes": 15727537304
+      },
+      "PT": {
+        "header_parsed_file_count": 16129,
+        "unique_sop_instance_count": 16129,
+        "series_group_count": 68,
+        "total_bytes": 982984624
+      },
+      "REG": {
+        "header_parsed_file_count": 87,
+        "unique_sop_instance_count": 87,
+        "series_group_count": 87,
+        "total_bytes": 7256774
+      },
+      "RTSTRUCT": {
+        "header_parsed_file_count": 63,
+        "unique_sop_instance_count": 63,
+        "series_group_count": 63,
+        "total_bytes": 10316112
+      },
+      "UNKNOWN": {
+        "header_parsed_file_count": 0,
+        "unique_sop_instance_count": 0,
+        "series_group_count": 0,
+        "total_bytes": 0
+      }
+    },
+    "header_only_volume_candidate_counts": {
+      "MR": {
+        "HEADER_GEOMETRY_INCOMPLETE_OR_INCONSISTENT": 49,
+        "MULTISLICE_HEADER_CANDIDATE": 474
+      },
+      "CT": {
+        "MULTISLICE_HEADER_CANDIDATE": 65
+      },
+      "PT": {
+        "MULTISLICE_HEADER_CANDIDATE": 68
+      }
+    }
+  },
+  "case_summaries": [
+    {
+      "case_alias": "A01",
+      "directory_present": true,
+      "files": 6390,
+      "bytes": 1196081708,
+      "study_directories": 30,
+      "series_directories": 66,
+      "empty_series_directories": 0,
+      "header_studies": 30,
+      "header_series_groups": 66,
+      "header_files_with_sop_instance_uid": 6390,
+      "modality_file_counts": {
+        "CT": 890,
+        "MR": 4770,
+        "PT": 697,
+        "REG": 30,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A02",
+      "directory_present": true,
+      "files": 6224,
+      "bytes": 1187383904,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 33,
+      "header_files_with_sop_instance_uid": 6224,
+      "modality_file_counts": {
+        "CT": 907,
+        "MR": 4655,
+        "PT": 656,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A03",
+      "directory_present": true,
+      "files": 6222,
+      "bytes": 1192548734,
+      "study_directories": 7,
+      "series_directories": 35,
+      "empty_series_directories": 0,
+      "header_studies": 7,
+      "header_series_groups": 35,
+      "header_files_with_sop_instance_uid": 6222,
+      "modality_file_counts": {
+        "CT": 919,
+        "MR": 4650,
+        "PT": 645,
+        "REG": 5,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A04",
+      "directory_present": true,
+      "files": 6129,
+      "bytes": 1168033376,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 33,
+      "header_files_with_sop_instance_uid": 6129,
+      "modality_file_counts": {
+        "CT": 896,
+        "MR": 4549,
+        "PT": 678,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A05",
+      "directory_present": true,
+      "files": 6097,
+      "bytes": 1166804118,
+      "study_directories": 7,
+      "series_directories": 33,
+      "empty_series_directories": 0,
+      "header_studies": 7,
+      "header_series_groups": 33,
+      "header_files_with_sop_instance_uid": 6097,
+      "modality_file_counts": {
+        "CT": 909,
+        "MR": 4480,
+        "PT": 702,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A06",
+      "directory_present": true,
+      "files": 3899,
+      "bytes": 762237258,
+      "study_directories": 5,
+      "series_directories": 22,
+      "empty_series_directories": 0,
+      "header_studies": 5,
+      "header_series_groups": 22,
+      "header_files_with_sop_instance_uid": 3899,
+      "modality_file_counts": {
+        "CT": 578,
+        "MR": 3036,
+        "PT": 281,
+        "REG": 2,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "A07",
+      "directory_present": true,
+      "files": 6095,
+      "bytes": 1155845980,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 2,
+      "header_studies": 6,
+      "header_series_groups": 31,
+      "header_files_with_sop_instance_uid": 6095,
+      "modality_file_counts": {
+        "CT": 909,
+        "MR": 4490,
+        "PT": 692,
+        "REG": 2,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "A08",
+      "directory_present": true,
+      "files": 5992,
+      "bytes": 1134436582,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 3,
+      "header_studies": 6,
+      "header_series_groups": 30,
+      "header_files_with_sop_instance_uid": 5992,
+      "modality_file_counts": {
+        "CT": 908,
+        "MR": 4398,
+        "PT": 683,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "A09",
+      "directory_present": true,
+      "files": 5985,
+      "bytes": 1158199970,
+      "study_directories": 7,
+      "series_directories": 33,
+      "empty_series_directories": 2,
+      "header_studies": 7,
+      "header_series_groups": 31,
+      "header_files_with_sop_instance_uid": 5985,
+      "modality_file_counts": {
+        "CT": 915,
+        "MR": 4414,
+        "PT": 652,
+        "REG": 2,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "A10",
+      "directory_present": true,
+      "files": 6069,
+      "bytes": 1136968776,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 4,
+      "header_studies": 6,
+      "header_series_groups": 29,
+      "header_files_with_sop_instance_uid": 6069,
+      "modality_file_counts": {
+        "CT": 872,
+        "MR": 4522,
+        "PT": 673,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "A11",
+      "directory_present": true,
+      "files": 5995,
+      "bytes": 1397124110,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 3,
+      "header_studies": 6,
+      "header_series_groups": 30,
+      "header_files_with_sop_instance_uid": 5995,
+      "modality_file_counts": {
+        "CT": 770,
+        "MR": 4709,
+        "PT": 513,
+        "REG": 1,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "A12",
+      "directory_present": true,
+      "files": 6620,
+      "bytes": 1541904584,
+      "study_directories": 6,
+      "series_directories": 33,
+      "empty_series_directories": 1,
+      "header_studies": 6,
+      "header_series_groups": 32,
+      "header_files_with_sop_instance_uid": 6620,
+      "modality_file_counts": {
+        "CT": 949,
+        "MR": 4937,
+        "PT": 729,
+        "REG": 3,
+        "RTSTRUCT": 2
+      }
+    },
+    {
+      "case_alias": "B01",
+      "directory_present": true,
+      "files": 5268,
+      "bytes": 1415332244,
+      "study_directories": 8,
+      "series_directories": 37,
+      "empty_series_directories": 0,
+      "header_studies": 8,
+      "header_series_groups": 37,
+      "header_files_with_sop_instance_uid": 5268,
+      "modality_file_counts": {
+        "CT": 1453,
+        "MR": 2977,
+        "PT": 832,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B02",
+      "directory_present": true,
+      "files": 5959,
+      "bytes": 1387467936,
+      "study_directories": 6,
+      "series_directories": 39,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 39,
+      "header_files_with_sop_instance_uid": 5959,
+      "modality_file_counts": {
+        "CT": 917,
+        "MR": 4334,
+        "PT": 702,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B03",
+      "directory_present": true,
+      "files": 5751,
+      "bytes": 1402385706,
+      "study_directories": 6,
+      "series_directories": 38,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 38,
+      "header_files_with_sop_instance_uid": 5751,
+      "modality_file_counts": {
+        "CT": 1045,
+        "MR": 3914,
+        "PT": 786,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B04",
+      "directory_present": true,
+      "files": 5525,
+      "bytes": 1317252648,
+      "study_directories": 7,
+      "series_directories": 39,
+      "empty_series_directories": 0,
+      "header_studies": 7,
+      "header_series_groups": 39,
+      "header_files_with_sop_instance_uid": 5525,
+      "modality_file_counts": {
+        "CT": 1011,
+        "MR": 3763,
+        "PT": 745,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B05",
+      "directory_present": true,
+      "files": 4929,
+      "bytes": 1245307608,
+      "study_directories": 7,
+      "series_directories": 37,
+      "empty_series_directories": 0,
+      "header_studies": 7,
+      "header_series_groups": 37,
+      "header_files_with_sop_instance_uid": 4929,
+      "modality_file_counts": {
+        "CT": 1174,
+        "MR": 2989,
+        "PT": 760,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B06",
+      "directory_present": true,
+      "files": 5661,
+      "bytes": 1405201472,
+      "study_directories": 6,
+      "series_directories": 39,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 39,
+      "header_files_with_sop_instance_uid": 5661,
+      "modality_file_counts": {
+        "CT": 1209,
+        "MR": 3636,
+        "PT": 810,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B07",
+      "directory_present": true,
+      "files": 5498,
+      "bytes": 1306406612,
+      "study_directories": 8,
+      "series_directories": 38,
+      "empty_series_directories": 0,
+      "header_studies": 8,
+      "header_series_groups": 38,
+      "header_files_with_sop_instance_uid": 5498,
+      "modality_file_counts": {
+        "CT": 1016,
+        "MR": 3728,
+        "PT": 748,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B08",
+      "directory_present": true,
+      "files": 5382,
+      "bytes": 1287674410,
+      "study_directories": 6,
+      "series_directories": 39,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 39,
+      "header_files_with_sop_instance_uid": 5382,
+      "modality_file_counts": {
+        "CT": 1018,
+        "MR": 3594,
+        "PT": 764,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B09",
+      "directory_present": true,
+      "files": 5537,
+      "bytes": 1366799016,
+      "study_directories": 6,
+      "series_directories": 39,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 39,
+      "header_files_with_sop_instance_uid": 5537,
+      "modality_file_counts": {
+        "CT": 1217,
+        "MR": 3496,
+        "PT": 818,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B10",
+      "directory_present": true,
+      "files": 5383,
+      "bytes": 1358191582,
+      "study_directories": 6,
+      "series_directories": 37,
+      "empty_series_directories": 0,
+      "header_studies": 6,
+      "header_series_groups": 37,
+      "header_files_with_sop_instance_uid": 5383,
+      "modality_file_counts": {
+        "CT": 1155,
+        "MR": 3462,
+        "PT": 760,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    },
+    {
+      "case_alias": "B11",
+      "directory_present": true,
+      "files": 3814,
+      "bytes": 461837082,
+      "study_directories": 7,
+      "series_directories": 19,
+      "empty_series_directories": 0,
+      "header_studies": 7,
+      "header_series_groups": 19,
+      "header_files_with_sop_instance_uid": 3814,
+      "modality_file_counts": {
+        "MR": 3005,
+        "PT": 803,
+        "REG": 3,
+        "RTSTRUCT": 3
+      }
+    }
+  ],
+  "previous_audit_comparison": {
+    "CMRL-05_local_root": {
+      "file_count": 130424,
+      "total_bytes": 28151425416,
+      "header_parse_success_count": 130424,
+      "study_uid_count": 171,
+      "series_uid_count": 806,
+      "directory_count_including_parent_root": 1017,
+      "reference_report": "reports/r0/CMRL-05-TCIA全量DICOM准入审计.md"
+    },
+    "current_minus_CMRL_05": {
+      "file_count": 0,
+      "total_bytes": 0,
+      "study_uid_count": 0,
+      "series_uid_count": 0,
+      "directory_scope_note": "Current root is the named child directory; CMRL-05 counted its enclosing ccth_idc_v25_full root, adding one directory level entry."
+    },
+    "IDC_v25_0_0_official_reference": {
+      "series_count": 821,
+      "instance_count": 131556,
+      "modalities": {
+        "MR": {
+          "series_count": 523,
+          "instance_count": 93308
+        },
+        "CT": {
+          "series_count": 65,
+          "instance_count": 21740
+        },
+        "PT": {
+          "series_count": 68,
+          "instance_count": 16343
+        },
+        "REG": {
+          "series_count": 97,
+          "instance_count": 97
+        },
+        "RTSTRUCT": {
+          "series_count": 68,
+          "instance_count": 68
+        }
+      },
+      "reference_report": "reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md"
+    },
+    "current_minus_official_expected": {
+      "series_count": -15,
+      "unique_sop_instance_count": -1132
+    },
+    "interpretation": "Count differences identify inventory gaps at this scope. Empty directory names are not linked to official missing Series without an independently verified UID-level comparison; equal counts do not prove object identity or content integrity."
+  },
+  "private_index_files": [
+    ".local/dataset-index/files.csv",
+    ".local/dataset-index/directories.csv",
+    ".local/dataset-index/studies.csv",
+    ".local/dataset-index/series.csv",
+    ".local/dataset-index/cases.csv"
+  ],
+  "index_verification": {
+    "private_files_manifest_rows": 130424,
+    "private_files_manifest_bytes_sum": 28151425416,
+    "private_files_manifest_unique_relative_paths": 130424,
+    "private_directories_manifest_rows": 1016,
+    "private_directory_root_recursive_files": 130424,
+    "private_directory_root_recursive_bytes": 28151425416,
+    "file_count_matches_scan": true,
+    "bytes_sum_matches_scan": true,
+    "directory_count_matches_scan": true,
+    "directory_root_recursive_totals_match_scan": true,
+    "directory_direct_totals_match_file_manifest": true
+  }
+}

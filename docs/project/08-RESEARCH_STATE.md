@@ -1,46 +1,36 @@
-# CURRENT RESEARCH STATE｜新项目独立初始状态
+# CURRENT RESEARCH STATE
 
-更新时间：2026-10-16｜状态来源：原课程对话用户明确的迁移意图、六篇 PDF 和公开网页/仓库审计；**无用户本地运行日志或实际患者数据审计结果**。
+更新时间：2026-10-18。仓库历史已整理到 main；此项工程整合不构成科研证据接受或阶段推进。
 
-## 唯一当前行动
+## 当前阶段
 
-`R0-DATA-ACCESS-AUDIT`。第一步验证 FlexFair Figshare 678 例发布包的真实文件清单、访问条件、患者/Mask/中心映射；并行启动 CCMD 数据授权申请可行性，TCIA 23 例优先检查临床表和小样本 RTSTRUCT。这个 R0 尚未执行文件级审计。
+唯一活动阶段仍为 R0-DATA-ACCESS-AUDIT，**R0 NOT COMPLETE**。用户亲自学习、编写、运行和审查 MRI 处理、分割、Radiomics、模型训练与解释性核心。没有任何本次仓库治理操作修改科学目标或实验验收状态。
 
-## 用户已确认
+## CCTH 本地数据
 
-以**宫颈癌 MRI** 为研究主线；与六篇论文的影像处理/影像组学/深度表征保持联系；允许先完成分割与前期影像研究，不强制当下患者级疗效二分类；未来追求真实、有根据的模型改进或新方法。采用 GPT 教学＋用户亲自编写和运行代码，常规不使用 Codex。未来工作独立迁移新 ChatGPT Project。
+- 数据根目录：data/raw/tcia/ccth_idc_v25_full/cc_tumor_heterogeneity。本地完整文件清单与 UID 映射在 Git 忽略的 .local/dataset-index/；用 pathlib.Path 解析，Series 路径由 Manifest 查询。
+- CMRL-11 索引事实：130,424 个 DICOM、171 个 Study、806 个 Series；MR 92,508、CT 21,637、PT 16,129、REG 87、RTSTRUCT 63。130,424 个 Header 均解析成功。此结果不表示像素、几何或 ROI 质控通过。
+- CMRL-06 固定 IDC v25.0.0 对照：821 个 Series / 131,556 个实例；本地 15 个 Series 缺失，73 个 Series 合计短缺 1,132 个实例。逐对象位完整性仍未验证。
+- CMRL-13 单对象 RTSTRUCT 下载试验通过来源、实例数量和 DICOM Header 标识核对；未验证位级完整性。文件保留在 .local/ccth-recovery-pilot/，没有合并进正式数据目录。
 
-**CMRL-00 专项权限**：当前 Plan 授权 Codex 自动核验公开数据源、公共元数据和非敏感文件清单，并产出证据报告；MRI 数据处理、分割、Radiomics、训练及解释性核心代码仍由用户亲自学习、编写和运行。此分工只适用于 CMRL-00。
+## 标注与科研边界
 
-## 不要代替用户确认的建议
+- CMRL-12 单例结果：PIXEL_QC=PASS；GEOMETRY_QC=FAIL、RTSTRUCT_ALIGNMENT_QC=FAIL、MASK_QC=FAIL；ROI_SEMANTIC_QC=PENDING。
+- CMRL-12 的私有 MRI、Mask、QC JSON、图片和部分导入产物目前未找到。提交到 GitHub 的只有脱敏代码和报告；不把私有运行输出称为已备份、可恢复或重建。
+- 尚无通过完整几何和语义验收的宫颈原发肿瘤三维 Mask。Clinical-to-DICOM 连接、真实治疗时点、结局定义仍未确认。因此监督式肿瘤分割、体积 Radiomics、纵向治疗分析和临床预测仍为 **NO-GO**。
+- 用户已取消 FlexFair-F01 独立教学线；本地 FlexFair 原始数据仍保留。
 
-- 当前首选**审计** FlexFair 678 例四中心数据、CCMD 151 例和 TCIA 23 例，并非已选定唯一实验数据集。
-- R3 2D/3D 分割、R4 稳健 Radiomics、R5 Habitat/深度表征、R6 跨中心、R7 应答等是分层候选，不是全部承诺。
-- 项目名称、数据下载、计算环境、代码托管位置、研究成果公开范围还未最终确定。
+## 私有资产位置
 
-## 已核实的正面证据
+- 原始医学数据与临床工作簿：本地 data/，Git 忽略并保持原位。
+- CMRL-11 完整 Manifest：.local/dataset-index/。
+- CMRL-06 固定 IDC v25.0.0 索引/缺口记录：.local/private-evidence/cmrl-06-idc-v25/。
+- CMRL-08 私有候选映射：.local/private-evidence/cmrl-08-crosswalk/。
+- CMRL-13 下载试验对象：.local/ccth-recovery-pilot/。
+- 本地恢复清单：.local/asset-inventory.json。它含本机路径和资产元数据，必须继续留在 Git 忽略目录。
 
-- 六篇用户提供的原 PDF 在此次迁移制品中存在并进行基本 PDF 打开/页数/校验。
-- FlexFair (Nature Communications 2025) 作者报告 678 患者、四中心 T2WI/ROI，并在 Figshare 发布相关文件；**包内容未验收**。
-- CCMD (2025) 论文和仓库描述 151 人 T2WI/ROI，下载申请受限；**尚未获密码**。
-- TCIA 公开 CC-Tumor-Heterogeneity 23 人 MRI/RTSTRUCT 和小型 XLSX 临床数据；**尚未实际下载**。
-- P03 有原作者公开研究代码但患者数据未公开。
+## 下一步建议
 
-## 最大阻塞/风险
+先取得可追溯的 ROI 定义并确定一个 MR–RTSTRUCT 候选，再由用户亲自完成单例几何和 Mask 质控。此条件满足前，不进入三维肿瘤分割、体积 Radiomics 或临床结局建模。
 
-1. D01 Figshare 实际文件内容/版本 DOI 冲突，患者/切片身份不明。
-2. D02 CCMD 授权与格式冲突，仓库公开代码缺失。
-3. 公开资源是否含可信疗效标签尚未得到证据，因此不可现在启动临床应答预测。
-4. OS/GPU/VRAM/磁盘与用户 Python 运行环境未知，不应冻结 CUDA 依赖。
-
-## 学习与执行证据
-
-已讲过 MRI 基础/机器学习/统计概念，但尚未通过当前项目完成 Python/MRI/模型的真实代码运行、数据审计、模型训练与评价；**所有实验验收均为 NOT STARTED**。没有已经建立的 Python 环境、仓库或数据下载可凭此文件宣称成功。
-
-## 与原课程关系
-
-原课程第一轮六篇技术导读与横向阶段回顾已覆盖，第二轮英文原文精读暂停。原课程的有效 Checkpoint 独立保留；新项目不修改、迁移或覆盖它。旧课程能力掌握未正式验收。
-
-## 下一次 Main 必做
-
-读取 `01`–`07` 和本文件；先核查最新源证据、给出 R0 最小核验动作；避免长表格调查；只在必要时询问硬件/机构身份。产生可靠 R0 文件证据后才决定实验任务与环境。若不能直接写入 Project Files，提供完整更新稿并明确用户手动替换。
+完整任务提交与原始审计文件通过[历史归档索引](HISTORY_ARCHIVE.md)定位；当前最短入口是仓库 [README](../../README.md) 和 [CCTH 路径合同](../datasets/CCTH_DATASET_INDEX.md)。
