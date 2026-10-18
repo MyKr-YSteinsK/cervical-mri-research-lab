@@ -5,6 +5,9 @@
 /.cache/
 /plans/
 
+# Local experiment outputs
+/experiments/**/outputs/
+
 # Credentials and local configuration
 .env*
 !.env.example

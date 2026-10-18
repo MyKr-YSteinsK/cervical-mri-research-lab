@@ -66,4 +66,4 @@
 - [IDC 官方数据下载入口](https://learn.canceridc.dev/data/downloading-data)
 - [IDC 官方 s5cmd 下载与 AWS/GCS 端点说明](https://learn.canceridc.dev/data/downloading-data/downloading-data-with-s5cmd)
 - [IDC `idc-index-data` Release 25.0.0](https://github.com/ImagingDataCommons/idc-index-data/releases/tag/25.0.0)
-- 固定版本索引与完整性核验细节见 [CMRL-06 报告](CMRL-06-IDC-v25%E9%80%90Series%E5%8F%8A%E5%AF%B9%E8%B1%A1%E5%AE%8C%E6%95%B4%E6%80%A7%E8%A1%A5%E8%AF%81.md) 和 [CMRL-06 TASK_RESULT](CMRL-06-TASK_RESULT.md)。
+- 固定版本索引与完整性核验的完整 CMRL-06 报告及 TASK_RESULT 保存在 [历史归档 Tag](../../docs/project/HISTORY_ARCHIVE.md#按任务查找)。

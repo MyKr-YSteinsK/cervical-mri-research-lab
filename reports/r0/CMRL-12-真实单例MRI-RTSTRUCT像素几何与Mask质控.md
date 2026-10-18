@@ -44,7 +44,7 @@
 
 ## ROI 医学语义证据
 
-TCIA 当前 Collection 页面描述发布集包含基于 T2 MRI 的肿瘤体积轮廓；Bowen 等论文描述参考矢状 T2 上分别勾画 tumor 与 uterus，且 uterus 用于辅助对齐。这些来源没有给出本地发布 RTSTRUCT 中每个 ROI 编号/名称到上述结构的权威映射。[TCIA Collection](https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/)、[Bowen et al. 2018 全文](https://pmc.ncbi.nlm.nih.gov/articles/PMC5899626/)。既有 [CMRL-07](CMRL-07-TCIA原始研究ROI时点与临床字段核验.md) 与 [CMRL-09](CMRL-09-TCIA权威ROI与临床定义追索报告.md) 审计也未找到该 crosswalk，因此维持 `SEMANTIC_PENDING`。
+TCIA 当前 Collection 页面描述发布集包含基于 T2 MRI 的肿瘤体积轮廓；Bowen 等论文描述参考矢状 T2 上分别勾画 tumor 与 uterus，且 uterus 用于辅助对齐。这些来源没有给出本地发布 RTSTRUCT 中每个 ROI 编号/名称到上述结构的权威映射。[TCIA Collection](https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/)、[Bowen et al. 2018 全文](https://pmc.ncbi.nlm.nih.gov/articles/PMC5899626/)。既有 [CMRL-07](../../docs/project/HISTORY_ARCHIVE.md#按任务查找) 与 [CMRL-09](../../docs/project/HISTORY_ARCHIVE.md#按任务查找) 审计也未找到该 crosswalk，因此维持 `SEMANTIC_PENDING`。
 
 ## 最小复现
 

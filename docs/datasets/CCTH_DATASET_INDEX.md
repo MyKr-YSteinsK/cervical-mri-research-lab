@@ -140,6 +140,6 @@ print(data_root.resolve())
 
 ## 证据来源与未验证事项
 
-- 本地审计对照：[CMRL-05 全量 DICOM 报告](../../reports/r0/CMRL-05-TCIA全量DICOM准入审计.md)、[CMRL-06 IDC v25 Series/Instance 对账](../../reports/r0/CMRL-06-IDC-v25逐Series及对象完整性补证.md)。
+- 本地审计对照：CMRL-05/06 的完整逐任务报告保存在 [CMRL 历史归档](../project/HISTORY_ARCHIVE.md#按任务查找) 指向的固定 Git Tag；当前状态摘要见 [数据证据登记](../project/02-DATASET_EVIDENCE_REGISTER.md)。
 - 官方 Collection/IDC 统计和许可证沿用前序来源核验；本次未请求网络或下载文件。
 - 唯一数量、UID/路径匹配及 header 候选不证明 PixelData 可解码、MRI 切片连续、方向正确、RTSTRUCT 可栅格化、ROI 为肿瘤或患者时点/临床标签正确。R0 仍以项目 Main 决定为准；本报告不表示 R0 COMPLETE。
