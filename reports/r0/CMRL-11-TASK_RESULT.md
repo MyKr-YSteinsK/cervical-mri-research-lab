@@ -43,5 +43,8 @@
 
 - **起始基线：** CMRL-10 分支/PR #11 head `4698b0d7d1992a02b6c1330157d5bfc778509b5e`；创建本分支时 PR #11 为 OPEN/Draft，base 为 `codex/r0-09-tcia-authoritative-annotation-review`，原 PR 未改动。
 - **分支：** `codex/cmrl-11-ccth-dataset-index`，从上述 PR #11 head 建立。
-- **提交、远端 ref、Draft PR 与最终 HEAD：** 待提交及推送后补录。
+- **成果提交：** `8713e26868531bb56b034a9df29f1cfb076df421`（`docs(cmrl): index local CCTH dataset paths`）；远端分支 ref 已核实与该 SHA 一致。
+- **Draft PR：** [PR #12](https://github.com/MyKr-YSteinsK/cervical-mri-research-lab/pull/12)，OPEN/Draft；base `codex/r0-10-derived-mask-provenance-screen`，head `codex/cmrl-11-ccth-dataset-index`。创建时 head SHA 与成果提交一致。
+- PR #11 复核后仍为 OPEN/Draft，head `4698b0d7d1992a02b6c1330157d5bfc778509b5e`，base 未变；未合并或更新 Main。
+- 本 TASK_RESULT 是交付回执，随成果提交后的后续分支提交推送；最终远端 HEAD 在执行回执中复核。
 - 不更新 Main、不合并 PR、不改变 R0 阶段。
