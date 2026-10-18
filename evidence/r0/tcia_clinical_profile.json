@@ -1,0 +1,145 @@
+{
+  "source_filename": "TCIA_CCTH_Patient-data_02.06.23.xlsx",
+  "file_size_bytes": 14233,
+  "sha256": "a59d29c86bb45bca98649d1eb8c7a533558fd1cf7b6beb35f5175ea47a04d1c9",
+  "inspection": "openpyxl read_only=True, data_only=False; no workbook writes",
+  "privacy": "No patient-level cell values, samples, or identifier values are emitted.",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "openpyxl": "3.1.5"
+  },
+  "sheets": [
+    {
+      "sheet": "Sheet1",
+      "state": "profiled",
+      "declared_dimension": "A1:K33",
+      "worksheet_max_row": 33,
+      "worksheet_max_column": 11,
+      "header_row_1_based": 1,
+      "column_count": 9,
+      "unlabeled_columns_with_data": [],
+      "record_count": 28,
+      "nonblank_cells_per_record_histogram": {
+        "1": 5,
+        "6": 15,
+        "8": 5,
+        "9": 3
+      },
+      "rows_with_candidate_identifier": 23,
+      "rows_without_candidate_identifier": 5,
+      "fields": [
+        {
+          "name": "Case Name",
+          "role_hint": "candidate identifier field (values not emitted)",
+          "nonblank_count": 23,
+          "observed_types": {
+            "text": 23
+          },
+          "blank_count": 5,
+          "blank_rate": 0.17857142857142858,
+          "sentinel_counts": {},
+          "candidate_key_profile": {
+            "nonblank_values": 23,
+            "distinct_values": 23,
+            "duplicate_nonblank_rows": 0
+          }
+        },
+        {
+          "name": "Early response (1-2 months post-therapy)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 28,
+          "observed_types": {
+            "text": 28
+          },
+          "blank_count": 0,
+          "blank_rate": 0.0,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Local Recurrence (y/n)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 23,
+          "observed_types": {
+            "text": 23
+          },
+          "blank_count": 5,
+          "blank_rate": 0.17857142857142858,
+          "sentinel_counts": {
+            "n/a": 1
+          }
+        },
+        {
+          "name": "Time to Local Recurrence (weeks)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 5,
+          "observed_types": {
+            "integer": 1,
+            "number": 4
+          },
+          "blank_count": 23,
+          "blank_rate": 0.8214285714285714,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Distant Metastasis (y/n)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 23,
+          "observed_types": {
+            "text": 23
+          },
+          "blank_count": 5,
+          "blank_rate": 0.17857142857142858,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Time to Distant Metastasis (weeks)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 6,
+          "observed_types": {
+            "integer": 1,
+            "number": 5
+          },
+          "blank_count": 22,
+          "blank_rate": 0.7857142857142857,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Death from Cervical Cancer (y/n)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 23,
+          "observed_types": {
+            "text": 23
+          },
+          "blank_count": 5,
+          "blank_rate": 0.17857142857142858,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Time to Death from Cervical Cancer (weeks)",
+          "role_hint": "candidate endpoint/follow-up field (requires source/clinical validation)",
+          "nonblank_count": 8,
+          "observed_types": {
+            "integer": 1,
+            "number": 7
+          },
+          "blank_count": 20,
+          "blank_rate": 0.7142857142857143,
+          "sentinel_counts": {}
+        },
+        {
+          "name": "Disease Status (at last contact)",
+          "role_hint": "meaning follows source column label; no clinical interpretation inferred",
+          "nonblank_count": 23,
+          "observed_types": {
+            "text": 23
+          },
+          "blank_count": 5,
+          "blank_rate": 0.17857142857142858,
+          "sentinel_counts": {}
+        }
+      ],
+      "row_values_emitted": false
+    }
+  ]
+}

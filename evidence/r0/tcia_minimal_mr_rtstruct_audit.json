@@ -1,0 +1,124 @@
+{
+  "audit_id": "CMRL-03",
+  "plan_revision": "r1",
+  "observed_at_utc": "2026-10-16T12:02:19Z",
+  "status": "PARTIAL",
+  "source_versions": {
+    "tcia_collection": "Version 2; collection page updated 2023-02-23",
+    "tcia_api": "REST API v4 documentation; runtime metadata unavailable from this environment",
+    "idc_collection": "Official portal page for CC-Tumor-Heterogeneity",
+    "idc_api": "REST API v3 documentation; runtime version unavailable from this environment"
+  },
+  "environment": {
+    "python_version": "3.14.6",
+    "pydicom_available": false,
+    "d_drive_free_bytes_at_preflight": 149419892736,
+    "preexisting_local_clinical_workbook_present": true,
+    "clinical_workbook_read_or_modified_in_this_task": false,
+    "credentials_used": false
+  },
+  "published_collection_metadata": {
+    "doi": "10.7937/ERZ5-QZ59",
+    "subject_count": 23,
+    "study_count": 171,
+    "series_count": 821,
+    "image_count": 131556,
+    "published_image_size_gb": 28.39,
+    "declared_modalities": ["MR", "RTSTRUCT", "REG", "PT", "CT"],
+    "image_license": "CC BY 4.0",
+    "data_citation_required": true
+  },
+  "query_statuses": [
+    {
+      "endpoint_category": "TCIA REST v4 getSeries, MR filter",
+      "result": "TIMEOUT",
+      "http_status": null,
+      "elapsed_ms": 14039,
+      "response_body_bytes_observed": 0,
+      "failure_class": "TimeoutError"
+    },
+    {
+      "endpoint_category": "IDC REST v3 version",
+      "result": "TLS_ERROR",
+      "http_status": null,
+      "response_body_bytes_observed": 0,
+      "elapsed_ms": 5235,
+      "failure_class": "SSLEOFError"
+    },
+    {
+      "endpoint_category": "IDC REST v3 version via curl",
+      "result": "CONNECTION_FAILURE",
+      "http_status": 0,
+      "response_body_bytes_observed": 0,
+      "elapsed_ms": 5740,
+      "failure_class": "Schannel handshake failure"
+    },
+    {
+      "endpoint_category": "IDC API documentation via browser",
+      "result": "CONNECTION_CLOSED",
+      "http_status": null,
+      "response_body_bytes_observed": 0,
+      "elapsed_ms": 10813,
+      "failure_class": "ERR_CONNECTION_CLOSED"
+    },
+    {
+      "endpoint_category": "TCIA REST exploratory PowerShell batch (MR and RTSTRUCT metadata)",
+      "result": "UNRECORDED",
+      "http_status": null,
+      "response_body_bytes_observed": null,
+      "elapsed_ms": ">30000",
+      "failure_class": "tool capture boundary; per-request results not returned",
+      "subrequest_count": 2,
+      "used_as_evidence": false
+    }
+  ],
+  "candidate_evidence_level": "COLLECTION_LEVEL_ONLY",
+  "modality_counts": {
+    "series_counts_by_modality": "NOT_OBSERVED",
+    "collection_declares_modalities": ["MR", "RTSTRUCT", "REG", "PT", "CT"]
+  },
+  "one_subject_chain": {
+    "subject_candidate_selected": false,
+    "mr_series_identified": "UNKNOWN",
+    "t2wi_confirmed": "UNKNOWN",
+    "rtstruct_identified": "UNKNOWN",
+    "same_subject": "UNKNOWN",
+    "same_study": "UNKNOWN",
+    "same_frame_of_reference": "UNKNOWN",
+    "rtstruct_references_mr_sop_or_series": "UNKNOWN"
+  },
+  "minimal_download_budget": {
+    "per_object_hard_limit_bytes": 30000000,
+    "total_response_body_hard_limit_bytes": 100000000,
+    "new_mr_dicom_count": 0,
+    "new_rtstruct_count": 0,
+    "new_dicom_response_body_bytes": 0,
+    "confirmed_body_bytes_from_completed_probes": 0,
+    "unrecorded_probe_body_bytes": "UNKNOWN for up to two metadata responses",
+    "total_metadata_response_body_bytes": "UNKNOWN",
+    "limit_exceeded": "UNKNOWN due to unrecorded exploratory metadata responses; no DICOM download was attempted"
+  },
+  "local_file_type_counts": {
+    "new_mr_dicom": 0,
+    "new_rtstruct": 0
+  },
+  "roi_category_hints": {
+    "header_inspected": false,
+    "roi_count": null,
+    "primary_tumor_roi_hint": "UNKNOWN",
+    "reason": "No RTSTRUCT file was obtained"
+  },
+  "privacy_checks": {
+    "subject_level_identifiers_in_committed_evidence": "NO",
+    "raw_dicom_headers_committed": "NO",
+    "pixel_or_contour_data_committed": "NO",
+    "credentials_or_authenticated_urls_committed": "NO"
+  },
+  "unresolved": [
+    "Local network access to the TCIA series endpoint timed out",
+    "Local TLS connections to the IDC REST host failed",
+    "No subject-level MR and RTSTRUCT metadata or reference chain was obtained",
+    "No file size, DICOM Header, ROI category, or geometry field was inspected",
+    "Cumulative metadata response body bytes cannot be fully accounted because one PowerShell batch with two modality queries did not return captured per-request results"
+  ]
+}

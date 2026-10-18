@@ -1,0 +1,336 @@
+{
+  "audit": "CMRL-02 FlexFair grouping, identity clues, and exact duplicate audit",
+  "observed_at_utc": "2026-10-16T11:35:44Z",
+  "privacy": {
+    "archive_member_names_emitted": false,
+    "patient_or_site_values_emitted": false,
+    "per_file_hashes_emitted": false,
+    "image_pixels_emitted": false
+  },
+  "source": {
+    "figshare_article_id": 28639598,
+    "figshare_file_id": 53159216,
+    "expected_size_bytes": 348731016,
+    "expected_md5": "303ae54703fdccc63302cb755aed792a",
+    "expected_sha256": "4efdfa6b6dbf4174a1b7ce2b0eb8878e739f0365829a89d57fdf5223c82817ec"
+  },
+  "author_code": {
+    "repository": "https://github.com/MaksimXing/FlexFair",
+    "commit": "f7da0fc0a9a4ad7c96f2c7b48699fc8cc151e320",
+    "data_directory_groups": [
+      "zhongda",
+      "shengfuyou",
+      "zhongzhong",
+      "new_zhongyi"
+    ],
+    "image_mask_rule": "exclude basename containing literal 'label'; target basename[:-4] + '_label.png' in same directory",
+    "train_test_code_paths": [
+      "Private/train/<group>/",
+      "Private/test/<group>/"
+    ]
+  },
+  "archive": {
+    "size_bytes": 348731016,
+    "md5": "303ae54703fdccc63302cb755aed792a",
+    "sha256": "4efdfa6b6dbf4174a1b7ce2b0eb8878e739f0365829a89d57fdf5223c82817ec",
+    "official_md5_match": true,
+    "cmrl01_sha256_match": true,
+    "zip_opened": true,
+    "file_count": 6732,
+    "directory_entry_count": 11,
+    "png_file_count": 6732,
+    "crc_check_completed": true,
+    "crc_check_passed": true
+  },
+  "zip_structure": {
+    "file_count": 6732,
+    "directory_entry_count": 11,
+    "png_count": 6732,
+    "observed_train_directory_png_count": 4840,
+    "observed_test_directory_png_count": 1892,
+    "private_train_group_file_count": 0,
+    "private_test_group_file_count": 0,
+    "code_group_directory_file_counts": {
+      "zhongda": 0,
+      "shengfuyou": 0,
+      "zhongzhong": 0,
+      "new_zhongyi": 0
+    },
+    "code_group_directory_entry_counts": {
+      "zhongda": 0,
+      "shengfuyou": 0,
+      "zhongzhong": 0,
+      "new_zhongyi": 0
+    },
+    "private_directory_entry_count": 0,
+    "author_expected_loader_directory_entry_counts": {
+      "train": {
+        "zhongda": 0,
+        "shengfuyou": 0,
+        "zhongzhong": 0,
+        "new_zhongyi": 0
+      },
+      "test": {
+        "zhongda": 0,
+        "shengfuyou": 0,
+        "zhongzhong": 0,
+        "new_zhongyi": 0
+      }
+    },
+    "train_test_group_role_counts": {
+      "train": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      },
+      "test": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      }
+    },
+    "observed_path_group_role_counts": {
+      "train": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 2420,
+          "mask": 2420,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      },
+      "test": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 946,
+          "mask": 946,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      },
+      "unclassified": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      },
+      "mixed": {
+        "zhongda": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "shengfuyou": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "zhongzhong": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "new_zhongyi": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "unclassified": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        },
+        "ambiguous": {
+          "image": 0,
+          "mask": 0,
+          "other": 0
+        }
+      }
+    },
+    "manifest_filename_hint_count": 0,
+    "patient_token_pattern_match_count": 0,
+    "site_token_pattern_match_count": 0,
+    "patient_or_site_mapping_contents_inspected": false
+  },
+  "pairing": {
+    "author_rule": {
+      "image_candidates": 3366,
+      "label_name_candidates": 3366,
+      "exact_same_directory_pairs": 3366,
+      "unpaired_image_candidates": 0,
+      "unpaired_label_name_candidates": 0,
+      "loader_scope_train_test_group_files": {
+        "train": 0,
+        "test": 0
+      }
+    },
+    "cmrl01_normalization_rule": {
+      "image_candidates": 3366,
+      "mask_candidates": 3366,
+      "matched_keys": 3366,
+      "unambiguous_pairs": 3366,
+      "ambiguous_keys": 0,
+      "unpaired_image_candidates": 0,
+      "unpaired_mask_candidates": 0
+    },
+    "cross_rule_comparison": {
+      "identical_member_pairs": 3366,
+      "author_only_pairs": 0,
+      "normalization_only_pairs": 0
+    },
+    "repeated_image_basenames_in_multiple_directories": 940
+  },
+  "exact_pixel_duplicates": {
+    "comparison_unit": "decoded RGBA pixel matrix plus width and height",
+    "candidate_image_count": 3366,
+    "decoded_image_count": 3366,
+    "decode_failure_count": 0,
+    "decode_failure_types": {},
+    "distinct_pixel_matrices": 3357,
+    "duplicate_extra_records_across_all_images": 9,
+    "train_directory_present": true,
+    "test_directory_present": true,
+    "distinct_matrices_present_in_both_train_and_test": 1,
+    "cross_split_matching_pairs": 1,
+    "within_same_split_duplicate_extra_records": 8,
+    "within_same_split_and_author_group_duplicate_extra_records": 0,
+    "within_same_split_and_unclassified_group_duplicate_extra_records": 8,
+    "split_level_interpretation": "Exact duplicate pixel matches are not patient identities and absence does not rule out different slices from one patient across splits."
+  },
+  "identity_evidence": {
+    "author_code_exposes_patient_key": false,
+    "author_code_has_site_like_group_path_labels": true,
+    "archive_contains_author_group_directory_labels": false,
+    "clinical_site_mapping_from_group_labels_verified": false,
+    "patient_wise_split_declaration_verified": false,
+    "patient_or_site_mapping_in_archive_verified": false,
+    "status": "UNKNOWN; author group labels are not mapped to verified clinical centres and no patient key is established"
+  },
+  "status": "PROFILED"
+}

@@ -51,3 +51,42 @@ H4（以后，有真实终点才激活）：稳定 Radiomics + 深度特征 + �
 ## D. 源冲突处理规则
 
 发现两个官方来源矛盾：同时记录版本、原句/数据表、来源链接与查询日期；实际下载文件可直接消解的则用文件证据，仍无法消解的则列 `UNRESOLVED` 并降低适用性评级。不得为了设计一条顺畅的研发路线而静默修正患者数、文件格式、算法参数或标签。
+
+## CMRL-07 补充核验（2026-10-17）
+
+- **S06 当前 TCIA Collection 页面**：当前页面报告 23 subjects、171 studies、821 series、131,556 images、28.39 GB，含 DICOM 与 Follow-Up / Classification XLSX，CC BY 4.0；Clinical changelog 标为 Version 2（2023-02-23），记载为一名受试者补入一个 Time to Distant Metastasis 值。当前页面直接读取超时，采用官方搜索索引文本；官方文件端点另以 HTTP 200 实际取得小型 XLSX 并与本机副本 SHA-256 比对。数据集引用标题写 Version 1，与临床文件 changelog 分开记录。
+- **S06 历史 TCIA Wiki 页面**：记载治疗前、约 2–2.5 周/20–25 Gy、约 4–5 周/45–50 Gy 三个计划时点；说明 tumor volume contours 由 T2 MRI 定义并与 PET/CT 配准。历史页的图像大小为 26.0 GB，当前页为 28.39 GB，属于发布页口径/时间记录差异，不据此判断本地缺失。
+- **S13 Bowen et al. 2018，DOI 10.1002/jmri.25874 / PMID 29044908 / PMCID PMC5899626**：作者报告 21 人、pre-RT/early 20–25 Gy/mid 40–50 Gy；参考矢状 T2 上勾画 tumor 与 uterus，uterus 辅助配准，tumor ROI 用于多时点多模态分析。论文未给出发布版 DICOM 的逐 ROI Number/name crosswalk。TCIA 的 23 subjects 与论文 21 人的对应及差额原因仍 UNKNOWN。
+- **Clinical 字段和临床连接**：官方当前 XLSX 实测 1 sheet、28 非空行、9 命名字段；候选键 23 个非空互异值，5 行为空。没有公开 codebook 解释实际行粒度、临床编码、时间起点、删失或随访；候选键到本地 DICOM PatientID 仍 JOIN_UNVERIFIED。当前完整审计见 [CMRL-07 报告](../../reports/r0/CMRL-07-TCIA原始研究ROI时点与临床字段核验.md)。
+- **ROI 与本地时点**：文献双结构勾画不等于 DICOM ROI 语义映射；本地 ROI 语义仍 ROI_SEMANTIC_UNRESOLVED。文献时点 SOURCE_DEFINED；本地实际 DICOM 时点 UNASSIGNED。CMRL-07 不读取像素、不重扫 DICOM、不联系作者。
+
+### CMRL-07 待 Main 决策
+
+先独立复核 ROI crosswalk/codebook 是否存在；若无，是否由用户自行联系作者。即使后续选取一组作单例空间教学，也须由用户实测方向、spacing 与 contour 几何，未确认结构语义前不把轮廓称为肿瘤真值。临床建模需另行取得正式事件/时间/删失定义和合法精确患者 crosswalk。
+
+
+### CMRL-08｜本地 Clinical 键、日期顺序与 MR–RTSTRUCT 候选
+
+Plan-08 r1 的只读元数据审计完成；没有数据源网络请求。Clinical V2 的五条单格文本行在布局上构成同一非键字段类别的连续表尾区块，样式不同且无内部注释/图例标记；语义与记录粒度仍 UNKNOWN。Clinical 候选键到本地 DICOM PatientID 的匹配子类受小单元格抑制，来源语义未确认，状态 JOIN_UNVERIFIED。
+
+固定 IDC v25.0.0 对账复现 CMRL-06/r2：821 期望、806 本地、15 缺失；748 计数相等、73 个短缺 Series/1,132 个实例。全量 Header 解析 130,424/130,424，前后文件元数据 snapshot 相同。63 个 RTSTRUCT 允许范围内解析，唯一直接 SOP 引用 1,873 个本地命中、61 个未命中。通过 MR/RTSTRUCT 计数与目标引用链预筛得到 56 个唯一 Series 对；这不是患者数，也不是空间/肿瘤语义验收。私有定位索引最多保存 3 组，精确小计不公开。时间证据只有 CHRONOLOGY_ONLY；真实治疗时点仍 UNASSIGNED，患者分组仍 GROUPING_UNVERIFIED。ROI_SEMANTIC_UNRESOLVED、ENDPOINT_CODEBOOK_UNVERIFIED 和 R0 NOT COMPLETE 不变。见 [CMRL-08 报告](../../reports/r0/CMRL-08-TCIA私有连接与候选预筛报告.md) 与 [脱敏 profile](../../evidence/r0/tcia_private_crosswalk_screen_profile.json)。
+## CMRL-09｜权威定义追索（2026-10-17）
+
+- 新增来源：TCIA 历史 Wiki（直接可读）确认 collection-level tumor contours/方案时点描述；IDC 页面直接确认 23 subjects 和模态/Clinical supporting data；Wiley 直接摘要支持论文 21 人、2/5 周方案时点及论文级 response assessment。PMC 正文仅 INDEX-ONLY；TCIA 当前 Collection 索引为 INDEX-ONLY；TCIA Data Dictionary、Support 与 ClinicalTrials.gov 正文本次不可读。
+- 未找到发布版逐 RTSTRUCT ROI 标识到 tumor/uterus 的 crosswalk、Clinical V2 codebook、21 人论文队列到 23 subjects 的具体关系、Clinical key 到 DICOM PatientID namespace 说明、DICOM Series 的逐患者治疗时点映射。
+- 源内歧义：TCIA Wiki 的 tumor contour 描述与 Version 1 下“No labels”单句未能消解；当前/历史页面大小不同；论文与 Wiki 的 mid timepoint 周次/剂量范围不同。逐项引用与访问等级见 [CMRL-09 报告](../../reports/r0/CMRL-09-TCIA权威ROI与临床定义追索报告.md)。
+- 仅准备 UNSENT 作者/TCIA 问题草案，未发送；R0 NOT COMPLETE。
+
+## CMRL-10 新增来源（2026-10-18）
+
+| 来源编号 | 权威入口 | 可支持的范围 | 不能支持的范围 |
+|---|---|---|---|
+| S14 | [CVPR-BiomedSegFM 数据卡](https://huggingface.co/datasets/junma/CVPR-BiomedSegFM)、[CCTH 目录](https://huggingface.co/datasets/junma/CVPR-BiomedSegFM/tree/main/3D_train_npz_all/MRI/MR_CervicalCancer)、[竞赛仓库](https://github.com/JunMa11/CVPR-MedSegFMCompetition) | 作者称多来源体数据预处理成 NPZ、仅提取有标签切片；目录的公开文件数量/大小/版本元数据 | `gts` 对应哪一 ROI、标注者、RTSTRUCT 版本、原始完整体积、病例/时点映射、origin/direction；许可对各来源资产的具体适用范围 |
+| S15 | [MedOtter 第三方 CCTH 页面](https://huggingface.co/datasets/MedOtter/TCIA_CervicalCancer) | 记录第三方自己的来源、ROI/时间点和 CC BY 4.0 声称；Hub revision/目录元数据 | 不证明 TCIA/原作者背书、ROI crosswalk、完整性、转化脚本或再发布授权；不独立于 CCTH |
+| S16 | [FlexFair Figshare 28639598](https://figshare.com/articles/dataset/Achieving_Flexible_Fairness_Metrics_in_Federated_Medical_Imaging/28639598)、[作者仓库](https://github.com/MaksimXing/FlexFair) | 官方 Figshare 版本、文件总量与 CC BY 4.0；作者 README 所指文件记录号 | 28636133 的公开 API 现返回 HTTP 404；该冲突不证明文章资产缺失或患者键可用 |
+| S17 | [MOGaMBO Zenodo 记录](https://zenodo.org/records/15156638) | 公开记录的开放状态、CC BY 4.0 与作者数据描述：3D T2 MRI、OAR 勾画 | 未下载档案的实际格式、空间 header、GTV 是否存在；目前只可视为 OAR/空间教学近似候选 |
+| S18 | [Cervical-RG/MICCAI 2025 论文页](https://papers.miccai.org/miccai-2025/0143-Paper0177.html) | 论文/作者报告的多序列 MRI、报告/FIGO 任务与邮件申请说法；页面中 3,137 与 3,177 的源内口径差异 | 公开下载、患者级独立访问、肿瘤 GTV Mask 或治疗应答/生存标签 |
+| S19 | [3D Cervical MRI 2022 OpenReview 论文](https://openreview.net/pdf?id=c42ffe0c48f7903a8df25629a7225b8f61b41860) | 论文报告的机构影像分割研究与合并训练结构 | 论文结果不证明公开影像资产或可复用许可；未发现公开下载 |
+| S20 | [HNTS-MRG 2024 官方数据页](https://hntsmrg24.grand-challenge.org/dataset/) | 公开头颈 MRI/肿瘤分割资源的范围 | 肿瘤原发部位为头颈，不符合本项目宫颈原发肿瘤目标，按 Plan 排除 |
+
+BiomedSegFM 的 3D 数组字段是作者声明，非文件内部核验；MedOtter 的肿瘤/时点描述是第三方声明，不能越过 CMRL-09 的权威 ROI 语义缺口。MOGaMBO 的开放许可支持其本身的 OAR 数据记录，不能转用于任何其他数据源。详细证据和访问版本见 [CMRL-10 报告](../../reports/r0/CMRL-10-宫颈癌MRI派生标注溯源与替代数据预筛.md) 与[来源登记](../../evidence/r0/cervical_mri_derived_provenance_register.json)。

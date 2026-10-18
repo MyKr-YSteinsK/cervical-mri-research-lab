@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "1.0",
+  "task": "CMRL-09",
+  "planRevision": "r1",
+  "accessedWindowUTC": "2026-10-17 13:45-13:51 UTC",
+  "navigationBudget": {
+    "distinctUrlTargetsOpenedOrAttemptedAtLeast": 12,
+    "max": 60,
+    "publicPdfsOrSupplementsDownloaded": 0,
+    "maxPdfs": 6,
+    "newPublicBytesDownloaded": 0,
+    "maxBytes": 41943040
+  },
+  "sources": [
+    {
+      "id": "A1",
+      "institution": "The Cancer Imaging Archive (TCIA)",
+      "title": "CC-TUMOR-HETEROGENEITY collection page",
+      "url": "https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/",
+      "version": "Version 2; page states updated 2023-02-23; citation label says Version 1",
+      "accessMethod": "official search index only; direct page open returned HTTP 500",
+      "evidenceGrade": "INDEX-ONLY",
+      "sections": [
+        "Data Access",
+        "Version 2",
+        "Citations & Data Usage Policy"
+      ],
+      "summary": "Indexed page lists 23 subjects, 171 studies, 821 series, 131556 images, DICOM and Clinical XLSX with CC BY 4.0; reports a Clinical V2 time-to-distant-metastasis value addition without an endpoint codebook.",
+      "applicability": "Current release metadata only. Does not establish ROI identities, clinical field semantics, patient join, or Series timepoints."
+    },
+    {
+      "id": "A2",
+      "institution": "TCIA Wiki",
+      "title": "Cervical Cancer – Tumor Heterogeneity: Serial Functional and Molecular Imaging Across the Radiation Therapy Course in Advanced Cervical Cancer (CC-Tumor-Heterogeneity)",
+      "url": "https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=112591753",
+      "version": "Historical collection page; page marked last modified 2024-04-11; Versions section describes V1 and V2",
+      "accessMethod": "direct page retrieval",
+      "evidenceGrade": "DIRECT / COLLECTION-REPORTED",
+      "sections": [
+        "Summary",
+        "Data Access",
+        "Detailed Description",
+        "Citations & Data Usage Policy",
+        "Additional Publication Resources",
+        "Versions"
+      ],
+      "summary": "Describes tumor-volume contours as included for each case and imaging timepoint and gives protocol-level treatment timepoints. Also contains an unexplained 'No labels' note under V1; page wording does not identify DICOM ROI numbers/names or code clinical endpoints.",
+      "applicability": "Collection-level descriptions only; no per-RTSTRUCT crosswalk or per-patient timepoint table."
+    },
+    {
+      "id": "A3",
+      "institution": "NCI Imaging Data Commons (IDC)",
+      "title": "Collection Details CC-Tumor-Heterogeneity",
+      "url": "https://portal.imaging.datacommons.cancer.gov/collections/cc_tumor_heterogeneity/",
+      "version": "Page observed 2026-10-17",
+      "accessMethod": "direct page retrieval",
+      "evidenceGrade": "DIRECT / COLLECTION-REPORTED",
+      "sections": [
+        "Details",
+        "Description"
+      ],
+      "summary": "Lists 23 subjects, cervix primary site, CT/MR/PT/REG/RTSTRUCT modalities, cervical cancer, and Clinical supporting data; directs users to TCIA collection page for metadata.",
+      "applicability": "Collection metadata; no file-level or identity/ROI validation."
+    },
+    {
+      "id": "A4",
+      "institution": "Wiley / Journal of Magnetic Resonance Imaging",
+      "title": "Tumor radiomic heterogeneity: Multiparametric functional imaging to characterize variability and predict response following cervical cancer radiation therapy",
+      "url": "https://onlinelibrary.wiley.com/doi/abs/10.1002/jmri.25874",
+      "doi": "10.1002/jmri.25874",
+      "version": "Journal 2018; first published online 2017-10-16",
+      "accessMethod": "direct publisher abstract page",
+      "evidenceGrade": "DIRECT / AUTHOR-REPORTED",
+      "sections": [
+        "Abstract: Study Type",
+        "Population",
+        "Assessment",
+        "Data Conclusion"
+      ],
+      "summary": "Abstract reports 21 participants; pre-RT, early 2-week and mid 5-week imaging; response assessed one month after treatment completion by a radiation oncologist using manually delineated tumor-volume changes.",
+      "applicability": "Published-study cohort and protocol only; not a Clinical V2 codebook or released DICOM ROI identity map.",
+      "publicContactRoute": "Corresponding author Stephen R. Bowen, PhD; srbowen@uw.edu appears in PMC search-indexed article text. Wiley page directly confirms corresponding author but masks the email link."
+    },
+    {
+      "id": "A5",
+      "institution": "PubMed Central (PMC)",
+      "title": "Bowen et al. full text, PMCID PMC5899626",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5899626/",
+      "version": "Published article; 2018 journal issue",
+      "accessMethod": "targeted official search index; direct open triggered reCAPTCHA; no PDF downloaded",
+      "evidenceGrade": "INDEX-ONLY / AUTHOR-REPORTED",
+      "sections": [
+        "Methods: Patient and Treatment Characteristics",
+        "DCE MRI, DW MRI and FDG PET/CT acquisition",
+        "Exploratory response analysis"
+      ],
+      "summary": "Search-indexed article text describes tumor and uterus delineation on reference sagittal T2 and a paper-specific response threshold of residual volume below 10% of baseline; index text also contains protocol dose/timepoint details.",
+      "applicability": "Research-paper method only. Threshold and contours cannot be mapped onto Clinical V2 fields or individual released RTSTRUCT objects."
+    },
+    {
+      "id": "A6",
+      "institution": "TCIA",
+      "title": "TCIA Data Dictionary",
+      "url": "https://www.cancerimagingarchive.net/tcia-data-type/data-dictionary/",
+      "version": "Page observed 2026-10-17",
+      "accessMethod": "direct page open returned HTTP 500",
+      "evidenceGrade": "UNAVAILABLE",
+      "sections": [
+        "Data Dictionary entry point"
+      ],
+      "summary": "The official dictionary page could not be retrieved; no CCTH-specific codebook was obtained.",
+      "applicability": "Unavailable; generic definitions were not substituted."
+    },
+    {
+      "id": "A7",
+      "institution": "TCIA",
+      "title": "Official FAQ and Support",
+      "url": "https://www.cancerimagingarchive.net/faqs/",
+      "linkedSupportUrl": "https://www.cancerimagingarchive.net/support/",
+      "version": "Pages observed 2026-10-17",
+      "accessMethod": "official FAQ indexed snippet plus direct FAQ/support attempts returning HTTP 500",
+      "evidenceGrade": "INDEX-ONLY / UNAVAILABLE",
+      "sections": [
+        "FAQ: finding collection information and contacting TCIA Help Desk",
+        "Historical collection page support link"
+      ],
+      "summary": "Public page links to official TCIA support; direct support pages were unavailable during this review. No form or email was submitted.",
+      "applicability": "Contact route only; author/administrator not contacted.",
+      "publicContactRoute": "TCIA Help Desk; help@cancerimagingarchive.net appears in official FAQ search-index text; official Support page direct retrieval returned HTTP 500."
+    },
+    {
+      "id": "A8",
+      "institution": "ClinicalTrials.gov",
+      "title": "NCT01992861 study record",
+      "url": "https://clinicaltrials.gov/study/NCT01992861",
+      "version": "Page observed 2026-10-17",
+      "accessMethod": "direct open returned only generic page shell without record content",
+      "evidenceGrade": "UNAVAILABLE",
+      "sections": [
+        "Study record target cited in article methods"
+      ],
+      "summary": "Official record content was not exposed by the retrieval tool; no third-party mirror was used as authority.",
+      "applicability": "No registry endpoint, cohort, or field definitions asserted."
+    }
+  ],
+  "determinations": {
+    "roiCrosswalk": "NOT_FOUND_IN_REVIEWED_SOURCES",
+    "collectionContourStatement": "SOURCE_DEFINED, collection-reported only",
+    "releasedLabelScope": "CONFLICTING_SOURCES due to unexplained V1 'No labels' note alongside tumor-contour description",
+    "clinicalV2Codebook": "NOT_FOUND_IN_REVIEWED_SOURCES",
+    "paperSpecificEarlyResponse": "PARTIAL_SOURCE_DEFINED; not equivalent to Clinical V2 field semantics",
+    "cohort21To23Link": "NOT_FOUND_IN_REVIEWED_SOURCES",
+    "clinicalKeyToDicomPatientIdNamespace": "NOT_FOUND_IN_REVIEWED_SOURCES",
+    "protocolTimepoints": "SOURCE_DEFINED with discrepancies preserved",
+    "dicomSeriesToPatientTimepointMapping": "NOT_FOUND_IN_REVIEWED_SOURCES",
+    "finalR0": "NOT COMPLETE"
+  },
+  "privacy": "Contains only public source metadata and short summaries. No patient identifiers, UID, raw ROI labels, Clinical row values, local paths, or private mapping."
+}
